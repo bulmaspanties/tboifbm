@@ -4,6 +4,8 @@ A mod for **The Binding of Isaac: Repentance+** (all DLC) that adds American foo
 None of the items replaces a vanilla item, and none is just cosmetic: each one has its own mechanic.
 It uses only the vanilla Lua API, so REPENTOGON is **not** required.
 
+![Item sprites and worn costumes](docs/preview.png)
+
 ## Items
 
 | Item | Type | Pools | What it does |
