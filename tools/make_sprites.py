@@ -42,7 +42,7 @@ PALETTE = {
     "f": (92, 46, 22, 255),
     "F": (140, 74, 36, 255),
     "E": (178, 104, 56, 255),
-    # kicking tee orange
+    # kicking tee / gatorade orange
     "o": (186, 78, 18, 255),
     "O": (238, 122, 32, 255),
     "P": (255, 176, 86, 255),
@@ -424,6 +424,119 @@ SPRITES["items/collectibles/pigskin.png"] = dict(mirror=True, rows=[
     "................",
     "................",
 ])
+
+
+# --- Shape helpers for sprites that are easier to build than to type ---------
+def blank(size=32):
+    return [["."] * size for _ in range(size)]
+
+
+def rect(g, x0, y0, x1, y1, ch):
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1):
+            g[y][x] = ch
+
+
+def ellipse(g, cx, cy, rx, ry, ch):
+    for y in range(len(g)):
+        for x in range(len(g[0])):
+            if ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1.0:
+                g[y][x] = ch
+
+
+def put(g, points, ch):
+    for x, y in points:
+        g[y][x] = ch
+
+
+def outline(g, ch="K"):
+    """Add a 1px outline around every non-transparent pixel."""
+    h, w = len(g), len(g[0])
+    edge = [(x, y) for y in range(h) for x in range(w) if g[y][x] == "."
+            and any(0 <= x + dx < w and 0 <= y + dy < h and g[y + dy][x + dx] not in (".", ch)
+                    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))]
+    put(g, edge, ch)
+    return g
+
+
+def rows_of(g):
+    return ["".join(r) for r in g]
+
+
+def playbook():
+    g = blank()
+    rect(g, 7, 6, 24, 27, "F")                       # clipboard
+    rect(g, 24, 6, 24, 27, "f")
+    rect(g, 7, 27, 24, 27, "f")
+    rect(g, 9, 9, 22, 25, "W")                       # paper
+    rect(g, 22, 9, 22, 25, "w")
+    rect(g, 9, 25, 22, 25, "w")
+    rect(g, 11, 4, 20, 7, "G")                       # clip
+    rect(g, 11, 7, 20, 7, "g")
+    rect(g, 14, 5, 17, 5, "K")
+    for cx, cy in ((12, 12), (19, 12)):              # X's
+        put(g, [(cx - 1, cy - 1), (cx + 1, cy - 1), (cx, cy), (cx - 1, cy + 1), (cx + 1, cy + 1)], "R")
+    for cx, cy in ((12, 21), (19, 21)):              # O's
+        put(g, [(cx, cy - 1), (cx - 1, cy), (cx + 1, cy), (cx, cy + 1)], "B")
+    put(g, [(13, 14), (14, 15), (15, 16), (16, 17), (17, 18)], "k")   # route arrow
+    put(g, [(16, 18), (17, 17), (18, 19)], "k")
+    return rows_of(outline(g))
+
+
+def coachs_whistle():
+    g = blank()
+    ellipse(g, 15, 18, 7.5, 5.5, "G")                # whistle body
+    rect(g, 3, 14, 10, 18, "G")                      # mouthpiece
+    rect(g, 3, 14, 10, 14, "W")
+    ellipse(g, 13, 15, 4, 1.4, "W")                  # shine
+    rect(g, 8, 22, 20, 23, "g")                      # underside shadow
+    rect(g, 15, 13, 18, 14, "k")                     # sound slot
+    ellipse(g, 24, 13, 2.2, 2.2, "g")                # ring
+    put(g, [(24, 13)], ".")
+    # lanyard looping up and back
+    lanyard = [(25, 11), (25, 10), (24, 9), (23, 8), (22, 7), (21, 6), (19, 5), (17, 5),
+               (15, 5), (13, 6), (11, 7), (10, 8), (9, 9), (9, 10), (10, 11)]
+    put(g, lanyard, "R")
+    put(g, [(x, y + 1) for x, y in lanyard[2:-2]], "r")
+    return rows_of(outline(g))
+
+
+def gatorade_bucket():
+    g = blank()
+    rect(g, 7, 9, 24, 26, "O")                       # orange cooler
+    ellipse(g, 15.5, 26, 8.5, 2.5, "O")
+    rect(g, 7, 9, 8, 26, "o")                        # side shading
+    rect(g, 23, 9, 24, 26, "o")
+    ellipse(g, 15.5, 8, 9, 3, "W")                   # white lid
+    ellipse(g, 15.5, 7.5, 7, 1.6, "w")
+    rect(g, 9, 15, 22, 18, "W")                      # label band
+    put(g, [(13, 16), (14, 16), (15, 16), (13, 17), (15, 17), (16, 17), (14, 17)], "O")  # lightning-ish mark
+    put(g, [(17, 16), (18, 16), (16, 16)], "o")
+    rect(g, 14, 22, 17, 24, "W")                     # spigot
+    rect(g, 15, 25, 16, 25, "w")
+    return rows_of(outline(g))
+
+
+def referee_flag():
+    g = blank()
+    # yellow cloth with a soft fold, weighted knot top-left
+    for y in range(9, 25):
+        wave = 1 if 13 <= y <= 18 else 0
+        rect(g, 9 + wave, y, 24 - wave, y, "Y")
+    for y in range(9, 25):
+        for x in range(9, 25):
+            if g[y][x] == "Y" and (x - 9) + (24 - y) < 6:
+                g[y][x] = "y"
+    put(g, [(x, x + 2) for x in range(12, 22) if g[x + 2][x] == "Y"], "y")   # fold line
+    ellipse(g, 9, 8, 3, 3, "n")                      # weighted knot
+    put(g, [(8, 7)], "N")
+    return rows_of(outline(g))
+
+SPRITES["items/collectibles/playbook.png"] = dict(rows=playbook())
+SPRITES["items/collectibles/coachs_whistle.png"] = dict(rows=coachs_whistle())
+SPRITES["items/collectibles/gatorade_bucket.png"] = dict(rows=gatorade_bucket())
+SPRITES["items/trinkets/referee_flag.png"] = dict(rows=referee_flag())
+
 
 # --- Football tear: 4-frame spiral strip (16x16 each, nose pointing +X) -----
 # Lua rotates the sprite to the tear's velocity; the frames roll the laces.

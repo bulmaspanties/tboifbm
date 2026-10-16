@@ -9,6 +9,9 @@
         <Item Name="Mouthguard" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Kicking Tee" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Pigskin" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Playbook" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Coach's Whistle" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Gatorade Bucket" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     </Pool>
     <Pool Name="shop">
         <Item Name="Shoulder Pads" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -16,8 +19,12 @@
         <Item Name="Eye Black" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Mouthguard" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Pigskin" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Gatorade Bucket" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     </Pool>
     <Pool Name="goldenChest">
         <Item Name="Team Jersey" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1" />
+    </Pool>
+    <Pool Name="boss">
+        <Item Name="Coach's Whistle" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     </Pool>
 </ItemPools>

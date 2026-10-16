@@ -13,7 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 MOD_FOLDER = "gridiron"
-INCLUDE = ["metadata.xml", "main.lua", "content", "resources"]
+INCLUDE = ["metadata.xml", "main.lua", "scripts", "content", "resources"]
 
 
 def main():

@@ -1,0 +1,14 @@
+<sounds root="sfx/">
+    <!-- Dead Sea Scrolls menu -->
+    <sound name="deadseascrolls_pop">
+        <sample weight="1" path="deadseascrolls/pop.wav" />
+    </sound>
+    <sound name="deadseascrolls_whoosh">
+        <sample weight="1" path="deadseascrolls/whoosh.wav" />
+    </sound>
+
+    <!-- Gridiron -->
+    <sound name="Gridiron Whistle">
+        <sample weight="1" path="gridiron_whistle.wav" />
+    </sound>
+</sounds>

@@ -1,9 +1,9 @@
 <costumes anm2root="gfx/" version="1">
-    <!-- Item costumes: id + type must match the item in items.xml -->
-    <costume id="1" anm2path="characters/gridiron_helmet.anm2" type="passive" priority="99" />
-    <costume id="5" anm2path="characters/gridiron_eyeblack.anm2" type="passive" />
-
-    <!-- Null costumes swapped in from main.lua so gear pieces sharing a layer combine -->
+    <!-- All Gridiron costumes are null costumes applied from scripts/costumes.lua,
+         so they can be toggled and hidden per character. Pieces that share a body
+         layer ship as combined variants. -->
+    <costume anm2path="characters/gridiron_helmet.anm2" type="none" priority="99" />
+    <costume anm2path="characters/gridiron_eyeblack.anm2" type="none" />
     <costume anm2path="characters/gridiron_torso_jersey.anm2" type="none" />
     <costume anm2path="characters/gridiron_torso_pads.anm2" type="none" />
     <costume anm2path="characters/gridiron_torso_jerseypads.anm2" type="none" />
