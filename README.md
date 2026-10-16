@@ -24,11 +24,16 @@ It uses only the vanilla Lua API, so REPENTOGON is **not** required.
 ### Set bonus: Suited Up
 Hold **3 or more** of the seven wearable gear items (all the passives above) to get **Suited Up**: +1 Damage, and the Helmet's tackle winds up twice as fast.
 
-## Installing (local)
-1. Copy this folder into your Isaac `mods` directory, e.g.
-   `…/Steam/steamapps/common/The Binding of Isaac Rebirth/mods/gridiron`
-2. Launch the game with mods enabled and turn on **Gridiron** in the Mods menu.
-3. To test, spawn the items from the debug console (`~`), for example `giveitem Football Helmet` or `giveitem t Padded Pants`.
+## Installing
+1. Download `gridiron-vX.Y.Z.zip` from the [latest release](https://github.com/bulmaspanties/tboifbm/releases/latest).
+2. Unzip it into your Isaac `mods` folder, so you end up with `mods/gridiron/metadata.xml`. On Steam/Windows that's
+   `C:\Program Files (x86)\Steam\steamapps\common\The Binding of Isaac Rebirth\mods`.
+3. Launch the game and turn on **Gridiron** in the Mods menu.
+4. To test, spawn the items from the debug console (`~`), for example `giveitem Football Helmet` or `giveitem t Padded Pants`.
+
+### Making a release
+Bump `<version>` in `metadata.xml`, commit, then tag and push (`git tag v0.2.0 && git push origin v0.2.0`).
+The Release workflow runs the smoke test, builds the zip with `tools/package.py` and publishes it.
 
 If **External Item Descriptions** is installed, every item shows its description.
 

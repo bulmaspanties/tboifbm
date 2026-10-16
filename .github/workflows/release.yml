@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Lua
+        run: sudo apt-get update && sudo apt-get install -y lua5.4
+
+      - name: Smoke test
+        run: lua5.4 tests/smoke_test.lua
+
+      - name: Build mod zip
+        run: python3 tools/package.py --expect-version "$GITHUB_REF_NAME"
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > notes.md <<'NOTES'
+          ## Install
+          1. Download `gridiron-${{ github.ref_name }}.zip` below.
+          2. Unzip it into your Isaac mods folder so you end up with `mods/gridiron/metadata.xml`.
+             - Windows (Steam): `C:\Program Files (x86)\Steam\steamapps\common\The Binding of Isaac Rebirth\mods`
+             - Linux (Steam/Proton): `~/.local/share/Steam/steamapps/common/The Binding of Isaac Rebirth/mods`
+          3. Launch the game and enable **Gridiron** in the Mods menu.
+
+          Requires The Binding of Isaac: Repentance+. REPENTOGON is not required.
+          NOTES
+          gh release create "$GITHUB_REF_NAME" dist/*.zip \
+            --title "Gridiron $GITHUB_REF_NAME" --notes-file notes.md
