@@ -4,5 +4,9 @@
     <passive id="3" name="Team Jersey" description="Wear the number" gfx="team_jersey.png" quality="2" tags="offensive" />
     <passive id="4" name="Football Cleats" description="Move the chains" gfx="football_cleats.png" quality="2" cache="speed damage" />
     <passive id="5" name="Eye Black" description="See the whole field" gfx="eye_black.png" quality="2" cache="luck" />
+    <passive id="6" name="Receiver Gloves" description="Sticky fingers" gfx="receiver_gloves.png" quality="2" tags="offensive" />
+    <passive id="7" name="Mouthguard" description="Bite down" gfx="mouthguard.png" quality="2" />
+    <active id="8" name="Kicking Tee" description="It's up... it's good!" gfx="kicking_tee.png" quality="2" maxcharges="4" tags="offensive" />
+    <active id="9" name="Pigskin" description="Fumble!" gfx="pigskin.png" quality="2" maxcharges="3" />
     <trinket id="1" name="Padded Pants" description="Thigh pads included" gfx="padded_pants.png" />
 </items>
