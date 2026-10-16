@@ -32,7 +32,7 @@ Hold **3 or more** of the seven wearable gear items (all the passives above) to 
 4. To test, spawn the items from the debug console (`~`), for example `giveitem Football Helmet` or `giveitem t Padded Pants`.
 
 ### Making a release
-Bump `<version>` in `metadata.xml`, commit, then tag and push (`git tag v0.2.0 && git push origin v0.2.0`).
+Bump `<version>` in `metadata.xml` and push to `main`, then run the **Release** workflow from the Actions tab (or push a matching `v*` tag).
 The Release workflow runs the smoke test, builds the zip with `tools/package.py` and publishes it.
 
 If **External Item Descriptions** is installed, every item shows its description.

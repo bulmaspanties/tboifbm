@@ -1,6 +1,9 @@
 name: Release
 
+# Run from the Actions tab ("Run workflow") or by pushing a v* tag.
+# Manual runs release the version in metadata.xml and create its tag.
 on:
+  workflow_dispatch:
   push:
     tags: ["v*"]
 
@@ -13,6 +16,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Resolve version
+        id: version
+        run: |
+          version=$(sed -n 's:.*<version>\(.*\)</version>.*:\1:p' metadata.xml | tr -d '[:space:]')
+          tag="v$version"
+          if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "$GITHUB_REF_NAME" != "$tag" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match metadata.xml version $version" >&2
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
       - name: Install Lua
         run: sudo apt-get update && sudo apt-get install -y lua5.4
 
@@ -20,21 +34,22 @@ jobs:
         run: lua5.4 tests/smoke_test.lua
 
       - name: Build mod zip
-        run: python3 tools/package.py --expect-version "$GITHUB_REF_NAME"
+        run: python3 tools/package.py --expect-version "${{ steps.version.outputs.tag }}"
 
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
-          cat > notes.md <<'NOTES'
+          cat > notes.md <<NOTES
           ## Install
-          1. Download `gridiron-${{ github.ref_name }}.zip` below.
-          2. Unzip it into your Isaac mods folder so you end up with `mods/gridiron/metadata.xml`.
-             - Windows (Steam): `C:\Program Files (x86)\Steam\steamapps\common\The Binding of Isaac Rebirth\mods`
-             - Linux (Steam/Proton): `~/.local/share/Steam/steamapps/common/The Binding of Isaac Rebirth/mods`
+          1. Download \`gridiron-$TAG.zip\` below.
+          2. Unzip it into your Isaac mods folder so you end up with \`mods/gridiron/metadata.xml\`.
+             - Windows (Steam): \`C:\\Program Files (x86)\\Steam\\steamapps\\common\\The Binding of Isaac Rebirth\\mods\`
+             - Linux (Steam/Proton): \`~/.local/share/Steam/steamapps/common/The Binding of Isaac Rebirth/mods\`
           3. Launch the game and enable **Gridiron** in the Mods menu.
 
           Requires The Binding of Isaac: Repentance+. REPENTOGON is not required.
           NOTES
-          gh release create "$GITHUB_REF_NAME" dist/*.zip \
-            --title "Gridiron $GITHUB_REF_NAME" --notes-file notes.md
+          gh release create "$TAG" dist/*.zip --target "$GITHUB_SHA" \
+            --title "Gridiron $TAG" --notes-file notes.md
