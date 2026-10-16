@@ -1,139 +1,331 @@
-"""Generate placeholder 32x32 pixel-art item sprites for Gridiron.
+"""Render Gridiron's item/trinket/tear sprites from the pixel maps below.
 
-Usage: python3 tools/make_sprites.py   (run from the repo root)
-Requires Pillow. Replace the output PNGs with hand-drawn art whenever you like.
+Each sprite is a list of rows; every character is one pixel looked up in
+PALETTE ('.' is transparent). Sprites marked `mirror` only list the left half
+and are mirrored to the right. Edit the maps and rerun:
+
+    python3 tools/make_sprites.py      (from the repo root; needs Pillow)
 """
 from pathlib import Path
 
-from PIL import Image, ImageDraw
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parent.parent
-COLL = ROOT / "resources/gfx/items/collectibles"
-TRINK = ROOT / "resources/gfx/items/trinkets"
+GFX = ROOT / "resources/gfx"
 
-OUTLINE = (20, 12, 12, 255)
-SIZE = 32
+PALETTE = {
+    ".": (0, 0, 0, 0),
+    "K": (20, 12, 12, 255),      # outline
+    # helmet red
+    "r": (120, 15, 22, 255),
+    "R": (190, 32, 42, 255),
+    "S": (225, 60, 68, 255),
+    "H": (250, 150, 150, 255),
+    # whites / greys
+    "W": (248, 248, 244, 255),
+    "w": (214, 214, 208, 255),
+    "v": (168, 168, 162, 255),
+    "G": (196, 200, 210, 255),   # facemask
+    "g": (118, 120, 132, 255),
+    "D": (48, 20, 22, 255),      # dark interior
+    # team blue / gold
+    "b": (24, 42, 112, 255),
+    "B": (40, 74, 170, 255),
+    "L": (82, 122, 214, 255),
+    "Y": (244, 204, 52, 255),
+    "y": (196, 150, 30, 255),
+    # blacks (eye black, cleats)
+    "k": (30, 30, 36, 255),
+    "n": (58, 58, 68, 255),
+    "N": (98, 98, 110, 255),
+    # football leather / laces
+    "f": (92, 46, 22, 255),
+    "F": (140, 74, 36, 255),
+    "E": (178, 104, 56, 255),
+}
+
+SPRITES = {}
+
+# --- Football Helmet (3/4 view facing right) ----------------------------------
+SPRITES["items/collectibles/football_helmet.png"] = dict(rows=[
+    "................................",
+    "................................",
+    "...........KKKKKKKK.............",
+    ".........KKWWWWWWWWKK...........",
+    "........KWWSSSSSSSSWWK..........",
+    ".......KWSHHSSSSSSSSSWK.........",
+    "......KWSHHSSSSSSSSSSSWK........",
+    ".....KWSHSSSSSSSSSSSSSSWK.......",
+    ".....KWSSSSSSSSSSSSSSSSSWK......",
+    "....KWRSSSSSSSSSSSSSSSSSSWK.....",
+    "....KWRSSSSSSSSSSSSSSSSSSSK.....",
+    "....KRRSSSSSSSSSSSSSSSSSSSK.....",
+    "...KRRRSSSSSSSSSSSSSSSSSSSKK....",
+    "...KRRSSSSSKKKKSSSSSSSSSKKDKKK..",
+    "...KRRSSSSKggggKSSSSSSSKDDDGGK..",
+    "...KRRSSSSKgDDgKSSSSSSKDDDGKGK..",
+    "...KrRRSSSKgDDgKSSSSSSKGGGGGGK..",
+    "...KrRRSSSSKggKSSSSSSSKDDDGKGK..",
+    "...KrrRRSSSSKKSSSSSSSSKDDDGKGK..",
+    "....KrRRRSSSSSSSSSSSSSKGGGGGGK..",
+    "....KrrRRRSSSSSSSSSSSKKDDDGKGK..",
+    ".....KrrRRRRSSSSSSSSSKDDDDGKGK..",
+    ".....KKrrrRRRRRRRRRRRKGGGGGGK...",
+    ".......KKrrrrrRRRRRRRKDDDGKK....",
+    ".........KKKKrrrrrrrrKGGGK......",
+    "............KKKKKKKKKKKKK.......",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+])
+
+# --- Shoulder Pads (front view, mirrored) -------------------------------------
+SPRITES["items/collectibles/shoulder_pads.png"] = dict(mirror=True, rows=[
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "......KKKKKKK...",
+    "....KKWWWWWWWKK.",
+    "...KWWWWWWWWWwwK",
+    "..KWWWWWWWwwwwwK",
+    ".KWWWWWWwwwwwwKD",
+    ".KWWWWwwwwwwwwKD",
+    "KWWWwwwwwwwwwwKD",
+    "KWwwwwwwwwwwvvKK",
+    "KwwwwwwwwwwvvKBB",
+    "KvwwwwwwwvvvKBBB",
+    ".KvvwwwvvvvKKBBB",
+    "..KKvvvvKKKLBBBB",
+    "....KKKKBLLBBBBB",
+    "......KbBLBBBBBB",
+    "......KbBBBBBBBB",
+    "......KbBBBBBBBB",
+    "......KbYYYYYYYY",
+    "......KbBBBBBBBB",
+    "......KbbBBBBBBB",
+    "......KbbBBBBBBB",
+    "......KbbBBBBBBB",
+    ".......KKKKKKKKK",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+])
+
+# --- Team Jersey (front view, mirrored; number drawn on top) -----------------
+SPRITES["items/collectibles/team_jersey.png"] = dict(mirror=True, rows=[
+    "................",
+    "................",
+    "................",
+    "........KKKK....",
+    "......KKBBBKKKKK",
+    "....KKBBBBBBYYYY",
+    "...KBBLBBBBBKYYK",
+    "..KBLLBBBBBBBKKB",
+    ".KBLLBBBBBBBBBBB",
+    "KBLLBBBBBBBBBBBB",
+    "KYYBBBBBBBBBBBBB",
+    "KYYKBBBBBBBBBBBB",
+    ".KKKBBBBBBBBBBBB",
+    "...KBBBBBBBBBBBB",
+    "...KbBBBBBBBBBBB",
+    "...KbBBBBBBBBBBB",
+    "...KbBBBBBBBBBBB",
+    "...KbBBBBBBBBBBB",
+    "...KbBBBBBBBBBBB",
+    "...KbBBBBBBBBBBB",
+    "...KbBBBBBBBBBBB",
+    "...KbbBBBBBBBBBB",
+    "...KbbBBBBBBBBBB",
+    "...KbbBBBBBBBBBB",
+    "...KYYYYYYYYYYYY",
+    "...KyyyyyyyyyyyY",
+    "....KKKKKKKKKKKK",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+], overlay=[
+    # big white "7" with outline, placed over the chest
+    (11, 10, [
+        "KKKKKKKKKK",
+        "KWWWWWWWWK",
+        "KWWWWWWWWK",
+        "KKKKKKWWWK",
+        "....KWWWKK",
+        "...KWWWK..",
+        "...KWWWK..",
+        "..KWWWK...",
+        "..KWWWK...",
+        "..KWWWK...",
+        "..KKKKK...",
+    ]),
+])
+
+# --- Football Cleats (side view facing right) ---------------------------------
+SPRITES["items/collectibles/football_cleats.png"] = dict(rows=[
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "....KKKKKKKK....................",
+    "...KnnnnnnnnK...................",
+    "...KnNNNNNNnK...................",
+    "...KnkkkkkknKK..................",
+    "...KnkkWkkkknnK.................",
+    "...KnkkkWkkkknK.................",
+    "...KnkkWkkkkknnKK...............",
+    "...KnkkkWkkkkknnnKK.............",
+    "...KnkkWkkkkkkkknnnKKK..........",
+    "...KnkkkkkkkkkkkkkknnnKKK.......",
+    "...KnkkkkkkkkkkkkkkkkknnnKK.....",
+    "...KnkkkkkkkkkkkkkkkkkkkknnK....",
+    "...KnkkkkkkRRRRRRRkkkkkkkknK....",
+    "...KnkkkkRRRSSSSSRRRkkkkkkkK....",
+    "...KnkkkkkkkkkkkkkkkSRkkkkkK....",
+    "...KnnkkkkkkkkkkkkkkkkkkkkkK....",
+    "...KKKKKKKKKKKKKKKKKKKKKKKKK....",
+    "...KWWWWWWWWWWWWWWWWWWWWWWWK....",
+    "...KwwwwwwwwwwwwwwwwwwwwwwwK....",
+    "....KKKKKKKKKKKKKKKKKKKKKKK.....",
+    ".....KWWK..KWWK..KWWK..KWWK.....",
+    ".....KwwK..KwwK..KwwK..KwwK.....",
+    "......KK....KK....KK....KK......",
+    "................................",
+    "................................",
+    "................................",
+])
+
+# --- Eye Black (grease stick + two swipes) ------------------------------------
+SPRITES["items/collectibles/eye_black.png"] = dict(rows=[
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................KKKKKKKKKKKK....",
+    "...............KkkNNnkkkkkkkK...",
+    "..............KkkNkkkkkkkkkK....",
+    ".............KkkkkkkkkkkkkK.....",
+    "..............KKKKKKKKKKKK......",
+    "................................",
+    "....KKKKKK......................",
+    "...KnnNNnnK.....................",
+    "...KkkkkkkK.....KKKKKKKKKKKK....",
+    "...KkkkkkkK....KkkNNnkkkkkkkK...",
+    "...KKKKKKKK...KkkNkkkkkkkkkK....",
+    "...KGGGGGgK..KkkkkkkkkkkkkK.....",
+    "...KGWGGGgK...KKKKKKKKKKKK......",
+    "...KGWGGGgK.....................",
+    "...KGWGGGgK.....................",
+    "...KGGGGGgK.....................",
+    "...KRRRRRrK.....................",
+    "...KSSSSRrK.....................",
+    "...KRRRRRrK.....................",
+    "...KGGGGGgK.....................",
+    "...KGWGGGgK.....................",
+    "...KGGGGGgK.....................",
+    "...KGGGGGgK.....................",
+    "....KKKKKK......................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+])
+
+# --- Padded Pants (trinket, mirrored) -----------------------------------------
+SPRITES["items/trinkets/padded_pants.png"] = dict(mirror=True, rows=[
+    "................",
+    "................",
+    "................",
+    "................",
+    "......KKKKKKKKKK",
+    "......KffFFFFFFF",
+    "......KKKKKKKKYK",
+    "......KBWWWWWWWW",
+    "......KBWWWWWWWW",
+    "......KBWWWWWWWW",
+    "......KBWWWWWWww",
+    "......KBWWWWWWwK",
+    "......KBWwwwWWwK",
+    "......KBwvvvwWwK",
+    "......KBwvvvwWwK",
+    "......KBwvvvwWwK",
+    "......KBWwwwWWwK",
+    "......KBWWWWWWwK",
+    "......KBWWWWWwK.",
+    "......KBWwwwWwK.",
+    "......KBwvvvwwK.",
+    "......KBwvvvwwK.",
+    "......KBWwwwWwK.",
+    "......KBWWWWwwK.",
+    "......KKKKKKKKK.",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+])
+
+# --- Football tear (16x16, pointed at +X; the game rotates it) ---------------
+SPRITES["tears/gridiron_football.png"] = dict(size=16, rows=[
+    "................",
+    "................",
+    "................",
+    "....KKKKKKKK....",
+    "..KKFFFFFFFFKK..",
+    ".KfFFEEEEEEFFfK.",
+    "KfFFEEWEWEWEFFfK",
+    "KfFFFWWWWWWWFFfK",
+    "KffFFFWEWEWFFFfK",
+    ".KffFFFFFFFFFfK.",
+    "..KKffffffffKK..",
+    "....KKKKKKKK....",
+    "................",
+    "................",
+    "................",
+    "................",
+])
 
 
-def canvas():
-    img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-    return img, ImageDraw.Draw(img)
-
-
-def outlined(img):
-    """Add a 1px dark outline around all opaque pixels (Isaac item style)."""
-    src = img.load()
-    out = img.copy()
-    dst = out.load()
-    for y in range(SIZE):
-        for x in range(SIZE):
-            if src[x, y][3]:
-                continue
-            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                nx, ny = x + dx, y + dy
-                if 0 <= nx < SIZE and 0 <= ny < SIZE and src[nx, ny][3]:
-                    dst[x, y] = OUTLINE
-                    break
-    return out
-
-
-def helmet():
-    img, d = canvas()
-    shell, shade, stripe = (200, 30, 40, 255), (140, 18, 28, 255), (245, 245, 245, 255)
-    d.ellipse((4, 5, 25, 25), fill=shell)
-    d.rectangle((4, 16, 14, 25), fill=shell)
-    d.ellipse((6, 18, 14, 25), fill=shade)          # ear hole shadow
-    d.ellipse((8, 20, 11, 23), fill=(60, 10, 14, 255))
-    d.rectangle((13, 5, 15, 25), fill=stripe)        # center stripe
-    d.rectangle((14, 5, 14, 25), fill=(200, 200, 210, 255))
-    # facemask bars
-    bar = (190, 190, 200, 255)
-    d.line((22, 14, 29, 14), fill=bar, width=2)
-    d.line((22, 19, 29, 19), fill=bar, width=2)
-    d.line((22, 24, 28, 24), fill=bar, width=2)
-    d.line((28, 13, 28, 25), fill=bar, width=2)
-    d.line((22, 12, 22, 26), fill=bar, width=1)
-    return outlined(img)
-
-
-def shoulder_pads():
-    img, d = canvas()
-    pad, shade, jersey = (230, 230, 225, 255), (170, 170, 165, 255), (30, 60, 160, 255)
-    d.rectangle((9, 14, 22, 29), fill=jersey)         # jersey body
-    d.ellipse((2, 8, 15, 20), fill=pad)               # left pad
-    d.ellipse((16, 8, 29, 20), fill=pad)              # right pad
-    d.arc((2, 8, 15, 20), 20, 160, fill=shade, width=2)
-    d.arc((16, 8, 29, 20), 20, 160, fill=shade, width=2)
-    d.rectangle((13, 9, 18, 13), fill=(80, 50, 40, 255))  # neck hole
-    d.rectangle((9, 24, 22, 25), fill=(240, 240, 240, 255))
-    return outlined(img)
-
-
-def team_jersey():
-    img, d = canvas()
-    body, trim, num = (30, 60, 160, 255), (240, 200, 40, 255), (245, 245, 245, 255)
-    d.polygon([(8, 5), (13, 4), (18, 4), (23, 5), (30, 11), (26, 16), (23, 13),
-               (23, 29), (8, 29), (8, 13), (5, 16), (1, 11)], fill=body)
-    d.rectangle((13, 4, 18, 6), fill=trim)
-    d.rectangle((1, 11, 3, 13), fill=trim)
-    d.rectangle((28, 11, 30, 13), fill=trim)
-    # a chunky "8"
-    d.rectangle((12, 11, 19, 25), fill=num)
-    d.rectangle((14, 13, 17, 16), fill=body)
-    d.rectangle((14, 20, 17, 23), fill=body)
-    return outlined(img)
-
-
-def cleats():
-    img, d = canvas()
-    shoe, sole, lace = (25, 25, 30, 255), (235, 235, 235, 255), (245, 245, 245, 255)
-    d.polygon([(4, 10), (12, 10), (14, 16), (27, 19), (29, 23), (4, 23)], fill=shoe)
-    d.rectangle((4, 23, 29, 25), fill=sole)
-    for x in (6, 11, 18, 25):                         # studs
-        d.rectangle((x, 26, x + 2, 28), fill=sole)
-    for y in (12, 14, 16):
-        d.line((9, y, 15, y + 2), fill=lace)
-    d.line((18, 20, 26, 21), fill=(200, 30, 40, 255), width=2)  # swoosh-ish stripe
-    return outlined(img)
-
-
-def eye_black():
-    img, d = canvas()
-    stick, cap, black = (230, 230, 230, 255), (40, 40, 40, 255), (10, 10, 10, 255)
-    # grease stick
-    d.rectangle((5, 6, 12, 26), fill=stick)
-    d.rectangle((5, 6, 12, 10), fill=cap)
-    d.rectangle((6, 13, 11, 18), fill=(200, 30, 40, 255))
-    # two smears
-    d.rounded_rectangle((16, 9, 28, 14), 2, fill=black)
-    d.rounded_rectangle((16, 19, 28, 24), 2, fill=black)
-    return outlined(img)
-
-
-def padded_pants():
-    img, d = canvas()
-    pants, pad, stripe = (240, 240, 235, 255), (200, 200, 190, 255), (30, 60, 160, 255)
-    d.rectangle((7, 5, 24, 9), fill=pants)            # waist
-    d.polygon([(7, 9), (16, 9), (15, 27), (8, 27)], fill=pants)
-    d.polygon([(16, 9), (24, 9), (23, 27), (17, 27)], fill=pants)
-    d.rectangle((9, 13, 13, 18), fill=pad)            # thigh pads
-    d.rectangle((18, 13, 22, 18), fill=pad)
-    d.line((7, 9, 8, 27), fill=stripe, width=2)
-    d.line((24, 9, 23, 27), fill=stripe, width=2)
-    d.rectangle((7, 5, 24, 6), fill=(120, 80, 50, 255))  # belt
-    return outlined(img)
+def render(spec):
+    size = spec.get("size", 32)
+    rows = spec["rows"]
+    if spec.get("mirror"):
+        rows = [r + r[::-1] for r in rows]
+    if len(rows) != size:
+        raise ValueError(f"expected {size} rows, got {len(rows)}")
+    img = Image.new("RGBA", (size, size), PALETTE["."])
+    px = img.load()
+    for y, row in enumerate(rows):
+        if len(row) != size:
+            raise ValueError(f"row {y} is {len(row)} wide: {row!r}")
+        for x, ch in enumerate(row):
+            px[x, y] = PALETTE[ch]
+    for ox, oy, patch in spec.get("overlay", []):
+        for y, row in enumerate(patch):
+            for x, ch in enumerate(row):
+                if ch != ".":
+                    px[ox + x, oy + y] = PALETTE[ch]
+    return img
 
 
 def main():
-    COLL.mkdir(parents=True, exist_ok=True)
-    TRINK.mkdir(parents=True, exist_ok=True)
-    helmet().save(COLL / "football_helmet.png")
-    shoulder_pads().save(COLL / "shoulder_pads.png")
-    team_jersey().save(COLL / "team_jersey.png")
-    cleats().save(COLL / "football_cleats.png")
-    eye_black().save(COLL / "eye_black.png")
-    padded_pants().save(TRINK / "padded_pants.png")
-    print("sprites written")
+    for rel, spec in SPRITES.items():
+        out = GFX / rel
+        out.parent.mkdir(parents=True, exist_ok=True)
+        render(spec).save(out)
+    print(f"{len(SPRITES)} sprites written")
 
 
 if __name__ == "__main__":
