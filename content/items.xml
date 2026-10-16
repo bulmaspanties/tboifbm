@@ -1,0 +1,8 @@
+<items gfxroot="gfx/items/" version="1">
+    <passive id="1" name="Football Helmet" description="Lower your head" gfx="football_helmet.png" quality="3" tags="offensive" />
+    <passive id="2" name="Shoulder Pads" description="Take the hit, give it back" gfx="shoulder_pads.png" quality="2" />
+    <passive id="3" name="Team Jersey" description="Wear the number" gfx="team_jersey.png" quality="2" tags="offensive" />
+    <passive id="4" name="Football Cleats" description="Move the chains" gfx="football_cleats.png" quality="2" cache="speed damage" />
+    <passive id="5" name="Eye Black" description="See the whole field" gfx="eye_black.png" quality="2" cache="luck" />
+    <trinket id="1" name="Padded Pants" description="Thigh pads included" gfx="padded_pants.png" />
+</items>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+    <name>Gridiron</name>
+    <directory>gridiron</directory>
+    <description>Suit up! Adds American football gear to The Binding of Isaac: Repentance+. Football Helmet, Shoulder Pads, Team Jersey, Football Cleats, Eye Black and Padded Pants each have their own mechanics, and wearing 3 pieces gets you "Suited Up".</description>
+    <version>0.1.0</version>
+    <visibility>Private</visibility>
+</metadata>
