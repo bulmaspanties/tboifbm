@@ -29,11 +29,15 @@ SKIN_SHADE = {
     (227, 198, 197): 2,
 }
 
-HELMET = [(120, 15, 22, 255), (175, 28, 38, 255), (215, 45, 55, 255)]
-HELMET_SHINE = (245, 120, 120, 255)
-HELMET_STRIPE = (245, 245, 245, 255)
-FACEMASK = (185, 188, 198, 255)
-FACEMASK_DARK = (120, 122, 132, 255)
+# helmet shell tones: dark rim, mid, light, gloss highlight
+HELMET = [(118, 14, 22, 255), (176, 28, 38, 255), (218, 50, 58, 255), (250, 150, 150, 255)]
+HELMET_STRIPE = (246, 246, 242, 255)
+HELMET_STRIPE_SHADE = (200, 200, 196, 255)
+BUMPER = [(52, 52, 60, 255), (92, 92, 104, 255)]       # front/back bumper plates
+FACEMASK = (214, 218, 226, 255)                         # bar top (lit)
+FACEMASK_SHADE = (126, 130, 142, 255)                   # bar underside
+CHIN_CUP = (240, 240, 236, 255)
+INTERIOR = (40, 18, 20, 255)                            # inside of the helmet (item icon)
 EYE_BLACK = (22, 22, 26, 255)
 EYE_BLACK_SHINE = (70, 70, 80, 255)
 
@@ -85,85 +89,173 @@ def head_frames(template):
         yield i, view, template.crop((i * CELL, 0, (i + 1) * CELL, CELL))
 
 
-def paint_helmet(src, view):
-    out = Image.new("RGBA", (CELL, CELL), CLEAR)
-    s, o = src.load(), out.load()
+def silhouette(src):
+    """Head pixels and per-row extents from the template frame."""
+    s = src.load()
+    mask = {(x, y) for y in range(CELL) for x in range(CELL) if s[x, y][3]}
     rows = {}
-    for y in range(CELL):
-        xs = [x for x in range(CELL) if s[x, y][3]]
-        if xs:
-            rows[y] = (min(xs), max(xs))
+    for (x, y) in mask:
+        lo, hi = rows.get(y, (x, x))
+        rows[y] = (min(lo, x), max(hi, x))
+    return mask, rows
 
-    def shell_at(x, y):
-        if y not in rows:
+
+def shell_tone(x, y, edge, light=(10, 6)):
+    """Gloss shading: bright near the light spot, dark at the rim."""
+    if edge:
+        return HELMET[0]
+    if (x, y) in ((light[0], light[1]), (light[0] + 1, light[1] - 1), (light[0] - 1, light[1] + 1)):
+        return HELMET[3]
+    d = ((x - light[0]) ** 2 + (y - light[1]) ** 2) ** 0.5
+    if d < 9:
+        return HELMET[2]
+    return HELMET[1]
+
+
+def bar(o, points, shade_below=True):
+    """A facemask bar: lit pixels with a darker underside so it reads as round."""
+    pts = set(points)
+    for (x, y) in pts:
+        o[x, y] = FACEMASK
+    if shade_below:
+        for (x, y) in pts:
+            if (x, y + 1) not in pts and 0 <= y + 1 < CELL:
+                o[x, y + 1] = FACEMASK_SHADE
+
+
+def paint_helmet(src, view):
+    """Modern helmet: bulkier glossy shell, center stripe, bumpers, cage facemask."""
+    out = Image.new("RGBA", (CELL, CELL), CLEAR)
+    o = out.load()
+    mask, rows = silhouette(src)
+
+    def in_shell(x, y):
+        if (x, y) not in mask:
             return False
         lo, hi = rows[y]
         if view == "up":
             return True
-        if y <= 12:
+        if y <= 11:
             return True
         if view == "down":
-            return y <= 22 and (x - lo <= 4 or hi - x <= 4)
-        # right: cover the back of the head, leave the face open
-        return x <= 15 or y >= 23 and x <= 19
+            side = 3 if y <= 17 else 4          # jaw guards widen toward the chin
+            return y <= 23 and (x - lo <= side or hi - x <= side)
+        # side view: back of the head and the jaw guard, face opening in front
+        if y <= 22:
+            return x <= 17
+        return x <= 19
 
-    for y in range(CELL):
-        for x in range(CELL):
-            px = s[x, y]
-            if not px[3] or not shell_at(x, y):
-                continue
-            if is_dark(px):
-                o[x, y] = OUTLINE
-            else:
-                o[x, y] = HELMET[shade_of(px)]
+    shell = {(x, y) for (x, y) in mask if in_shell(x, y)}
+    # helmets sit taller than a bare head: add one row on top of the crown
+    grown = set(shell)
+    for (x, y) in shell:
+        if y <= 4 and (x, y - 1) not in mask and y - 1 >= 0:
+            grown.add((x, y - 1))
+    rim = outline_mask(grown, CELL, CELL)
+    for (x, y) in grown:
+        near_rim = any((x + dx, y + dy) in rim for dx, dy in ((1, 0), (0, 1), (1, 1)))
+        o[x, y] = shell_tone(x, y, near_rim and (x > 15 or y > 14))
+    for (x, y) in rim:
+        o[x, y] = OUTLINE
 
-    # edge of the shell opening gets an outline so it reads as a separate piece
-    shell = {(x, y) for y in range(CELL) for x in range(CELL) if o[x, y][3]}
-    for (x, y) in outline_mask(shell, CELL, CELL):
-        if s[x, y][3] and not is_dark(s[x, y]):
-            o[x, y] = HELMET[0]
-
-    # shine
-    for (x, y) in ((9, 6), (10, 6), (8, 7), (9, 7), (8, 8)):
-        if o[x, y][3] and not is_dark(o[x, y]):
-            o[x, y] = HELMET_SHINE
-
-    # center stripe (front-to-back)
-    if view in ("down", "up"):
-        last = 12 if view == "down" else 25
-        for y in range(3, last + 1):
-            for x in (15, 16):
-                if o[x, y][3] and not is_dark(o[x, y]):
-                    o[x, y] = HELMET_STRIPE
-    else:
-        for x in range(9, 23):
-            top = [y for y in range(CELL) if o[x, y][3] and not is_dark(o[x, y])]
-            if top:
-                o[x, top[0]] = HELMET_STRIPE
-
-    # ear hole and facemask
     if view == "down":
-        for x in range(6, 26):
-            o[x, 22] = FACEMASK
-        for x in range(9, 23):
-            o[x, 24] = FACEMASK
-        for y in range(21, 26):
-            o[9, y] = FACEMASK_DARK if y in (23, 25) else FACEMASK
-            o[22, y] = FACEMASK_DARK if y in (23, 25) else FACEMASK
+        # center stripe with a shaded edge
+        for y in range(1, 12):
+            for x, col in ((15, HELMET_STRIPE), (16, HELMET_STRIPE_SHADE)):
+                if (x, y) in grown and o[x, y] != OUTLINE:
+                    o[x, y] = col
+        # brow edge of the shell, with the mask's top bar tucked under it
+        for x in range(rows[11][0] + 4, rows[11][1] - 3):
+            o[x, 11] = HELMET[0]
+        # inner edge of the jaw guards in shadow
+        for y in range(12, 24):
+            lo, hi = rows[y]
+            side = 3 if y <= 17 else 4
+            for x in (lo + side, hi - side):
+                if (x, y) in grown:
+                    o[x, y] = HELMET[0]
+        # facemask cage
+        bar(o, [(x, 22) for x in range(6, 26)])                        # main bar under the eyes
+        bar(o, [(x, 24) for x in range(9, 23)])                        # lower bar
+        for x in (13, 18):                                              # twin center verticals
+            for y in range(19, 25):
+                o[x, y] = FACEMASK if y % 2 == 0 else FACEMASK_SHADE
+        for x in range(9, 23):                                           # top bar under the brow
+            o[x, 12] = FACEMASK
+        for y in range(13, 22):                                          # side struts down to the jaw
+            o[6, y] = FACEMASK
+            o[25, y] = FACEMASK
+        for x, y in ((7, 12), (8, 12), (23, 12), (24, 12), (5, 22), (26, 22)):  # clips
+            o[x, y] = BUMPER[1]
+        # chin cup
+        for x in range(13, 19):
+            o[x, 26] = CHIN_CUP
+        for x in range(12, 20):
+            o[x, 27] = OUTLINE
+        o[12, 26] = OUTLINE
+        o[19, 26] = OUTLINE
+
     elif view == "right":
-        for (x, y) in ((9, 15), (10, 15), (9, 16), (10, 16)):
+        # stripe along the crown
+        for x in range(8, 25):
+            col = [y for y in range(CELL) if (x, y) in grown and o[x, y] != OUTLINE]
+            if col:
+                o[x, col[0]] = HELMET_STRIPE
+        # brow bumper, vents, ear hole, jaw-guard seam
+        for x in range(18, 26):
+            if (x, 11) in grown or (x, 11) in mask:
+                o[x, 11] = BUMPER[1]
+            o[x, 12] = BUMPER[0]
+        for x, y in ((7, 6), (8, 6), (11, 4), (12, 4)):
+            o[x, y] = BUMPER[0]
+        for x, y in ((9, 15), (10, 15), (9, 16), (10, 16)):
             o[x, y] = OUTLINE
-        for (x, y) in ((8, 15), (11, 15), (8, 16), (11, 16), (9, 14), (10, 14), (9, 17), (10, 17)):
+        for x, y in ((8, 15), (11, 15), (8, 16), (11, 16), (9, 14), (10, 14), (9, 17), (10, 17)):
+            o[x, y] = BUMPER[1]
+        for x, y in ((12, 19), (13, 20), (14, 21), (15, 22), (16, 23)):
             o[x, y] = HELMET[0]
-        for x in range(18, 30):
-            o[x, 19] = FACEMASK
-            o[x, 22] = FACEMASK
-        for y in range(17, 25):
-            o[29, y] = FACEMASK
-            o[18, y] = FACEMASK_DARK
-        o[29, 16] = OUTLINE
-        o[29, 25] = OUTLINE
+        # rear bumper at the base of the shell
+        for x in range(3, 9):
+            if (x, 22) in grown:
+                o[x, 22] = BUMPER[0]
+        # facemask cage, sticking out in front of the face
+        bar(o, [(x, 13) for x in range(18, 30)])
+        bar(o, [(x, 18) for x in range(18, 31)])
+        bar(o, [(x, 22) for x in range(19, 30)])
+        for y in range(13, 25):                                         # front of the cage
+            o[30, y] = FACEMASK_SHADE if y not in (18,) else FACEMASK
+            o[31, y] = OUTLINE
+        o[30, 12] = OUTLINE
+        for y in range(18, 24):                                         # nose vertical
+            o[25, y] = FACEMASK if y % 2 == 0 else FACEMASK_SHADE
+        for x in range(21, 30):                                         # chin bar
+            o[x, 25] = FACEMASK_SHADE
+        for x in range(22, 26):                                         # chin cup
+            o[x, 26] = CHIN_CUP
+            o[x, 27] = OUTLINE
+
+    else:  # up / back of the helmet
+        for y in range(1, 26):
+            for x, col in ((15, HELMET_STRIPE), (16, HELMET_STRIPE_SHADE)):
+                if (x, y) in grown and o[x, y] != OUTLINE:
+                    o[x, y] = col
+        lo, hi = rows[23]
+        for x in range(lo + 3, hi - 2):                                 # rear bumper
+            if (x, 23) in grown:
+                o[x, 23] = BUMPER[1]
+                o[x, 24] = BUMPER[0]
     return out
+
+
+def helmet_item_icon(src):
+    """The collectible sprite: the side view with the face opening filled in."""
+    icon = paint_helmet(src, "right")
+    o = icon.load()
+    mask, _ = silhouette(src)
+    for (x, y) in mask:
+        if not o[x, y][3]:
+            o[x, y] = INTERIOR
+    return icon
 
 
 def paint_eye_black(src, view):
@@ -230,7 +322,14 @@ def paint_torso(cell, jersey, pads, side_view):
             for (x, y) in outline_mask(pad, CELL, CELL):
                 o[x, y] = OUTLINE
             for (x, y) in pad:
-                o[x, y] = PADS[2] if y <= 15 else PADS[1] if y <= 17 else PADS[0]
+                if jersey:
+                    # jersey stretched over the pads: team fabric with sleeve stripes
+                    if y == 17:
+                        o[x, y] = JERSEY_TRIM
+                    else:
+                        o[x, y] = JERSEY[2] if y <= 14 else JERSEY[1] if y <= 16 else JERSEY[0]
+                else:
+                    o[x, y] = PADS[2] if y <= 15 else PADS[1] if y <= 17 else PADS[0]
     return out
 
 
@@ -288,6 +387,10 @@ def main(template_root):
         "gridiron_helmet": (paint_helmet, "head5"),
         "gridiron_eyeblack": (paint_eye_black, "head1"),
     }
+    # the collectible sprite is the costume's side view, so they always match
+    helmet_item_icon(head.crop((2 * CELL, 0, 3 * CELL, CELL))).save(
+        ROOT / "resources/gfx/items/collectibles/football_helmet.png")
+
     for name, (painter, layer) in head_costumes.items():
         sheet = Image.new("RGBA", head.size, CLEAR)
         for i, view, frame in head_frames(head):
