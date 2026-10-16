@@ -277,31 +277,87 @@ SPRITES["items/trinkets/padded_pants.png"] = dict(mirror=True, rows=[
     "................",
 ])
 
-# --- Football tear (16x16, pointed at +X; the game rotates it) ---------------
-SPRITES["tears/gridiron_football.png"] = dict(size=16, rows=[
-    "................",
-    "................",
-    "................",
-    "....KKKKKKKK....",
-    "..KKFFFFFFFFKK..",
-    ".KfFFEEEEEEFFfK.",
-    "KfFFEEWEWEWEFFfK",
-    "KfFFFWWWWWWWFFfK",
-    "KffFFFWEWEWFFFfK",
-    ".KffFFFFFFFFFfK.",
-    "..KKffffffffKK..",
-    "....KKKKKKKK....",
-    "................",
-    "................",
-    "................",
-    "................",
-])
+# --- Football tear: 4-frame spiral strip (16x16 each, nose pointing +X) -----
+# Lua rotates the sprite to the tear's velocity; the frames roll the laces.
+FOOTBALL_FRAMES = [
+    [  # laces facing the camera
+        "................",
+        "................",
+        "................",
+        "....KKKKKKKK....",
+        "..KKFFFFFFFFKK..",
+        ".KfFFEEEEEEFFfK.",
+        "KfFFEEWEWEWEFFfK",
+        "KfFFFWWWWWWWFFfK",
+        "KffFFFWEWEWFFFfK",
+        ".KffFFFFFFFFFfK.",
+        "..KKffffffffKK..",
+        "....KKKKKKKK....",
+        "................",
+        "................",
+        "................",
+        "................",
+    ],
+    [  # laces rolling up
+        "................",
+        "................",
+        "................",
+        "....KKKKKKKK....",
+        "..KKFWEWEWEFKK..",
+        ".KfFFWWWWWWWFfK.",
+        "KfFFEFWEWEWFEFfK",
+        "KfFFEEEEEEEEFFfK",
+        "KffFFFFFFFFFFFfK",
+        ".KffFFFFFFFFFfK.",
+        "..KKffffffffKK..",
+        "....KKKKKKKK....",
+        "................",
+        "................",
+        "................",
+        "................",
+    ],
+    [  # laces on the far side
+        "................",
+        "................",
+        "................",
+        "....KKKKKKKK....",
+        "..KKFFFFFFFFKK..",
+        ".KfFFEEEEEEFFfK.",
+        "KfFFEEEEEEEEFFfK",
+        "KfFFFEEEEEEFFFfK",
+        "KffFFFFFFFFFFFfK",
+        ".KffffFFFFffffK.",
+        "..KKffffffffKK..",
+        "....KKKKKKKK....",
+        "................",
+        "................",
+        "................",
+        "................",
+    ],
+    [  # laces rolling back in from below
+        "................",
+        "................",
+        "................",
+        "....KKKKKKKK....",
+        "..KKFFFFFFFFKK..",
+        ".KfFFEEEEEEFFfK.",
+        "KfFFEEEEEEEEFFfK",
+        "KfFFFEEEEEEFFFfK",
+        "KffFFFWEWEWFFFfK",
+        ".KffFWWWWWWWFfK.",
+        "..KKfWEWEWEfKK..",
+        "....KKKKKKKK....",
+        "................",
+        "................",
+        "................",
+        "................",
+    ],
+]
+SPRITES["tears/gridiron_football.png"] = dict(size=16, frames=FOOTBALL_FRAMES)
 
 
-def render(spec):
-    size = spec.get("size", 32)
-    rows = spec["rows"]
-    if spec.get("mirror"):
+def render_rows(rows, size, mirror=False, overlay=()):
+    if mirror:
         rows = [r + r[::-1] for r in rows]
     if len(rows) != size:
         raise ValueError(f"expected {size} rows, got {len(rows)}")
@@ -312,12 +368,22 @@ def render(spec):
             raise ValueError(f"row {y} is {len(row)} wide: {row!r}")
         for x, ch in enumerate(row):
             px[x, y] = PALETTE[ch]
-    for ox, oy, patch in spec.get("overlay", []):
+    for ox, oy, patch in overlay:
         for y, row in enumerate(patch):
             for x, ch in enumerate(row):
                 if ch != ".":
                     px[ox + x, oy + y] = PALETTE[ch]
     return img
+
+
+def render(spec):
+    size = spec.get("size", 32)
+    frames = spec.get("frames") or [spec["rows"]]
+    strip = Image.new("RGBA", (size * len(frames), size), PALETTE["."])
+    for i, rows in enumerate(frames):
+        frame = render_rows(rows, size, spec.get("mirror", False), spec.get("overlay", ()))
+        strip.paste(frame, (i * size, 0))
+    return strip
 
 
 def main():

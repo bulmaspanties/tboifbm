@@ -83,6 +83,8 @@ local Cfg = {
 }
 mod.Config = Cfg
 
+local FOOTBALL_ANM2 = "gfx/gridiron_football_tear.anm2"
+
 local GEAR = { Items.HELMET, Items.PADS, Items.JERSEY, Items.CLEATS, Items.EYE_BLACK }
 
 local DIR_VECTORS = {
@@ -366,12 +368,39 @@ function mod:OnFireTear(tear)
             tear.CollisionDamage = tear.CollisionDamage * Cfg.JERSEY_BALL_DMG_MULT
             tear.Scale = tear.Scale * Cfg.JERSEY_BALL_SCALE
             tear:AddTearFlags(TearFlags.TEAR_PIERCING | TearFlags.TEAR_SPECTRAL)
-            tear.Color = Color(0.55, 0.3, 0.15, 1, 0.1, 0.05, 0)
-            tear:GetData().GridironFootball = true
+            tear.Color = Color(0.55, 0.3, 0.15, 1, 0.1, 0.05, 0) -- tints the splash on impact
+            local ball = Sprite()
+            ball:Load(FOOTBALL_ANM2, true)
+            ball:Play("Spiral", true)
+            tear:GetData().GridironFootball = ball
+            tear:GetSprite().Color = Color(1, 1, 1, 0)
+            sfx:Play(SoundEffect.SOUND_SHELLGAME, 0.6, 0, false, 1.3)
         end
     end
 end
 mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.OnFireTear)
+
+-- Team Jersey footballs: hide the vanilla tear and draw a spiraling ball instead.
+function mod:OnTearUpdate(tear)
+    local ball = tear:GetData().GridironFootball
+    if not ball then return end
+    tear:GetSprite().Color = Color(1, 1, 1, 0)
+    ball:Update()
+    if tear.Velocity:Length() > 0.1 then
+        ball.Rotation = tear.Velocity:GetAngleDegrees()
+    end
+end
+mod:AddCallback(ModCallbacks.MC_POST_TEAR_UPDATE, mod.OnTearUpdate)
+
+function mod:OnTearRender(tear, renderOffset)
+    local ball = tear:GetData().GridironFootball
+    if not ball then return end
+    if RenderMode and game:GetRoom():GetRenderMode() == RenderMode.RENDER_WATER_REFLECT then return end
+    local s = math.max(tear.Scale, 0.6)
+    ball.Scale = Vector(s, s)
+    ball:Render(Isaac.WorldToScreen(tear.Position + tear.PositionOffset) + renderOffset)
+end
+mod:AddCallback(ModCallbacks.MC_POST_TEAR_RENDER, mod.OnTearRender)
 
 -- Projectiles: facemask blocks, shoulder pad deflections ---------------------
 function mod:OnProjectileCollision(proj, collider)
