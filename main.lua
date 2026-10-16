@@ -18,6 +18,23 @@ local Trinkets = {
 mod.Items = Items
 mod.Trinkets = Trinkets
 
+-- Body costumes that share a layer come in combined variants (see content/costumes2.xml).
+local function nullCostume(name)
+    return Isaac.GetCostumeIdByPath("gfx/characters/gridiron_" .. name .. ".anm2")
+end
+local Costumes = {
+    torso = {
+        jersey     = nullCostume("torso_jersey"),
+        pads       = nullCostume("torso_pads"),
+        jerseypads = nullCostume("torso_jerseypads"),
+    },
+    legs = {
+        pants       = nullCostume("legs_pants"),
+        cleats      = nullCostume("legs_cleats"),
+        pantscleats = nullCostume("legs_pantscleats"),
+    },
+}
+
 -- Tuning ---------------------------------------------------------------------
 local Cfg = {
     -- Football Helmet
@@ -213,9 +230,39 @@ local function updateCleats(player, d)
     end
 end
 
+-- Costumes ---------------------------------------------------------------------
+local function setSlotCostume(player, d, slot, key)
+    local current = d.costumes[slot]
+    if current == key then return end
+    if current ~= "none" then player:TryRemoveNullCostume(Costumes[slot][current]) end
+    if key ~= "none" then player:AddNullCostume(Costumes[slot][key]) end
+    d.costumes[slot] = key
+end
+
+local function updateCostumes(player, d)
+    if not d.costumes then
+        -- Fresh data (new run or continue): clear anything left over, then re-apply.
+        for _, group in pairs(Costumes) do
+            for _, id in pairs(group) do player:TryRemoveNullCostume(id) end
+        end
+        d.costumes = { torso = "none", legs = "none" }
+    end
+
+    local jersey, pads = player:HasCollectible(Items.JERSEY), player:HasCollectible(Items.PADS)
+    local torso = (jersey and pads and "jerseypads") or (jersey and "jersey") or (pads and "pads") or "none"
+
+    local pants = Trinkets.PANTS > 0 and player:HasTrinket(Trinkets.PANTS)
+    local cleats = player:HasCollectible(Items.CLEATS)
+    local legs = (pants and cleats and "pantscleats") or (pants and "pants") or (cleats and "cleats") or "none"
+
+    setSlotCostume(player, d, "torso", torso)
+    setSlotCostume(player, d, "legs", legs)
+end
+
 -- Per-player update ----------------------------------------------------------
 function mod:OnPeffectUpdate(player)
     local d = pdata(player)
+    updateCostumes(player, d)
 
     -- Re-evaluate damage when the number of gear pieces changes (set bonus).
     local count = gearCount(player)
