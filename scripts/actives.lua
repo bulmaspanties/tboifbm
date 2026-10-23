@@ -31,6 +31,11 @@ return function(mod)
             sprite = mod.newFootballSprite(),
         }
         sfx:Play(kick and SoundEffect.SOUND_PUNCH or SoundEffect.SOUND_SHELLGAME, 0.9, 0, false, kick and 0.8 or 1)
+        mod.popOn(player, kick and "KICK!" or "HIKE!", mod.Colors.gold)
+        -- mark where it will land so you can see the play develop
+        local marker = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.TARGET, 0, target, Vector.Zero, player)
+        marker:ToEffect().Timeout = kick and Cfg.KICK_FLIGHT or Cfg.FUMBLE_FLIGHT
+        marker.Color = kick and Color(1, 0.85, 0.3, 0.8) or Color(1, 1, 1, 0.6)
     end
 
     local function landKick(ball)
@@ -46,6 +51,7 @@ return function(mod)
         end
 
         mod.kickExploding = true
+        mod.kickBlastFrame = game:GetFrameCount()
         game:BombExplosionEffects(ball.pos, dmg, TearFlags.TEAR_NORMAL, Color.Default, player,
             Cfg.KICK_RADIUS_MULT, true, false, DamageFlag.DAMAGE_EXPLOSION)
         mod.kickExploding = false
@@ -59,6 +65,13 @@ return function(mod)
             end
             game:GetHUD():ShowItemText("It's good!", "Field goal: 3 points")
             sfx:Play(SoundEffect.SOUND_CASH_REGISTER)
+            mod.popAt(ball.pos, "IT'S GOOD!", mod.Colors.gold, 1.3)
+            for i = 0, 5 do
+                Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.ULTRA_GREED_BLING, 0,
+                    ball.pos + Vector.FromAngle(i * 60) * 30, Vector.Zero, player)
+            end
+        else
+            mod.popAt(ball.pos, "NO GOOD", mod.Colors.grey)
         end
     end
 
@@ -70,6 +83,7 @@ return function(mod)
         end
         game:GetHUD():ShowItemText("Touchdown!", "+1 Damage this room")
         sfx:Play(SoundEffect.SOUND_THUMBSUP)
+        mod.popOn(player, "TOUCHDOWN!", mod.Colors.gold, 1.3)
         player:SetColor(Color(1, 1, 1, 1, 0.4, 0.3, 0), 15, 1, true, false)
     end
 
@@ -129,6 +143,7 @@ return function(mod)
                         ball.sprite:SetFrame("Spiral", 0)
                         ball.sprite.Rotation = 0
                         sfx:Play(SoundEffect.SOUND_PLOP)
+                        mod.popAt(ball.pos, "FUMBLE! GRAB IT", mod.Colors.yellow)
                     end
                 end
             else
@@ -153,6 +168,9 @@ return function(mod)
 
             -- ball (blinks when a fumble is about to disappear)
             s.Rotation, s.Color = rot, col
+            if ball.landed and ball.life % 20 < 4 then
+                s.Color = Color(1, 1, 1, 1, 0.5, 0.5, 0.3)   -- glint: "pick me up"
+            end
             s.Scale = Vector(ball.scale, ball.scale)
             local blinking = ball.landed and ball.life < 40 and ball.life % 8 < 4
             if not blinking then
@@ -199,6 +217,8 @@ return function(mod)
         mod.refreshCache(player, PLAY_CACHE)
         game:GetHUD():ShowItemText(play.name, play.desc)
         mod.playWhistle(0.6)
+        mod.popOn(player, play.name:upper(), mod.Colors.gold)
+        player:SetColor(Color(1, 1, 1, 1, 0.3, 0.25, 0), 20, 1, true, false)
         return true
     end
     mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.OnUsePlaybook, Items.PLAYBOOK)
@@ -225,6 +245,9 @@ return function(mod)
         mod.playWhistle(1)
         game:ShakeScreen(8)
         game:GetHUD():ShowItemText("Offsides!", "Five yard penalty")
+        mod.popOn(player, "OFFSIDES!", mod.Colors.yellow, 1.2)
+        Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF02, 0, player.Position, Vector.Zero, player).Color =
+            Color(1, 1, 0.5, 0.6, 0.3, 0.3, 0)
         return true
     end
     mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.OnUseWhistle, Items.WHISTLE)

@@ -174,26 +174,33 @@ def paint_helmet(src, view):
             for x in (lo + side, hi - side):
                 if (x, y) in grown:
                     o[x, y] = HELMET[0]
-        # facemask cage
-        bar(o, [(x, 22) for x in range(6, 26)])                        # main bar under the eyes
-        bar(o, [(x, 24) for x in range(9, 23)])                        # lower bar
-        for x in (13, 18):                                              # twin center verticals
-            for y in range(19, 25):
-                o[x, y] = FACEMASK if y % 2 == 0 else FACEMASK_SHADE
-        for x in range(9, 23):                                           # top bar under the brow
+        # forehead badge (like the Schutt / Riddell front plate)
+        for x in range(14, 18):
+            o[x, 9] = BUMPER[1]
+            o[x, 10] = HELMET_STRIPE
+        o[13, 10] = BUMPER[0]
+        o[18, 10] = BUMPER[0]
+        # facemask, modeled on a modern wrap-around cage: the eyes stay open and the
+        # bars sweep back from the nose bar to the temple clips instead of boxing the face
+        for x in (9, 10, 21, 22):                                       # bar stubs at the temple clips
             o[x, 12] = FACEMASK
-        for y in range(13, 22):                                          # side struts down to the jaw
-            o[6, y] = FACEMASK
-            o[25, y] = FACEMASK
-        for x, y in ((7, 12), (8, 12), (23, 12), (24, 12), (5, 22), (26, 22)):  # clips
+        for x, y in ((8, 12), (23, 12)):                                # temple clips
             o[x, y] = BUMPER[1]
+        sweep = [(9, 13), (8, 14), (8, 15), (7, 16), (6, 17), (6, 18)]
+        for x, y in sweep:                                              # side sweeps (angled away: darker)
+            o[x, y] = FACEMASK_SHADE
+            o[31 - x, y] = FACEMASK_SHADE
+        bar(o, [(x, 19) for x in range(6, 26)])                         # nose bar, right under the eyes
+        bar(o, [(7, 21), (8, 22)] + [(x, 22) for x in range(9, 23)] + [(23, 22), (24, 21)])  # chin bar
+        for x in (13, 18):                                              # twin center verticals
+            o[x, 21] = FACEMASK
         # chin cup
         for x in range(13, 19):
-            o[x, 26] = CHIN_CUP
+            o[x, 24] = CHIN_CUP
         for x in range(12, 20):
-            o[x, 27] = OUTLINE
-        o[12, 26] = OUTLINE
-        o[19, 26] = OUTLINE
+            o[x, 25] = OUTLINE
+        o[12, 24] = OUTLINE
+        o[19, 24] = OUTLINE
 
     elif view == "right":
         # stripe along the crown
@@ -218,21 +225,28 @@ def paint_helmet(src, view):
         for x in range(3, 9):
             if (x, 22) in grown:
                 o[x, 22] = BUMPER[0]
-        # facemask cage, sticking out in front of the face
-        bar(o, [(x, 13) for x in range(18, 30)])
-        bar(o, [(x, 18) for x in range(18, 31)])
-        bar(o, [(x, 22) for x in range(19, 30)])
-        for y in range(13, 25):                                         # front of the cage
-            o[30, y] = FACEMASK_SHADE if y not in (18,) else FACEMASK
-            o[31, y] = OUTLINE
-        o[30, 12] = OUTLINE
-        for y in range(18, 24):                                         # nose vertical
-            o[25, y] = FACEMASK if y % 2 == 0 else FACEMASK_SHADE
-        for x in range(21, 30):                                         # chin bar
-            o[x, 25] = FACEMASK_SHADE
-        for x in range(22, 26):                                         # chin cup
-            o[x, 26] = CHIN_CUP
-            o[x, 27] = OUTLINE
+        # facemask: clips at the temple and jaw, sweeps forward to a rounded front
+        bar(o, [(x, 13) for x in range(19, 26)])                        # top bar
+        for x, y in ((26, 14), (27, 15)):                               # brow curve down to the nose bar
+            o[x, y] = FACEMASK
+        for x, y in ((20, 14), (21, 15)):                               # side sweep to the nose bar
+            o[x, y] = FACEMASK_SHADE
+        bar(o, [(x, 16) for x in range(19, 30)])                        # nose bar
+        bar(o, [(x, 19) for x in range(20, 30)])                        # lower bar
+        for y in range(17, 19):                                         # front of the cage
+            o[29, y] = FACEMASK_SHADE
+        for x, y in ((29, 20), (28, 21), (27, 22)):                       # rounded chin
+            o[x, y] = FACEMASK_SHADE
+        for x in range(21, 27):                                         # chin bar
+            o[x, 22] = FACEMASK_SHADE
+        for x in range(21, 25):                                         # chin cup
+            o[x, 23] = CHIN_CUP
+            o[x, 24] = OUTLINE
+        for y in range(14, 24):                                         # outline the protruding front
+            for x in range(1, CELL):
+                if x >= 28 and o[x - 1, y][3] and o[x - 1, y] != OUTLINE and not o[x, y][3]:
+                    o[x, y] = OUTLINE
+                    break
 
     else:  # up / back of the helmet
         for y in range(1, 26):

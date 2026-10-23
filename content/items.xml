@@ -11,6 +11,6 @@
     <active id="10" name="Playbook" description="Call the play" gfx="playbook.png" quality="2" maxcharges="2" />
     <active id="11" name="Coach's Whistle" description="Offsides!" gfx="coachs_whistle.png" quality="2" maxcharges="4" />
     <passive id="12" name="Gatorade Bucket" description="Stay hydrated" gfx="gatorade_bucket.png" quality="2" />
-    <trinket id="1" name="Padded Pants" description="Thigh pads included" gfx="padded_pants.png" />
+    <passive id="13" name="Padded Pants" description="Thigh pads included" gfx="padded_pants.png" quality="2" />
     <trinket id="2" name="Referee Flag" description="Flag on the play" gfx="referee_flag.png" />
 </items>

@@ -54,8 +54,9 @@ return function(mod)
         EID:addCollectible(Items.GATORADE,
             "Clearing a room without getting hit fills the bucket#" ..
             "Every " .. Cfg.GATORADE_FILLS .. " fills (or one no-hit boss): heals a full red heart, or half a soul heart if you're full")
-        EID:addTrinket(Trinkets.PANTS,
-            "25% chance to ignore damage from touching enemies#Stacks with golden/Mom's Box (up to 60%)")
+        EID:addCollectible(Items.PANTS,
+            pct(Cfg.PANTS_IGNORE_CHANCE) .. " chance to ignore damage from touching an enemy, and stiff-arm it away#" ..
+            "Extra copies stack (up to " .. pct(Cfg.PANTS_MAX_CHANCE) .. ")#Counts toward Suited Up")
         EID:addTrinket(Trinkets.FLAG,
             "When an enemy or its shot hits you, it gets flagged:#" ..
             "takes 10 + 3x floor number damage and is slowed")

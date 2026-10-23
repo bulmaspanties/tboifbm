@@ -46,11 +46,21 @@ return function(mod)
 
         local windup = Cfg.TACKLE_WINDUP
         if mod.isSuitedUp(player) then windup = math.floor(windup / 2) end
+        local wasTackling = d.tackling
         d.tackling = d.runDir ~= nil and d.runFrames >= windup
         if not d.tackling then return end
 
-        -- Visual tell: helmet glows while a tackle is live.
+        -- Tells: a whoosh when the tackle goes live, then a glow and a dust trail.
+        if not wasTackling then
+            sfx:Play(SoundEffect.SOUND_FETUS_JUMP, 0.6, 0, false, 0.8)
+        end
         player:SetColor(Color(1, 1, 1, 1, 0.3, 0.18, 0), 2, 1, false, false)
+        if d.runFrames % 5 == 0 then
+            local dust = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0,
+                player.Position - d.runDir * 10, Vector.Zero, player)
+            dust:ToEffect().Timeout = 12
+            dust.SpriteScale = Vector(0.5, 0.5)
+        end
 
         local now = game:GetFrameCount()
         local reach = player.Size + Cfg.TACKLE_REACH
@@ -66,7 +76,10 @@ return function(mod)
                     e:AddVelocity(push)
                     e:AddConfusion(EntityRef(player), Cfg.TACKLE_CONFUSE, true)
                     sfx:Play(SoundEffect.SOUND_PUNCH)
+                    sfx:Play(SoundEffect.SOUND_MEAT_IMPACTS, 0.6)
                     game:ShakeScreen(5)
+                    Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.IMPACT, 0, e.Position, Vector.Zero, player)
+                    mod.popOn(e, "TACKLE!", mod.Colors.orange)
                     if player:HasCollectible(Items.PADS) then
                         padPop(player, e.Position, 0.6)
                     end
@@ -87,6 +100,8 @@ return function(mod)
             mod.refreshCache(player)
             player:SetColor(Color(1, 1, 1, 1, 0.1, 0.4, 0.1), 10, 1, true, false)
             sfx:Play(SoundEffect.SOUND_THUMBSUP, 0.7)
+            local ord = ({ "1ST", "2ND", "3RD", "4TH" })[d.firstDowns] or ""
+            mod.popOn(player, ord .. " DOWN!", mod.Colors.green)
         end
     end
 
@@ -200,6 +215,7 @@ return function(mod)
         end
         if froze then
             sfx:Play(SoundEffect.SOUND_BUTTON_PRESS, 0.8)
+            mod.popOn(snapper, "SET... HUT!", mod.Colors.yellow)
         end
     end
     mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.OnNewRoomGear)
@@ -214,9 +230,12 @@ return function(mod)
             player:AddSoulHearts(1)
         end
         player:SetColor(Color(1, 1, 1, 1, 0.5, 0.25, 0), 30, 1, true, false)
+        local orange = Color(1, 0.6, 0.1, 1, 0.4, 0.15, 0)
         local splash = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF02, 0, player.Position, Vector.Zero, player)
-        splash.Color = Color(1, 0.6, 0.1, 1, 0.3, 0.1, 0)
+        splash.Color = orange
+        mod.burst(player.Position, EffectVariant.TEAR_POOF_A, 8, orange, 18)
         sfx:Play(SoundEffect.SOUND_SPLATTER, 1.2)
+        mod.popOn(player, "GATORADE SHOWER!", mod.Colors.orange)
         game:GetHUD():ShowItemText("Gatorade shower!", "Victory tastes like orange")
     end
 
@@ -231,6 +250,7 @@ return function(mod)
                 gatoradeShower(player)
             else
                 sfx:Play(SoundEffect.SOUND_PLOP, 0.8, 0, false, 0.8)
+                mod.popOn(player, "SHUTOUT! " .. d.bucket .. "/" .. Cfg.GATORADE_FILLS, mod.Colors.orange)
             end
         end)
     end
@@ -318,6 +338,7 @@ return function(mod)
                 d.caught = d.caught + 1
                 sfx:Play(SoundEffect.SOUND_PLOP, 1.2)
                 player:SetColor(Color(1, 1, 1, 1, 0.3, 0.3, 0.3), 6, 1, true, false)
+                mod.popOn(player, "CATCH!", mod.Colors.white)
                 return true
             end
         end
@@ -328,7 +349,8 @@ return function(mod)
             if face and toProj:Length() > 0.01 and face:Dot(toProj:Normalized()) > Cfg.FACEMASK_ARC then
                 if rngFor(player, Items.HELMET):RandomFloat() < Cfg.FACEMASK_BLOCK_CHANCE then
                     proj:Die()
-                    sfx:Play(SoundEffect.SOUND_TEARIMPACTS, 1.2)
+                    sfx:Play(SoundEffect.SOUND_METAL_BLOCKBREAK, 0.5, 0, false, 1.4)
+                    mod.popOn(player, "BLOCKED", mod.Colors.grey, 0.8)
                     return true
                 end
             end
@@ -340,6 +362,7 @@ return function(mod)
                 proj:AddProjectileFlags(ProjectileFlags.HIT_ENEMIES | ProjectileFlags.CANT_HIT_PLAYER)
                 proj.Color = Color(0.5, 0.7, 1, 1, 0, 0, 0.2)
                 sfx:Play(SoundEffect.SOUND_PUNCH, 0.6)
+                mod.popOn(player, "DEFLECT", mod.Colors.blue, 0.8)
                 return true
             end
         end
@@ -363,6 +386,7 @@ return function(mod)
         offender:AddSlowing(EntityRef(player), Cfg.FLAG_SLOW_FRAMES, 0.6, Color(1, 1, 0.3, 1, 0.2, 0.2, 0))
         offender:SetColor(Color(1, 1, 1, 1, 0.6, 0.5, 0), 20, 1, true, false)
         mod.playWhistle(0.7)
+        mod.popOn(offender, "FLAG!", mod.Colors.yellow)
     end
 
     function mod:OnPlayerDamage(entity, amount, flags, source, countdown)
@@ -371,8 +395,9 @@ return function(mod)
         local d = pdata(player)
         local contact = mod.isContactDamage(source)
 
-        -- Your own field goal doesn't blow you up.
-        if mod.kickExploding then
+        -- Your own field goal doesn't blow you up (even if the blast lands a frame late).
+        if mod.kickExploding or (mod.kickBlastFrame and flags & DamageFlag.DAMAGE_EXPLOSION ~= 0
+            and game:GetFrameCount() - mod.kickBlastFrame <= 2) then
             return false
         end
 
@@ -381,13 +406,19 @@ return function(mod)
             return false
         end
 
-        -- Padded Pants: shrug off some contact hits.
-        if contact and Trinkets.PANTS > 0 and player:HasTrinket(Trinkets.PANTS) then
+        -- Padded Pants: shrug off some contact hits and stiff-arm the enemy away.
+        if contact and player:HasCollectible(Items.PANTS) then
             local chance = math.min(Cfg.PANTS_MAX_CHANCE,
-                Cfg.PANTS_IGNORE_CHANCE * player:GetTrinketMultiplier(Trinkets.PANTS))
-            if player:GetTrinketRNG(Trinkets.PANTS):RandomFloat() < chance then
+                Cfg.PANTS_IGNORE_CHANCE * player:GetCollectibleNum(Items.PANTS))
+            if rngFor(player, Items.PANTS):RandomFloat() < chance then
                 player:SetMinDamageCooldown(30)
-                sfx:Play(SoundEffect.SOUND_PUNCH, 0.5)
+                sfx:Play(SoundEffect.SOUND_PUNCH, 0.7)
+                local enemy = source.Entity
+                local away = enemy.Position - player.Position
+                if away:Length() > 0.1 and not enemy:IsBoss() then
+                    enemy:AddVelocity(away:Resized(Cfg.PANTS_STIFF_ARM))
+                end
+                mod.popOn(player, "STIFF ARM!", mod.Colors.white)
                 return false
             end
         end
@@ -400,6 +431,7 @@ return function(mod)
             player:TakeDamage(amount - Cfg.MOUTHGUARD_REDUCTION, flags, source, countdown)
             reapplyingPlayer = false
             sfx:Play(SoundEffect.SOUND_TEARIMPACTS, 0.8, 0, false, 0.7)
+            mod.popOn(player, "BITE DOWN!", mod.Colors.blue)
             return false
         end
 

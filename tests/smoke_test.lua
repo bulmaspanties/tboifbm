@@ -118,6 +118,7 @@ function Font()
     function f:IsLoaded() return self.loaded end
     function f:GetLineHeight() return 8 end
     function f:DrawString(str) drawnText[#drawnText + 1] = str end
+    function f:DrawStringScaled(str) drawnText[#drawnText + 1] = str end
     return f
 end
 
@@ -233,6 +234,7 @@ local function newEntity(t)
     function e:GetSprite() return self.sprite end
     function e:ToPlayer() return self.isPlayer and self or nil end
     function e:ToProjectile() return self.isProjectile and self or nil end
+    function e:ToEffect() return self.Type == EntityType.ENTITY_EFFECT and self or nil end
     function e:IsEnemy() return self.isEnemy == true end
     function e:IsVulnerableEnemy() return self.isEnemy == true end
     function e:IsActiveEnemy() return self.isEnemy == true and self.exists end
@@ -450,7 +452,7 @@ tick()
 p.items[Items.HELMET] = 1
 p.items[Items.JERSEY] = 1
 p.items[Items.PADS] = 1
-p.trinkets[Trinkets.PANTS] = true
+p.items[Items.PANTS] = 1
 tick()
 check(costumeOn(p, "helmet"), "helmet costume applied")
 check(costumeOn(p, "torso_jerseypads"), "jersey+pads costume applied")
@@ -496,6 +498,10 @@ tick(math.floor(Cfg.TACKLE_WINDUP / 2) + 2)
 local victim = newEnemy(p.Position + Vector(20, 0), 100)
 tick()
 check(victim.damageTaken > 0 and victim.confused, "tackle damages and confuses")
+local function sawText(t) for _, line in ipairs(drawnText) do if line == t then return true end end return false end
+drawnText = {}
+tick()
+check(sawText("TACKLE!"), "tackle shows a callout")
 local contact = newEnemy(p.Position)
 check(dispatch(ModCallbacks.MC_ENTITY_TAKE_DMG, EntityType.ENTITY_PLAYER, p, 1, 0, EntityRef(contact), 0) == false,
     "no contact damage while tackling")
@@ -571,6 +577,12 @@ dispatch(ModCallbacks.MC_USE_ITEM, Items.KICKING_TEE, Items.KICKING_TEE, p.rng, 
 tick(Cfg.KICK_FLIGHT + 1)
 check(weak.damageTaken > 0, "kick explosion hits enemies")
 check(p.damageTaken == hpBefore, "kick doesn't hurt the kicker")
+world.frame = world.frame + 1
+check(dispatch(ModCallbacks.MC_ENTITY_TAKE_DMG, EntityType.ENTITY_PLAYER, p, 2, DamageFlag.DAMAGE_EXPLOSION,
+    EntityRef(p), 0) == false, "a late blast from your own kick is ignored too")
+drawnText = {}
+tick()
+check(sawText("IT'S GOOD!"), "field goal callout")
 local coins = 0
 for _, e in ipairs(world.spawned) do if e.Type == EntityType.ENTITY_PICKUP then coins = coins + 1 end end
 check(coins == Cfg.FIELD_GOAL_COINS, "field goal spawns coins")
@@ -639,6 +651,17 @@ newRoom(false, RoomType.ROOM_BOSS)
 dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, p.rng, Vector(0, 0))
 check(p.hearts == 6, "no-hit boss room is an instant shower")
 
+-- Padded Pants: shrug off a contact hit and stiff-arm the enemy
+newRoom(false)
+p.Position, p.Velocity, p.aim = Vector(0, 0), Vector(0, 0), Vector(0, 0)
+tick()
+p.rng.value = 0.0
+local bully = newEnemy(Vector(5, 0))
+local taken = p.damageTaken
+p:TakeDamage(1, 0, EntityRef(bully), 0)
+check(p.damageTaken == taken and bully.Velocity.X > 0, "padded pants ignore contact and shove the enemy")
+p.rng.value = 0.99
+
 -- Eye Black curse removal
 local cursed = LevelCurse.CURSE_OF_DARKNESS | LevelCurse.CURSE_OF_THE_LOST
 local after = dispatch(ModCallbacks.MC_POST_CURSE_EVAL, nil, cursed)
@@ -682,6 +705,7 @@ for _, e in ipairs(world.spawned) do
     end
 end
 check(dropped == 4 + trinketCount, "give command drops actives and trinkets")
+check(p2:HasCollectible(Items.PANTS), "padded pants are a passive now")
 check(dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "hide legs"):find("hiding"), "hide command")
 check(mod.Settings.charRules["0"].legs == false, "hide command stores a rule")
 dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "show legs")

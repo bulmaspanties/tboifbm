@@ -48,7 +48,7 @@ return function(mod)
         local s = mod.GetSaveData().settings
         local rules = s.charRules
         mod.GetSaveData().settings = { charRules = rules }
-        mod.Settings.costumes, mod.Settings.suitedGlow, mod.Settings.hud = true, true, true
+        mod.Settings.costumes, mod.Settings.suitedGlow, mod.Settings.hud, mod.Settings.popups = true, true, true, true
         mod.ApplySettings()
         mod.StoreSaveData()
     end

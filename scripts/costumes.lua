@@ -2,7 +2,7 @@
 -- so it can be toggled from the menu, hidden per character, and re-applied if
 -- the game clears costumes (Clicker, character swaps, etc.).
 return function(mod)
-    local Items, Trinkets = mod.Items, mod.Trinkets
+    local Items = mod.Items
     local pdata = mod.pdata
 
     local function nullCostume(name)
@@ -49,7 +49,7 @@ return function(mod)
         local jersey, pads = player:HasCollectible(Items.JERSEY), player:HasCollectible(Items.PADS)
         want.torso = (jersey and pads and "jerseypads") or (jersey and "jersey") or (pads and "pads") or "none"
 
-        local pants = Trinkets.PANTS > 0 and player:HasTrinket(Trinkets.PANTS)
+        local pants = player:HasCollectible(Items.PANTS)
         local cleats = player:HasCollectible(Items.CLEATS)
         want.legs = (pants and cleats and "pantscleats") or (pants and "pants") or (cleats and "cleats") or "none"
 

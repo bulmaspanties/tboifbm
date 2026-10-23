@@ -15,6 +15,7 @@ It uses only the vanilla Lua API, so REPENTOGON is **not** required.
 | **Team Jersey** | Passive (Q2) | Treasure, Golden Chest | You get a **jersey number** (1–99) for the run. Every N shots (N = 3–9, set by your number) you throw a spiraling **football**: 2× damage, piercing, spectral. **Pre-snap:** enemies freeze briefly when you enter a room. |
 | **Football Cleats** | Passive (Q2) | Treasure, Shop | +0.2 Speed. Running **10 yards** in an uncleared room earns a **First Down**: +0.5 Damage until you leave the room (max 4 per room). |
 | **Eye Black** | Passive (Q2) | Treasure, Shop | +1 Luck. Tears do up to **+50% damage the farther they travel**. Makes you immune to **Curse of Darkness**. |
+| **Padded Pants** | Passive (Q2) | Treasure, Shop | 30% chance to **shrug off** damage from touching an enemy and **stiff-arm** it away. Extra copies stack (up to 60%). |
 | **Receiver Gloves** | Passive (Q2) | Treasure | When you're **not shooting**, 35% chance to **catch** an enemy shot instead of getting hit (hold up to 3, shown above your head). Each shot you fire throws one caught ball back as a **football**: 1.5× damage, piercing, spectral. |
 | **Mouthguard** | Passive (Q2) | Treasure, Shop | The **first hit each room** that deals a full heart or more deals **half a heart less**. Makes you immune to **fear** and **confusion**. |
 | **Kicking Tee** | Active, 4 charges | Treasure | **Punt** a football in the direction you're aiming. It sails over rocks and pits and **explodes on landing** for 40 + 4× your damage, without hurting you. If the blast kills an enemy, that's a **field goal: 3 pennies**. |
@@ -22,11 +23,10 @@ It uses only the vanilla Lua API, so REPENTOGON is **not** required.
 | **Playbook** | Active, 2 charges | Treasure | **Call a play** for the room. Each use turns to the next page: **Blitz** (tears up, +0.3 speed) → **Hail Mary** (+range, +shot speed, piercing tears) → **Trick Play** (your next 6 shots are footballs). |
 | **Coach's Whistle** | Active, 4 charges | Treasure, Boss | **Offsides!** Shoves every enemy away from you and slows them for 5 seconds, and wipes out all enemy shots. Bosses take damage instead of being shoved. |
 | **Gatorade Bucket** | Passive (Q2) | Treasure, Shop | Clearing a room **without getting hit** fills the bucket. Every 3 fills (or one no-hit boss room) you get a **Gatorade shower**: heal a full red heart, or half a soul heart if your red hearts are full. |
-| **Padded Pants** | Trinket | Trinket pool | 25% chance to ignore damage from touching enemies (golden or Mom's Box raises it, up to 60%). |
 | **Referee Flag** | Trinket | Trinket pool | **Flag on the play:** when an enemy or its shot hits you, that enemy takes 10 + 3× floor-number damage and is slowed. |
 
 ### Set bonus: Suited Up
-Hold **3 or more** of the seven wearable gear items (Helmet, Pads, Jersey, Cleats, Eye Black, Gloves, Mouthguard) to get **Suited Up**: +1 Damage, the Helmet's tackle winds up twice as fast, and you pulse gold.
+Hold **3 or more** of the eight wearable gear items (Helmet, Pads, Jersey, Cleats, Eye Black, Gloves, Mouthguard, Padded Pants) to get **Suited Up**: +1 Damage, the Helmet's tackle winds up twice as fast, and you pulse gold.
 
 ## Installing
 1. Download `gridiron-vX.Y.Z.zip` from the [latest release](https://github.com/bulmaspanties/tboifbm/releases/latest).
@@ -43,8 +43,8 @@ If **External Item Descriptions** is installed, every item shows its description
 
 ## Settings menu
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
-- **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, yards per first down, kick damage, reset to defaults
-- **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill)
+- **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, reset to defaults
+- **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!)
 - **costume fit:** hide the helmet, eye black, jersey/pads or pants/cleats for the character you're playing right now
 
 Settings are saved and kept between runs. Your run state (caught balls, bucket, jersey, current play…) also survives **save & continue**.

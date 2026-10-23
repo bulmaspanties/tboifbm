@@ -130,6 +130,7 @@ return function(mod)
                 percent("facemask block", "FACEMASK_BLOCK_CHANCE", 10, { "chance to block", "shots from the", "front" }),
                 percent("pad deflect", "PADS_DEFLECT_CHANCE", 5, { "shoulder pads", "deflect chance" }),
                 percent("glove catch", "GLOVES_CATCH_CHANCE", 5, { "receiver gloves", "catch chance" }),
+                percent("pants shrug off", "PANTS_IGNORE_CHANCE", 5, { "padded pants", "contact hit", "ignore chance" }),
                 number("yards per down", "FIRST_DOWN_YARDS", 5, 20, 1, { "cleats: yards", "for a first down" }),
                 number("kick damage", "KICK_DAMAGE", 10, 100, 10, { "kicking tee base", "damage (plus 4x", "your damage)" }),
                 { str = "", fsize = 2, nosel = true },
@@ -149,6 +150,7 @@ return function(mod)
                 toggle("costumes", "costumes", { "show worn gear", "on your", "character" }),
                 toggle("suited up glow", "suitedGlow", { "gold pulse while", "suited up" }),
                 toggle("hud text", "hud", { "downs, plays and", "bucket under", "your character" }),
+                toggle("popup text", "popups", { "callouts like", "tackle! and", "it's good!" }),
             },
         },
         character = {

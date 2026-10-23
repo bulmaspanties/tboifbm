@@ -211,8 +211,8 @@ SPRITES["items/collectibles/eye_black.png"] = dict(rows=[
     "................................",
 ])
 
-# --- Padded Pants (trinket, mirrored) -----------------------------------------
-SPRITES["items/trinkets/padded_pants.png"] = dict(mirror=True, rows=[
+# --- Padded Pants (passive, mirrored) -----------------------------------------
+SPRITES["items/collectibles/padded_pants.png"] = dict(mirror=True, rows=[
     "................",
     "................",
     "................",

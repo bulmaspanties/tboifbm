@@ -17,9 +17,9 @@ return function(mod)
         PLAYBOOK    = Isaac.GetItemIdByName("Playbook"),
         WHISTLE     = Isaac.GetItemIdByName("Coach's Whistle"),
         GATORADE    = Isaac.GetItemIdByName("Gatorade Bucket"),
+        PANTS       = Isaac.GetItemIdByName("Padded Pants"),
     }
     mod.Trinkets = {
-        PANTS = Isaac.GetTrinketIdByName("Padded Pants"),
         FLAG  = Isaac.GetTrinketIdByName("Referee Flag"),
     }
     mod.Sounds = {
@@ -116,8 +116,9 @@ return function(mod)
         FLAG_SLOW_FRAMES      = 90,
 
         -- Padded Pants
-        PANTS_IGNORE_CHANCE   = 0.25,  -- per trinket multiplier (golden / Mom's Box stack)
+        PANTS_IGNORE_CHANCE   = 0.3,   -- (menu) per copy
         PANTS_MAX_CHANCE      = 0.6,
+        PANTS_STIFF_ARM       = 16,    -- knockback on the enemy you shrugged off
 
         -- Set bonus
         SUITED_UP_PIECES      = 3,
@@ -133,6 +134,7 @@ return function(mod)
         costumes = true,       -- show worn gear on the character
         suitedGlow = true,     -- gold pulse while Suited Up
         hud = true,            -- small text readouts under the player
+        popups = true,         -- floating callouts ("TACKLE!", "IT'S GOOD!")
     }
 
     mod.FOOTBALL_ANM2 = "gfx/gridiron_football_tear.anm2"
@@ -140,7 +142,7 @@ return function(mod)
     -- Wearable gear counts toward Suited Up; actives and the bucket don't.
     mod.GEAR = {
         mod.Items.HELMET, mod.Items.PADS, mod.Items.JERSEY, mod.Items.CLEATS,
-        mod.Items.EYE_BLACK, mod.Items.GLOVES, mod.Items.MOUTHGUARD,
+        mod.Items.EYE_BLACK, mod.Items.GLOVES, mod.Items.MOUTHGUARD, mod.Items.PANTS,
     }
 
     mod.ACTIVE_ITEMS = {

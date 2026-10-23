@@ -2,6 +2,7 @@
 -- Uses only the vanilla Lua API (REPENTOGON not required).
 --
 -- scripts/core.lua      item ids, tuning (Cfg), settings, shared helpers
+-- scripts/fx.lua        floating callouts and effect bursts
 -- scripts/gear.lua      passive items, trinkets and stats
 -- scripts/actives.lua   Kicking Tee, Pigskin, Playbook, Coach's Whistle
 -- scripts/costumes.lua  worn gear
@@ -13,6 +14,6 @@
 
 local mod = RegisterMod("Gridiron", 1)
 
-for _, name in ipairs({ "core", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands" }) do
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands" }) do
     include("scripts." .. name)(mod)
 end
