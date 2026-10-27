@@ -558,6 +558,12 @@ EID = {
     addPill = function(_, id) check(id and id >= 0, "EID for unknown pill"); eidEntries = eidEntries + 1 end,
 }
 
+-- Effects that fill the screen must never be spawned by gameplay code (v0.4.1 tackle-trail bug).
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "extras", "familiars", "monsters", "quarterback", "challenges" }) do
+    local src = readFile("scripts/" .. name .. ".lua") or ""
+    check(not src:find("DUST_CLOUD", 1, true), "scripts/" .. name .. ".lua must not spawn DUST_CLOUD")
+end
+
 -- Load the mod ------------------------------------------------------------------------
 dofile("main.lua")
 local Items, Trinkets, Cfg = mod.Items, mod.Trinkets, mod.Cfg

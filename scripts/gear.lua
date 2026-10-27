@@ -57,11 +57,12 @@ return function(mod)
             sfx:Play(SoundEffect.SOUND_FETUS_JUMP, 0.6, 0, false, 0.8)
         end
         player:SetColor(Color(1, 1, 1, 1, 0.3, 0.18, 0), 2, 1, false, false)
-        if d.runFrames % 5 == 0 then
-            local dust = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.DUST_CLOUD, 0,
-                player.Position - d.runDir * 10, Vector.Zero, player)
-            dust:ToEffect().Timeout = 12
-            dust.SpriteScale = Vector(0.5, 0.5)
+        if d.runFrames % 6 == 0 then
+            -- small, faint kicked-up turf (never DUST_CLOUD: that's a screen-filling fog)
+            local puff = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0,
+                player.Position - d.runDir * 12, Vector.Zero, player)
+            puff.SpriteScale = Vector(0.35, 0.35)
+            puff.Color = Color(0.6, 0.45, 0.3, 0.5)
         end
 
         local now = game:GetFrameCount()
