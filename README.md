@@ -77,6 +77,14 @@ Find these under **Challenges → Custom**:
 3. Launch the game and turn on **Gridiron** in the Mods menu.
 4. To try everything at once, open the debug console (`~`) and type `gridiron give`.
 
+### Publishing to the Steam Workshop
+1. Install the release zip into your `mods` folder as above (it includes `thumb.png`, the Workshop preview).
+2. Run **ModUploader.exe** from the game's `tools/ModUploader` folder, pick **Gridiron**, and upload.
+   It reads the name, description, tags and version from `metadata.xml`.
+3. `metadata.xml` ships with `<visibility>Private</visibility>`; switch it to `Public` (in the file or on the Workshop page) when you're ready.
+   After the first upload the uploader writes the Workshop `<id>` into `metadata.xml`: copy that back into the repo so later uploads update the same page.
+   If the uploader rejects a tag, delete that `<tag>` line.
+
 ### Making a release
 Bump `<version>` in `metadata.xml` and push to `main`, then run the **Release** workflow from the Actions tab (or push a matching `v*` tag).
 The Release workflow runs the smoke test, builds the zip with `tools/package.py` and publishes it.

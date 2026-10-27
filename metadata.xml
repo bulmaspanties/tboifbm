@@ -2,7 +2,34 @@
 <metadata>
     <name>Gridiron</name>
     <directory>gridiron</directory>
-    <description>Suit up! Adds American football gear to The Binding of Isaac: Repentance+. Football Helmet, Shoulder Pads, Team Jersey, Football Cleats, Eye Black and Padded Pants each have their own mechanics, and wearing 3 pieces gets you "Suited Up".</description>
-    <version>0.3.0</version>
+    <description>[h1]Gridiron: American football for Isaac[/h1]
+Suit up! Football gear with its own mechanics: no reskins, no stat-only items.
+
+[h2]What's inside[/h2]
+[list]
+[*][b]16 items[/b]: Football Helmet (tackles + facemask), Shoulder Pads, Team Jersey, Football Cleats, Eye Black, Receiver Gloves, Mouthguard, Padded Pants, Chin Strap, Foam Finger, Super Bowl Ring, Gatorade Bucket, Kicking Tee, Pigskin, Playbook, Coach's Whistle and more
+[*][b]3 familiars[/b]: Cheerleader, Water Boy, Tackling Dummy
+[*][b]2 trinkets, a card and a pill[/b]: Referee Flag, Concussion Protocol, Coin Toss, Timeout!
+[*][b]Wear 3+ pieces to get Suited Up[/b]: bonus damage, faster tackles, gold glow
+[*][b]Worn costumes[/b]: helmet with facemask, jersey over pads, pants and cleats, eye black
+[*][b]A new boss[/b]: The Linebacker, plus Mascot and Referee enemies
+[*][b]A new character[/b]: The Quarterback and Tainted Quarterback
+[*][b]3 challenges[/b]: Fourth and Long, Two-Minute Drill, Ground Game
+[*][b]Settings[/b] in the Dead Sea Scrolls menu (press C), External Item Descriptions support, save &amp; continue support
+[/list]
+
+Debug console: [b]gridiron give[/b] spawns all the gear, [b]gridiron boss[/b] summons the Linebacker.
+
+Requires Repentance+. REPENTOGON is not required.
+Source and bug reports: github.com/bulmaspanties/tboifbm</description>
+    <version>0.4.0</version>
     <visibility>Private</visibility>
+    <tag id="Items"/>
+    <tag id="Characters"/>
+    <tag id="Bosses"/>
+    <tag id="Monsters"/>
+    <tag id="Challenges"/>
+    <tag id="Lua"/>
+    <tag id="Graphics"/>
+    <tag id="Sound"/>
 </metadata>
