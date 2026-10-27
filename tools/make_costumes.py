@@ -140,7 +140,9 @@ def paint_helmet(src, view):
         if view == "down":
             side = 3 if y <= 17 else 4          # jaw guards widen toward the chin
             return y <= 23 and (x - lo <= side or hi - x <= side)
-        # side view: back of the head and the jaw guard, face opening in front
+        # side view: the shell covers the brow, the back of the head and the jaw guard
+        if y <= 12:
+            return True
         if y <= 22:
             return x <= 17
         return x <= 19
@@ -208,45 +210,25 @@ def paint_helmet(src, view):
             col = [y for y in range(CELL) if (x, y) in grown and o[x, y] != OUTLINE]
             if col:
                 o[x, col[0]] = HELMET_STRIPE
-        # brow bumper, vents, ear hole, jaw-guard seam
-        for x in range(18, 26):
-            if (x, 11) in grown or (x, 11) in mask:
-                o[x, 11] = BUMPER[1]
-            o[x, 12] = BUMPER[0]
-        for x, y in ((7, 6), (8, 6), (11, 4), (12, 4)):
-            o[x, y] = BUMPER[0]
-        for x, y in ((9, 15), (10, 15), (9, 16), (10, 16)):
+        # ear hole with a screw below it (kept simple, like the real shell)
+        for x, y in ((9, 15), (10, 15), (9, 16), (10, 16), (11, 16)):
             o[x, y] = OUTLINE
-        for x, y in ((8, 15), (11, 15), (8, 16), (11, 16), (9, 14), (10, 14), (9, 17), (10, 17)):
-            o[x, y] = BUMPER[1]
-        for x, y in ((12, 19), (13, 20), (14, 21), (15, 22), (16, 23)):
-            o[x, y] = HELMET[0]
-        # rear bumper at the base of the shell
-        for x in range(3, 9):
-            if (x, 22) in grown:
-                o[x, 22] = BUMPER[0]
-        # facemask: clips at the temple and jaw, sweeps forward to a rounded front
-        bar(o, [(x, 13) for x in range(19, 26)])                        # top bar
-        for x, y in ((26, 14), (27, 15)):                               # brow curve down to the nose bar
+        o[10, 19] = BUMPER[1]
+        # facemask: a thin one-pixel cage that protrudes past the face
+        cage = [(18, 13), (19, 13), (20, 13), (21, 13), (22, 14), (23, 14), (24, 14), (25, 14),
+                (26, 15), (27, 15), (28, 15)]                           # top bar, sloping down
+        cage += [(29, y) for y in range(16, 22)]                        # front of the cage
+        cage += [(x, 18) for x in range(18, 29)]                        # nose bar
+        cage += [(x, 21) for x in range(18, 29)]                        # lower bar
+        cage += [(22, y) for y in range(14, 22)]                        # connector bar
+        cage += [(28, 22), (27, 23)] + [(x, 23) for x in range(19, 27)]  # chin bar back to the jaw
+        for x, y in cage:
+            o[x, y] = FACEMASK_SHADE
+        for x, y in ((28, 15), (29, 16), (18, 13), (19, 13)):            # shine on the bends
             o[x, y] = FACEMASK
-        for x, y in ((20, 14), (21, 15)):                               # side sweep to the nose bar
-            o[x, y] = FACEMASK_SHADE
-        bar(o, [(x, 16) for x in range(19, 30)])                        # nose bar
-        bar(o, [(x, 19) for x in range(20, 30)])                        # lower bar
-        for y in range(17, 19):                                         # front of the cage
-            o[29, y] = FACEMASK_SHADE
-        for x, y in ((29, 20), (28, 21), (27, 22)):                       # rounded chin
-            o[x, y] = FACEMASK_SHADE
-        for x in range(21, 27):                                         # chin bar
-            o[x, 22] = FACEMASK_SHADE
-        for x in range(21, 25):                                         # chin cup
-            o[x, 23] = CHIN_CUP
-            o[x, 24] = OUTLINE
-        for y in range(14, 24):                                         # outline the protruding front
-            for x in range(1, CELL):
-                if x >= 28 and o[x - 1, y][3] and o[x - 1, y] != OUTLINE and not o[x, y][3]:
-                    o[x, y] = OUTLINE
-                    break
+        for x, y in [(29, 15), (30, 16)] + [(30, y) for y in range(17, 22)] + [(29, 22), (28, 23)] \
+                + [(x, 24) for x in range(19, 28)]:
+            o[x, y] = OUTLINE
 
     else:  # up / back of the helmet
         for y in range(1, 26):

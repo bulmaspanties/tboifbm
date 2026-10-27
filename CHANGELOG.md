@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.1
+- Cleaner helmet side view: smooth shell, simple ear hole, and a thin cage facemask that protrudes past the face (no more stacked bars across the brow).
+
 ## 0.4.0
 - **The Quarterback** and **Tainted Quarterback** playable characters, with full menu art.
 - **The Linebacker** boss (charge, spiked footballs, enraged pile-up) plus **Mascot** and **Referee** enemies.
