@@ -133,6 +133,8 @@ return function(mod)
                 percent("pants shrug off", "PANTS_IGNORE_CHANCE", 5, { "padded pants", "contact hit", "ignore chance" }),
                 number("yards per down", "FIRST_DOWN_YARDS", 5, 20, 1, { "cleats: yards", "for a first down" }),
                 number("kick damage", "KICK_DAMAGE", 10, 100, 10, { "kicking tee base", "damage (plus 4x", "your damage)" }),
+                percent("linebacker boss", "LINEBACKER_CHANCE", 5, { "chance he replaces", "an early boss", "(floors 2-6)" }),
+                percent("football foes", "FOOTBALL_ENEMY_CHANCE", 2, { "chance a basic", "enemy is a mascot", "or referee" }),
                 { str = "", fsize = 2, nosel = true },
                 {
                     str = "reset to defaults",

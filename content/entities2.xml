@@ -15,4 +15,20 @@
             numGridCollisionPoints="0" shadowSize="12" stageHP="0">
         <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
     </entity>
+    <!-- Enemies + boss: type 643 (unused by vanilla), AI in scripts/monsters.lua -->
+    <entity anm2path="bosses/gridiron_linebacker.anm2" baseHP="330" boss="1" champion="0" collisionDamage="1"
+            collisionMass="30" collisionRadius="20" friction="1" id="643" variant="0" name="Gridiron Linebacker"
+            numGridCollisionPoints="24" shadowSize="34" stageHP="30" shutdoors="true" tags="nodelirium">
+        <gibs amount="18" blood="1" bone="1" eye="0" gut="1" large="1" />
+    </entity>
+    <entity anm2path="monsters/gridiron_mascot.anm2" baseHP="18" boss="0" champion="1" collisionDamage="1"
+            collisionMass="8" collisionRadius="11" friction="1" id="643" variant="1" name="Gridiron Mascot"
+            numGridCollisionPoints="12" shadowSize="14" stageHP="4" shutdoors="true">
+        <gibs amount="8" blood="1" bone="0" eye="0" gut="0" large="0" />
+    </entity>
+    <entity anm2path="monsters/gridiron_referee.anm2" baseHP="14" boss="0" champion="1" collisionDamage="1"
+            collisionMass="6" collisionRadius="10" friction="1" id="643" variant="2" name="Gridiron Referee"
+            numGridCollisionPoints="12" shadowSize="12" stageHP="3" shutdoors="true">
+        <gibs amount="8" blood="1" bone="0" eye="0" gut="0" large="0" />
+    </entity>
 </entities>

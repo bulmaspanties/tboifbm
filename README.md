@@ -45,6 +45,15 @@ Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats
 | **Coin Toss** | Card | Flip a coin. **Heads:** +1.5 Damage for the room. **Tails:** fully recharges your active item and slows every enemy. |
 | **Timeout!** | Pill | Freezes every enemy for 3 seconds, clears enemy shots, and heals half a heart. |
 
+## Boss & enemies
+| Entity | Where | What it does |
+|---|---|---|
+| **The Linebacker** (boss) | May replace Monstro, Gurdy, Gurdy Jr., Duke of Flies or Dingle on floors 2–6 (25%) | Walks you down, then either **telegraphs a charge** (crouches and flashes) and blitzes across the room, getting **stunned** if he hits a wall, or **spikes a football** that bursts into shots. Below half health he enrages: faster, plus a **pile-up jump** that lands with a ring of shots. |
+| **Mascot** | Sometimes replaces a Gaper, Horf or Clotty (8%) | Waddles toward you and fires big, slow **T-shirt cannon** shots. |
+| **Referee** | Sometimes replaces a Gaper, Horf or Clotty (8%) | Keeps his distance, blows his whistle and **throws yellow flags** at you. |
+
+Both chances can be changed (or set to 0) in the menu. When the Linebacker replaces a boss, the intro screen still shows the original boss.
+
 ## Challenges
 Find these under **Challenges → Custom**:
 | Challenge | Goal | Rules |
@@ -68,7 +77,7 @@ If **External Item Descriptions** is installed, every item shows its description
 
 ## Settings menu
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
-- **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, reset to defaults
+- **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, Linebacker boss chance, football-enemy chance, reset to defaults
 - **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!)
 - **costume fit:** hide the helmet, eye black, jersey/pads or pants/cleats for the character you're playing right now
 
@@ -79,6 +88,7 @@ Open the debug console with `~`:
 | Command | What it does |
 |---|---|
 | `gridiron give` | Gives every passive; drops all actives and trinkets around you |
+| `gridiron boss` / `gridiron enemies` | Spawn the Linebacker, or a Mascot and a Referee, next to you |
 | `gridiron hide <slot>` / `gridiron show <slot>` | Hide/show a costume piece for your current character (`helmet`, `eyeblack`, `torso`, `legs`) |
 | `gridiron reset` | Reset all settings to defaults |
 

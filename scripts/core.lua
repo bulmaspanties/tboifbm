@@ -163,6 +163,10 @@ return function(mod)
         DUMMY_TAUNT_RADIUS    = 140,
         DUMMY_TAUNT_PULL      = 0.35,
 
+        -- Boss / enemies
+        LINEBACKER_CHANCE     = 0.25,  -- (menu) chance to replace an early boss
+        FOOTBALL_ENEMY_CHANCE = 0.08,  -- (menu) chance a basic enemy is a Mascot/Referee
+
         -- Set bonus
         SUITED_UP_PIECES      = 3,
         SUITED_UP_DAMAGE      = 1.0,

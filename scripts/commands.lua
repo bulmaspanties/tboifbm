@@ -4,7 +4,7 @@
 --   gridiron show <slot>     show it again          (slots: helmet eyeblack torso legs)
 --   gridiron reset           reset all settings to defaults
 return function(mod)
-    local HELP = "gridiron give | hide <slot> | show <slot> | reset   (slots: helmet eyeblack torso legs)"
+    local HELP = "gridiron give | boss | enemies | hide <slot> | show <slot> | reset   (slots: helmet eyeblack torso legs)"
 
     local function setSlot(slot, visible)
         local valid = false
@@ -51,6 +51,16 @@ return function(mod)
                 drop(PickupVariant.PICKUP_PILL, Game():GetItemPool():ForceAddPillEffect(mod.Pills.TIMEOUT))
             end
             return "gave all Gridiron passives; actives and trinkets are on the floor"
+        elseif args[1] == "boss" or args[1] == "enemies" then
+            local player = Isaac.GetPlayer(0)
+            local room = Game():GetRoom()
+            local V = mod.MonsterVariants
+            local list = args[1] == "boss" and { V.LINEBACKER } or { V.MASCOT, V.REFEREE }
+            for i, variant in ipairs(list) do
+                local pos = room:FindFreePickupSpawnPosition(player.Position + Vector(0, -120 + i * 60), 0, true)
+                mod.spawnMonster(variant, pos)
+            end
+            return args[1] == "boss" and "the Linebacker takes the field" or "spawned a Mascot and a Referee"
         elseif args[1] == "hide" or args[1] == "show" then
             return setSlot(args[2], args[1] == "show")
         elseif args[1] == "reset" then

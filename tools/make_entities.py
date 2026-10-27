@@ -101,7 +101,151 @@ def tackling_dummy(frame):
     return rows_of(outline(g))
 
 
+# --- Mascot: Walk (waddle) and Shoot (t-shirt cannon) ---------------------------
+def mascot(frame):
+    g = blank()
+    step = frame % 2
+    shooting = frame >= 2
+    cx = 12
+    rect(g, cx - 5, 18, cx + 5, 25, "Y")                       # furry body
+    rect(g, cx - 5, 24, cx + 5, 25, "y")
+    rect(g, cx - 4, 26, cx - 2, 27 - step, "O")                # big orange feet
+    rect(g, cx + 2, 26, cx + 4, 26 + step, "O")
+    ellipse(g, cx, 11, 7.5, 7, "Y")                            # mascot head
+    ellipse(g, cx - 3, 10, 2.2, 2.6, "W")                      # googly eyes
+    ellipse(g, cx + 3, 10, 2.2, 2.6, "W")
+    put(g, [(cx - 3, 11), (cx + 3, 10)], "e")
+    rect(g, cx - 2, 14, cx + 2, 15, "O")                       # beak
+    rect(g, cx - 1, 16, cx + 1, 16, "o")
+    rect(g, cx - 6, 3, cx + 6, 4, "B")                         # team headband
+    # t-shirt cannon
+    kick = -1 if shooting and frame == 2 else 0
+    rect(g, cx + 4 + kick, 18, cx + 13 + kick, 21, "m")
+    rect(g, cx + 12 + kick, 17, cx + 14 + kick, 22, "g")
+    if frame == 2:
+        put(g, [(cx + 16, 18), (cx + 17, 20), (cx + 16, 22), (cx + 18, 19)], "W")   # muzzle puff
+    return rows_of(outline(g))
+
+
+# --- Referee: Walk and Throw (flag up) -------------------------------------------
+def referee(frame):
+    g = blank()
+    step = frame % 2
+    throwing = frame >= 2
+    cx = 15
+    rect(g, cx - 4, 18, cx + 4, 23, "W")                       # striped shirt
+    for x in range(cx - 4, cx + 5, 2):
+        rect(g, x, 18, x, 23, "k")
+    rect(g, cx - 3, 24, cx - 1, 27 - step, "k")                # black pants
+    rect(g, cx + 1, 24, cx + 3, 26 + step, "k")
+    head(g, cx, 12)
+    rect(g, cx - 6, 5, cx + 6, 7, "k")                         # black cap
+    rect(g, cx - 7, 7, cx + 3, 7, "n")
+    put(g, [(cx + 1, 16), (cx + 2, 16)], "m")                  # whistle
+    if throwing:
+        rect(g, cx + 5, 6 if frame == 3 else 9, cx + 6, 17, "s")   # arm up
+        rect(g, cx + 7, 3 if frame == 3 else 6, cx + 11, 7 if frame == 3 else 10, "Y")  # flag
+    else:
+        rect(g, cx + 5, 19, cx + 6, 22, "s")
+        rect(g, cx + 6, 21, cx + 8, 23, "Y")                   # flag tucked in the belt
+    return rows_of(outline(g))
+
+
+# --- The Linebacker (boss, 64x64) -----------------------------------------------
+def linebacker(pose, frame=0):
+    """Rival-team linebacker: silver helmet, black #99 jersey, huge pads."""
+    g = blank(64)
+    bob = frame % 2
+    crouch = {"windup": 5, "charge": 4, "land": 7, "jump": -4}.get(pose, 0)
+    lean = 7 if pose == "charge" else 0
+    top = 14 + crouch + bob
+    cx = 31 + lean
+
+    # legs (black pants, cleats) - walking alternates the stride
+    stride = (1 if frame % 2 else -1) * 3 if pose == "walk" else 0
+    leg_top = 40 + max(crouch, 0) // 2 + bob
+    rect(g, 22, leg_top, 29 + stride, 55, "k")
+    rect(g, 34 - stride, leg_top, 41, 55, "k")
+    rect(g, 20, 55, 29 + stride, 58, "n")
+    rect(g, 34 - stride, 55, 43, 58, "n")
+    rect(g, 22, 47 + bob, 29 + stride, 47 + bob, "W")          # pants stripe
+
+    # torso: black jersey with white trim and number 99
+    rect(g, cx - 13, top + 12, cx + 13, 41 + max(crouch, 0) // 2 + bob, "k")
+    rect(g, cx - 13, top + 26, cx + 13, top + 26, "W")
+    for nx in (cx - 7, cx + 1):                                # "99"
+        rect(g, nx, top + 16, nx + 5, top + 23, "W")
+        rect(g, nx + 2, top + 18, nx + 3, top + 19, "k")
+        rect(g, nx, top + 21, nx + 3, top + 23, "k")
+    # shoulder pads under the jersey, white sleeve stripes
+    ellipse(g, cx - 13, top + 13, 7, 5, "k")
+    ellipse(g, cx + 13, top + 13, 7, 5, "k")
+    rect(g, cx - 19, top + 15, cx - 8, top + 15, "W")
+    rect(g, cx + 8, top + 15, cx + 19, top + 15, "W")
+
+    # arms
+    if pose == "throw":
+        reach = (-12, -4, 10)[frame % 3]
+        rect(g, cx + 14, top + 6 + max(reach, -6), cx + 17, top + 22, "s")
+        if frame % 3 != 2:
+            ellipse(g, cx + 16 + reach // 2, top + 4 + reach // 2, 4, 2.5, "F")   # football in hand
+    elif pose == "charge":
+        rect(g, cx + 10, top + 18, cx + 20, top + 22, "s")      # forearm out front
+    else:
+        rect(g, cx - 19, top + 16, cx - 16, top + 30, "s")
+        rect(g, cx + 16, top + 16, cx + 19, top + 30, "s")
+
+    # helmet: silver shell, black stripe, black cage
+    hx, hy = cx + (4 if pose == "charge" else 0), top + 2
+    ellipse(g, hx, hy, 12, 11, "G")
+    ellipse(g, hx - 4, hy - 4, 3, 2, "W")
+    rect(g, hx - 1, hy - 11, hx + 1, hy - 1, "k")
+    rect(g, hx - 7, hy + 1, hx + 7, hy + 9, "s")               # face
+    rect(g, hx - 4, hy + 3, hx - 3, hy + 4, "e")
+    rect(g, hx + 3, hy + 3, hx + 4, hy + 4, "e")
+    if pose in ("windup", "charge"):
+        put(g, [(hx - 5, hy + 2), (hx - 4, hy + 2), (hx + 4, hy + 2), (hx + 5, hy + 2)], "e")  # angry brows
+    for by in (hy + 6, hy + 9):
+        rect(g, hx - 8, by, hx + 8, by, "n")
+    for bx in (hx - 3, hx + 3):
+        rect(g, bx, hy + 6, bx, hy + 10, "n")
+
+    if pose == "stunned":                                     # birdies
+        for i, (sx, sy) in enumerate(((hx - 10, hy - 14), (hx, hy - 17), (hx + 10, hy - 14))):
+            if (i + frame) % 2 == 0:
+                put(g, [(sx, sy), (sx - 1, sy), (sx + 1, sy), (sx, sy - 1), (sx, sy + 1)], "U")
+    return rows_of(outline(g))
+
+
 ENTITIES = {
+    "monsters/gridiron_mascot": dict(
+        frames=[mascot(i) for i in range(4)],
+        anims={"Walk": ([0, 1], 8, True), "Shoot": ([2, 3, 3], 6, False)},
+    ),
+    "monsters/gridiron_referee": dict(
+        frames=[referee(i) for i in range(4)],
+        anims={"Walk": ([0, 1], 8, True), "Throw": ([2, 3, 3], 6, False)},
+    ),
+    "bosses/gridiron_linebacker": dict(
+        size=64,
+        pivot=(32, 58),
+        frames=[linebacker("idle", 0), linebacker("idle", 1),
+                linebacker("walk", 0), linebacker("walk", 1),
+                linebacker("windup", 0), linebacker("charge", 0), linebacker("charge", 1),
+                linebacker("stunned", 0), linebacker("stunned", 1),
+                linebacker("throw", 0), linebacker("throw", 1), linebacker("throw", 2),
+                linebacker("jump", 0), linebacker("land", 0)],
+        anims={
+            "Idle": ([0, 1], 10, True),
+            "Walk": ([2, 3], 7, True),
+            "Windup": ([4], 25, False),
+            "Charge": ([5, 6], 3, True),
+            "Stunned": ([7, 8], 8, True),
+            "Throw": ([9, 10, 11], 7, False),
+            "Jump": ([12], 20, False),
+            "Land": ([13], 12, False),
+        },
+    ),
     "familiars/gridiron_cheerleader": dict(
         icon="items/collectibles/cheerleader.png",
         frames=[cheerleader(i) for i in range(4)],

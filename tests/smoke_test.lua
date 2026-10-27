@@ -115,6 +115,7 @@ RoomType = { ROOM_DEFAULT = 1, ROOM_BOSS = 5 }
 HeartSubType = { HEART_FULL = 1, HEART_HALF = 2, HEART_SOUL = 3, HEART_DOUBLEPACK = 5, HEART_SCARED = 9 }
 Direction = { LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3 }
 EntityCollisionClass = { ENTCOLL_NONE = 0, ENTCOLL_PLAYERONLY = 1, ENTCOLL_PLAYEROBJECTS = 2, ENTCOLL_ENEMIES = 3, ENTCOLL_ALL = 4 }
+ProjectileVariant = { PROJECTILE_NORMAL = 0 }
 EntityFamiliar = { GetOrbitDistance = function(layer) return Vector(30 + layer * 10, 30 + layer * 10) end }
 EntityType = { ENTITY_FAMILIAR = 3, ENTITY_PLAYER = 1, ENTITY_TEAR = 2, ENTITY_PROJECTILE = 9, ENTITY_PICKUP = 5,
     ENTITY_EFFECT = 1000, ENTITY_GAPER = 10 }
@@ -136,6 +137,7 @@ VMT.__mul = function(a, b)
     assert(type(b) == "number", "Vector * non-number")
     return Vector(a.X * b, a.Y * b)
 end
+VMT.__div = function(a, b) assert(type(b) == "number", "Vector / non-number"); return Vector(a.X / b, a.Y / b) end
 function VMT:Length() return math.sqrt(self.X * self.X + self.Y * self.Y) end
 function VMT:Normalized() local l = self:Length(); if l == 0 then return Vector(0, 0) end return Vector(self.X / l, self.Y / l) end
 function VMT:Resized(n) return self:Normalized() * n end
@@ -388,7 +390,16 @@ local function newPlayer(ptype)
 end
 
 local function newEnemy(pos, hp, boss)
-    return newEntity({ isEnemy = true, Type = EntityType.ENTITY_GAPER, Position = pos, HitPoints = hp or 10, boss = boss })
+    local npc = newEntity({ isEnemy = true, Type = EntityType.ENTITY_GAPER, Position = pos, HitPoints = hp or 10, boss = boss })
+    npc.SpriteOffset = Vector(0, 0)
+    npc.EntityCollisionClass = 4
+    npc.Pathfinder = {
+        FindGridPath = function(_, target, speed) npc.Velocity = (target - npc.Position):Resized(speed * 6) end,
+        EvadeTarget = function(_, target) npc.Velocity = (npc.Position - target):Resized(3) end,
+    }
+    function npc:GetPlayerTarget() return Isaac.GetPlayer(0) end
+    function npc:CollidesWithGrid() return self.hitWall == true end
+    return npc
 end
 
 local function newProjectile(pos, spawner)
@@ -428,7 +439,8 @@ function Game()
         GetNumPlayers = function() return #players end,
         GetRoom = function() return room end,
         GetHUD = function() return hud end,
-        GetLevel = function() return { GetStage = function() return 2 end } end,
+        GetLevel = function() return { GetStage = function() return world.stage or 2 end,
+            GetCurrentRoomDesc = function() return { Data = { Type = world.roomType } } end } end,
         GetItemPool = function() return { ForceAddPillEffect = function(_, effect) return 7 end } end,
         GetSeeds = function() return { GetStartSeed = function() return 123456 end } end,
         GetFrameCount = function() return world.frame end,
@@ -465,7 +477,21 @@ Isaac = {
         end
         return list
     end,
-    Spawn = function(type, variant, subtype, pos)
+    Spawn = function(type, variant, subtype, pos, vel, spawner)
+        if type == EntityType.ENTITY_PROJECTILE then
+            local pr = newProjectile(pos, spawner)
+            pr.Variant, pr.Velocity, pr.Scale = variant, vel or Vector(0, 0), 1
+            world.spawned[#world.spawned + 1] = pr
+            return pr
+        end
+        local info = entityByVariant[variant]
+        if info and info.type == type and type ~= EntityType.ENTITY_FAMILIAR then
+            local npc = newEnemy(pos, 100, false)
+            npc.Type, npc.Variant, npc.SubType = type, variant, subtype
+            npc.sprite:Load(info.anm2)
+            world.spawned[#world.spawned + 1] = npc
+            return npc
+        end
         local e = newEntity({ Type = type, Variant = variant, SubType = subtype, Position = pos })
         world.spawned[#world.spawned + 1] = e
         return e
@@ -474,6 +500,7 @@ Isaac = {
     GetScreenWidth = function() return 480 end,
     GetCardIdByName = function(name) return cardIds[name] or -1 end,
     GetEntityVariantByName = function(name) return entityByName[name] and entityByName[name].variant or -1 end,
+    GetEntityTypeByName = function(name) return entityByName[name] and entityByName[name].type or 0 end,
     GetItemConfig = function() return { GetCollectible = function(_, id) return { ID = id } end } end,
     FindByType = function(type, variant)
         local list = {}
@@ -981,6 +1008,100 @@ check(not dshot.exists, "dummy blocks shots")
 local lured = newEnemy(dummy.Position + Vector(100, 0))
 tick()
 check(lured.Velocity.X < 0, "dummy lures enemies")
+
+-- Boss + enemies ----------------------------------------------------------------------------
+local MT, MV = mod.MonsterType, mod.MonsterVariants
+check(MT == 643, "monster type comes from entities2.xml")
+for key, v in pairs(MV) do check(v >= 0 and entityByVariant[v], "monster variant registered: " .. key) end
+local mp = newPlayer()
+players[1] = mp
+newRoom(false, RoomType.ROOM_BOSS)
+mp.Position = Vector(0, 0)
+
+local function npcTick(npc, n)
+    for _ = 1, n or 1 do
+        dispatch(ModCallbacks.MC_NPC_UPDATE, npc.Type, npc)
+        npc.Position = npc.Position + npc.Velocity
+        dispatch(ModCallbacks.MC_POST_UPDATE)
+    end
+end
+local function projectilesSince(i0)
+    local list = {}
+    for i = i0 + 1, #world.spawned do
+        if world.spawned[i].isProjectile then list[#list + 1] = world.spawned[i] end
+    end
+    return list
+end
+
+check(dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "boss"):find("Linebacker"), "boss command")
+local lb = world.spawned[#world.spawned]
+check(lb.Type == MT and lb.Variant == MV.LINEBACKER, "boss command spawns the Linebacker")
+lb.Position = Vector(300, 0)
+local realRandom = math.random
+math.random = function(a) if a then return 1 end return 0.5 end   -- 0.5 -> charge
+npcTick(lb, 30 + 40)
+check(lb:GetData().mode == "windup" and lb.sprite.anim == "Windup", "linebacker winds up a charge")
+npcTick(lb, 26)
+check(lb:GetData().mode == "charge" and lb.Velocity:Length() > 10, "then charges")
+lb.hitWall = true
+npcTick(lb, 5)
+check(lb:GetData().mode == "stunned", "hitting a wall stuns him")
+lb.hitWall = false
+npcTick(lb, 51)
+math.random = function(a) if a then return 1 end return 0.9 end   -- 0.9 -> throw
+local before = #world.spawned
+npcTick(lb, 41 + 11)
+local thrown = projectilesSince(before)
+check(#thrown == 1 and thrown[1]:GetData().GridironFootball and thrown[1]:HasProjectileFlags(ProjectileFlags.BURST),
+    "he spikes a bursting football")
+dispatch(ModCallbacks.MC_POST_PROJECTILE_UPDATE, nil, thrown[1])
+dispatch(ModCallbacks.MC_POST_PROJECTILE_RENDER, nil, thrown[1], Vector(0, 0))
+check(thrown[1]:GetData().GridironFootball.renders == 1, "the football is drawn")
+npcTick(lb, 15)
+lb.HitPoints = lb.MaxHitPoints * 0.4
+math.random = function(a) if a then return 1 end return 0.1 end   -- enraged + 0.1 -> jump
+npcTick(lb, 61)
+check(lb:GetData().enraged, "below half health he gets angry")
+check(lb:GetData().mode == "jump", "and starts jumping")
+before = #world.spawned
+npcTick(lb, 21)
+check(#projectilesSince(before) == 10 and lb:GetData().mode == "land", "the pile-up landing fires a ring")
+math.random = realRandom
+
+-- Mascot and Referee shoot
+newRoom(false)
+dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "enemies")
+local ref = world.spawned[#world.spawned]
+local masc = world.spawned[#world.spawned - 1]
+check(masc.Variant == MV.MASCOT and ref.Variant == MV.REFEREE, "enemies command spawns both")
+masc.Position, ref.Position = Vector(100, 0), Vector(200, 0)
+before = #world.spawned
+npcTick(masc, 120)
+check(#projectilesSince(before) >= 1, "the mascot fires t-shirts")
+before = #world.spawned
+npcTick(ref, 160)
+check(#projectilesSince(before) >= 1, "the referee throws flags")
+
+-- Room spawn swaps (seeded, deterministic)
+Cfg.LINEBACKER_CHANCE, Cfg.FOOTBALL_ENEMY_CHANCE = 0.25, 0.08
+world.roomType, world.stage = RoomType.ROOM_BOSS, 3
+dispatch(ModCallbacks.MC_POST_NEW_ROOM)
+local swap = dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 20, 0, 0, 0, 100)    -- roll 0.1
+check(swap and swap[1] == MT and swap[2] == MV.LINEBACKER, "monstro can become the linebacker")
+check(dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 20, 0, 0, 0, 100) == nil, "only one boss swap per room")
+dispatch(ModCallbacks.MC_POST_NEW_ROOM)
+check(dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 20, 0, 0, 0, 900) == nil, "most rolls keep the real boss")
+world.stage = 8
+dispatch(ModCallbacks.MC_POST_NEW_ROOM)
+check(dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 20, 0, 0, 0, 100) == nil, "no linebacker past floor 6")
+world.roomType, world.stage = RoomType.ROOM_DEFAULT, 2
+local foe = dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 10, 0, 0, 0, 1050)    -- roll 0.05
+check(foe and foe[1] == MT and (foe[2] == MV.MASCOT or foe[2] == MV.REFEREE), "gapers can become football foes")
+check(dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 13, 0, 0, 0, 1050) == nil, "other enemies are left alone")
+Cfg.FOOTBALL_ENEMY_CHANCE = 0
+check(dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 10, 0, 0, 0, 1050) == nil, "the setting can turn foes off")
+Cfg.FOOTBALL_ENEMY_CHANCE = mod.Defaults.FOOTBALL_ENEMY_CHANCE
+world.stage = nil
 
 -- Challenges ---------------------------------------------------------------------------
 for key, c in pairs(mod.CHALLENGES) do check(c.id and c.id > 0, "challenge in challenges.xml: " .. key) end
