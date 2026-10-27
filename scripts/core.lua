@@ -21,6 +21,9 @@ return function(mod)
         CHIN_STRAP  = Isaac.GetItemIdByName("Chin Strap"),
         FOAM_FINGER = Isaac.GetItemIdByName("Foam Finger"),
         RING        = Isaac.GetItemIdByName("Super Bowl Ring"),
+        CHEERLEADER = Isaac.GetItemIdByName("Cheerleader"),
+        WATER_BOY   = Isaac.GetItemIdByName("Water Boy"),
+        DUMMY       = Isaac.GetItemIdByName("Tackling Dummy"),
     }
     mod.Trinkets = {
         FLAG  = Isaac.GetTrinketIdByName("Referee Flag"),
@@ -151,6 +154,14 @@ return function(mod)
 
         -- Timeout!
         TIMEOUT_FREEZE        = 90,
+
+        -- Familiars
+        CHEER_HYPE            = 6,     -- kills per routine
+        CHEER_FRAMES          = 150,
+        CHEER_FIRE_DELAY_MULT = 0.75,
+        WATER_BOY_CHANCE      = 0.33,
+        DUMMY_TAUNT_RADIUS    = 140,
+        DUMMY_TAUNT_PULL      = 0.35,
 
         -- Set bonus
         SUITED_UP_PIECES      = 3,

@@ -32,6 +32,13 @@ It uses only the vanilla Lua API, so REPENTOGON is **not** required.
 ### Set bonus: Suited Up
 Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats, Eye Black, Gloves, Mouthguard, Padded Pants, Chin Strap) to get **Suited Up**: +1 Damage, the Helmet's tackle winds up twice as fast, and you pulse gold.
 
+### Familiars
+| Item | Quality | Pools | What it does |
+|---|---|---|---|
+| **Cheerleader** | Q2 | Treasure | Follows you. Every 6 kills she runs a routine: **+33% fire rate for 5 seconds** ("GO TEAM!"). |
+| **Water Boy** | Q1 | Treasure, Shop | Follows you. 33% chance (better with Luck) to drop **half a red heart** after a cleared room, always after a boss. With the **Gatorade Bucket**, clean rooms fill it twice as fast. |
+| **Tackling Dummy** | Q2 | Treasure | Orbits you, **blocks enemy shots** and **pulls nearby enemies** onto itself. |
+
 ### Pocket items
 | Item | Type | What it does |
 |---|---|---|

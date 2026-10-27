@@ -15,6 +15,9 @@
     <passive id="14" name="Chin Strap" description="Buckle up" gfx="chin_strap.png" quality="2" tags="offensive" />
     <passive id="15" name="Foam Finger" description="We're number one!" gfx="foam_finger.png" quality="2" tags="offensive" />
     <passive id="16" name="Super Bowl Ring" description="Hardware" gfx="super_bowl_ring.png" quality="3" cache="damage luck" />
+    <familiar id="17" name="Cheerleader" description="Give me a G!" gfx="cheerleader.png" quality="2" cache="familiars" />
+    <familiar id="18" name="Water Boy" description="Stay hydrated" gfx="water_boy.png" quality="1" cache="familiars" />
+    <familiar id="19" name="Tackling Dummy" description="Hit it, not me" gfx="tackling_dummy.png" quality="2" cache="familiars" />
     <trinket id="3" name="Concussion Protocol" description="Ring their bell" gfx="concussion_protocol.png" />
     <trinket id="2" name="Referee Flag" description="Flag on the play" gfx="referee_flag.png" />
 </items>

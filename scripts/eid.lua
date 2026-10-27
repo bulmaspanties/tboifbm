@@ -65,6 +65,13 @@ return function(mod)
             "You deal +50% damage to it#It drops a penny when it dies")
         EID:addCollectible(Items.RING,
             "↑ +1 Luck#Every boss room you clear adds a ring: +0.35 Damage for the rest of the run")
+        EID:addCollectible(Items.CHEERLEADER,
+            "Follows you and cheers on every kill#Every 6 kills: a routine gives +33% fire rate for 5 seconds")
+        EID:addCollectible(Items.WATER_BOY,
+            "Follows you; 33% chance to drop half a red heart after a cleared room (always after a boss)#" ..
+            "With Gatorade Bucket: clean rooms fill it twice as fast")
+        EID:addCollectible(Items.DUMMY,
+            "Orbits you and blocks enemy shots#Pulls nearby enemies toward itself")
         EID:addTrinket(Trinkets.PROTOCOL,
             "Taking damage confuses every enemy in the room for 2 seconds")
         if mod.Cards.COIN_TOSS and mod.Cards.COIN_TOSS > 0 then

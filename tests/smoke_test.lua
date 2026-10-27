@@ -69,6 +69,18 @@ for name in pocketXml:gmatch('<pilleffect[^>]-name="(.-)"') do
     pillCount = pillCount + 1
 end
 
+local entitiesXml = assert(readFile("content/entities2.xml"))
+local entityByName, entityByVariant, entityCount = {}, {}, 0
+for attrs in entitiesXml:gmatch("<entity%s+(.-)>") do
+    local name, anm2 = attrs:match('name="(.-)"'), attrs:match('anm2path="(.-)"')
+    entityCount = entityCount + 1
+    local info = { name = name, anm2 = "gfx/" .. anm2, type = tonumber(attrs:match('id="(%d+)"')),
+        variant = tonumber(attrs:match('variant="(%d+)"')) or (900 + entityCount) }
+    entityByName[name] = info
+    entityByVariant[info.variant] = info
+    check(readFile("resources/gfx/" .. anm2) ~= nil, "entity anm2 missing: " .. anm2)
+end
+
 local challengeXml = assert(readFile("content/challenges.xml"))
 local challengeIds, challengeCount = {}, 0
 for name in challengeXml:gmatch('<challenge name="(.-)"') do
@@ -102,7 +114,9 @@ RenderMode = enum()
 RoomType = { ROOM_DEFAULT = 1, ROOM_BOSS = 5 }
 HeartSubType = { HEART_FULL = 1, HEART_HALF = 2, HEART_SOUL = 3, HEART_DOUBLEPACK = 5, HEART_SCARED = 9 }
 Direction = { LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3 }
-EntityType = { ENTITY_PLAYER = 1, ENTITY_TEAR = 2, ENTITY_PROJECTILE = 9, ENTITY_PICKUP = 5,
+EntityCollisionClass = { ENTCOLL_NONE = 0, ENTCOLL_PLAYERONLY = 1, ENTCOLL_PLAYEROBJECTS = 2, ENTCOLL_ENEMIES = 3, ENTCOLL_ALL = 4 }
+EntityFamiliar = { GetOrbitDistance = function(layer) return Vector(30 + layer * 10, 30 + layer * 10) end }
+EntityType = { ENTITY_FAMILIAR = 3, ENTITY_PLAYER = 1, ENTITY_TEAR = 2, ENTITY_PROJECTILE = 9, ENTITY_PICKUP = 5,
     ENTITY_EFFECT = 1000, ENTITY_GAPER = 10 }
 REPENTANCE = true
 ActiveSlot = { SLOT_PRIMARY = 0, SLOT_SECONDARY = 1, SLOT_POCKET = 2 }
@@ -165,7 +179,12 @@ end
 function Sprite()
     local s = { Rotation = 0, Scale = Vector(1, 1), Color = Color(1, 1, 1, 1), renders = 0 }
     function s:Load(path) self.anims = anm2Animations(path); check(self.anims ~= nil, "anm2 missing: " .. path) end
-    function s:Play(name) check(self.anims and self.anims[name], "animation missing: " .. tostring(name)) end
+    function s:Play(name)
+        check(self.anims and self.anims[name], "animation missing: " .. tostring(name))
+        self.anim = name
+    end
+    function s:IsPlaying(name) return self.anim == name end
+    function s:IsFinished() return self.finished == true end
     function s:SetFrame(name) check(self.anims and self.anims[name], "animation missing: " .. tostring(name)) end
     function s:Update() end
     function s:Render(pos) assert(getmetatable(pos) == VMT, "Render needs a Vector"); self.renders = self.renders + 1 end
@@ -266,6 +285,7 @@ local function newEntity(t)
     function e:ToPlayer() return self.isPlayer and self or nil end
     function e:ToProjectile() return self.isProjectile and self or nil end
     function e:ToEffect() return self.Type == EntityType.ENTITY_EFFECT and self or nil end
+    function e:ToFamiliar() return self.Type == EntityType.ENTITY_FAMILIAR and self or nil end
     function e:IsEnemy() return self.isEnemy == true end
     function e:IsVulnerableEnemy() return self.isEnemy == true end
     function e:IsActiveEnemy() return self.isEnemy == true and self.exists end
@@ -294,7 +314,7 @@ end
 function EntityRef(e) return { Entity = e, Type = e and e.Type } end
 
 local STAT_FLAGS = { "CACHE_DAMAGE", "CACHE_SPEED", "CACHE_LUCK", "CACHE_FIREDELAY", "CACHE_RANGE",
-    "CACHE_SHOTSPEED", "CACHE_TEARFLAG" }
+    "CACHE_SHOTSPEED", "CACHE_TEARFLAG", "CACHE_FAMILIARS" }
 
 local function newPlayer(ptype)
     local p = newEntity({ isPlayer = true, Type = EntityType.ENTITY_PLAYER, Size = 10, ControllerIndex = 0 })
@@ -312,6 +332,28 @@ local function newPlayer(ptype)
     function p:GetCardRNG() return self.rng end
     function p:AddCard(id) self.card = id end
     function p:FullCharge() self.charged = true; return true end
+    function p:GetEffects() return { GetCollectibleEffectNum = function() return 0 end } end
+    function p:CheckFamiliar(variant, count)
+        local mine = {}
+        for _, e in ipairs(world.entities) do
+            if e.exists and e.Type == EntityType.ENTITY_FAMILIAR and e.Variant == variant and e.Player == self then
+                mine[#mine + 1] = e
+            end
+        end
+        for i = #mine + 1, count do
+            local info = entityByVariant[variant]
+            check(info ~= nil, "familiar variant has an entities2 entry")
+            local fam = newEntity({ Type = EntityType.ENTITY_FAMILIAR, Variant = variant, Player = self,
+                Position = self.Position })
+            fam.sprite:Load(info.anm2)
+            function fam:AddToFollowers() self.follower = true end
+            function fam:AddToOrbit(layer) self.orbit = layer end
+            function fam:FollowParent() self.Position = self.Player.Position + Vector(-20, 0) end
+            function fam:GetOrbitPosition(pos) return pos + Vector(30, 0) end
+            dispatch(ModCallbacks.MC_FAMILIAR_INIT, variant, fam)
+        end
+        for i = count + 1, #mine do mine[i].exists = false end
+    end
     function p:HasTrinket(id) return self.trinkets[id] == true end
     function p:AddTrinket(id) self.trinkets[id] = true end
     function p:GetTrinketMultiplier() return 1 end
@@ -431,6 +473,17 @@ Isaac = {
     WorldToScreen = function(pos) return pos * 0.65 end,
     GetScreenWidth = function() return 480 end,
     GetCardIdByName = function(name) return cardIds[name] or -1 end,
+    GetEntityVariantByName = function(name) return entityByName[name] and entityByName[name].variant or -1 end,
+    GetItemConfig = function() return { GetCollectible = function(_, id) return { ID = id } end } end,
+    FindByType = function(type, variant)
+        local list = {}
+        for _, e in ipairs(world.entities) do
+            if e.exists and e.Type == type and (variant == nil or variant == -1 or e.Variant == variant) then
+                list[#list + 1] = e
+            end
+        end
+        return list
+    end,
     GetPillEffectByName = function(name) return pillIds[name] or -1 end,
     GetChallenge = function() return world.challenge end,
     GetChallengeIdByName = function(name) return challengeIds[name] or -1 end,
@@ -454,6 +507,7 @@ local Items, Trinkets, Cfg = mod.Items, mod.Trinkets, mod.Cfg
 for key, id in pairs(Items) do check(id > 0, "item name not found in items.xml: " .. key) end
 for key, id in pairs(Trinkets) do check(id > 0, "trinket name not found in items.xml: " .. key) end
 for key, id in pairs(mod.Sounds) do check(id > 0, "sound not found in sounds.xml: " .. key) end
+for key, v in pairs(mod.FamiliarVariants) do check(v > 0, "familiar not found in entities2.xml: " .. key) end
 for key, id in pairs(mod.Cards) do check(id > 0, "card not found in pocketitems.xml: " .. key) end
 for key, id in pairs(mod.Pills) do check(id >= 0, "pill not found in pocketitems.xml: " .. key) end
 local itemCount, trinketCount = 0, 0
@@ -466,6 +520,11 @@ local function tick(n)
     for _ = 1, n or 1 do
         world.frame = world.frame + 1
         for _, p in ipairs(players) do dispatch(ModCallbacks.MC_POST_PEFFECT_UPDATE, nil, p) end
+        for _, e in ipairs(world.entities) do
+            if e.exists and e.Type == EntityType.ENTITY_FAMILIAR then
+                dispatch(ModCallbacks.MC_FAMILIAR_UPDATE, e.Variant, e)
+            end
+        end
         dispatch(ModCallbacks.MC_POST_UPDATE)
         dispatch(ModCallbacks.MC_POST_RENDER)
         for _, p in ipairs(players) do dispatch(ModCallbacks.MC_POST_PLAYER_RENDER, nil, p, Vector(0, 0)) end
@@ -473,8 +532,12 @@ local function tick(n)
 end
 
 local function newRoom(clear, roomType)
-    world.entities = {}
-    for _, p in ipairs(players) do world.entities[#world.entities + 1] = p end
+    local keep = {}
+    for _, p in ipairs(players) do keep[#keep + 1] = p end
+    for _, e in ipairs(world.entities) do   -- familiars follow you between rooms
+        if e.exists and e.Type == EntityType.ENTITY_FAMILIAR then keep[#keep + 1] = e end
+    end
+    world.entities = keep
     world.roomClear = clear
     world.roomType = roomType or RoomType.ROOM_DEFAULT
     dispatch(ModCallbacks.MC_POST_NEW_ROOM)
@@ -857,6 +920,67 @@ local shotT = newProjectile(Vector(10, 10))
 b3.hearts = 2
 dispatch(ModCallbacks.MC_USE_PILL, mod.Pills.TIMEOUT, mod.Pills.TIMEOUT, b3, 0)
 check(froze.frozen and not shotT.exists and b3.hearts == 3, "timeout freezes, clears shots and heals")
+
+-- Familiars --------------------------------------------------------------------------------
+local fp = newPlayer()
+players[1] = fp
+newRoom(false)
+local FV = mod.FamiliarVariants
+local function famsOf(variant)
+    local n = 0
+    for _, e in ipairs(world.entities) do
+        if e.exists and e.Type == EntityType.ENTITY_FAMILIAR and e.Variant == variant then n = n + 1 end
+    end
+    return n
+end
+fp.items[Items.CHEERLEADER], fp.items[Items.WATER_BOY], fp.items[Items.DUMMY] = 1, 1, 1
+fp:EvaluateItems()
+check(famsOf(FV.CHEERLEADER) == 1 and famsOf(FV.WATER_BOY) == 1 and famsOf(FV.DUMMY) == 1, "familiars spawn")
+fp.items[Items.CHEERLEADER] = 2
+fp:EvaluateItems()
+check(famsOf(FV.CHEERLEADER) == 2, "a second copy adds a second cheerleader")
+fp.items[Items.CHEERLEADER] = 1
+fp:EvaluateItems()
+check(famsOf(FV.CHEERLEADER) == 1, "losing a copy removes one")
+tick()
+
+-- cheerleader: 6 kills -> routine -> faster tears, then it wears off
+fp:EvaluateItems()
+local baseDelay = fp.MaxFireDelay
+for _ = 1, Cfg.CHEER_HYPE do
+    dispatch(ModCallbacks.MC_POST_NPC_DEATH, nil, newEnemy(Vector(300, 0)))
+end
+fp:EvaluateItems()
+check(fp.MaxFireDelay < baseDelay, "cheer routine raises fire rate")
+tick(Cfg.CHEER_FRAMES + 1)
+fp:EvaluateItems()
+check(fp.MaxFireDelay == baseDelay, "cheer routine wears off")
+
+-- water boy always delivers after a boss
+newRoom(false, RoomType.ROOM_BOSS)
+local spawnedB = #world.spawned
+dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, fp.rng, Vector(0, 0))
+local hearts = 0
+for i = spawnedB + 1, #world.spawned do
+    if world.spawned[i].Variant == PickupVariant.PICKUP_HEART then hearts = hearts + 1 end
+end
+check(hearts >= 1, "water boy drops a heart after a boss")
+
+-- tackling dummy eats shots and pulls enemies
+newRoom(false)
+fp:EvaluateItems()
+tick()
+local dummy
+for _, e in ipairs(world.entities) do
+    if e.exists and e.Type == EntityType.ENTITY_FAMILIAR and e.Variant == FV.DUMMY then dummy = e end
+end
+check(dummy and dummy.orbit, "dummy orbits")
+local dshot = newProjectile(dummy.Position)
+dispatch(ModCallbacks.MC_PRE_FAMILIAR_COLLISION, FV.DUMMY, dummy, dshot, false)
+check(not dshot.exists, "dummy blocks shots")
+local lured = newEnemy(dummy.Position + Vector(100, 0))
+tick()
+check(lured.Velocity.X < 0, "dummy lures enemies")
 
 -- Challenges ---------------------------------------------------------------------------
 for key, c in pairs(mod.CHALLENGES) do check(c.id and c.id > 0, "challenge in challenges.xml: " .. key) end

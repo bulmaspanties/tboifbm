@@ -260,7 +260,8 @@ return function(mod)
             if not player:HasCollectible(Items.GATORADE) then return end
             local d = pdata(player)
             if d.hitThisRoom then return end
-            d.bucket = bossRoom and Cfg.GATORADE_FILLS or d.bucket + 1
+            local fill = player:HasCollectible(Items.WATER_BOY) and 2 or 1   -- the Water Boy helps
+            d.bucket = bossRoom and Cfg.GATORADE_FILLS or d.bucket + fill
             if d.bucket >= Cfg.GATORADE_FILLS then
                 gatoradeShower(player)
             else

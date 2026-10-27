@@ -16,6 +16,9 @@
         <Item Name="Chin Strap" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Foam Finger" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Super Bowl Ring" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1" />
+        <Item Name="Cheerleader" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Water Boy" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Tackling Dummy" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     </Pool>
     <Pool Name="shop">
         <Item Name="Shoulder Pads" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -27,6 +30,7 @@
         <Item Name="Padded Pants" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Chin Strap" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Foam Finger" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Water Boy" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     </Pool>
     <Pool Name="goldenChest">
         <Item Name="Team Jersey" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1" />

@@ -1,0 +1,18 @@
+<entities anm2root="gfx/" version="5">
+    <!-- Familiars (variants are assigned by the game; looked up by name in scripts/familiars.lua) -->
+    <entity anm2path="familiars/gridiron_cheerleader.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0"
+            collisionMass="3" collisionRadius="10" friction="1" id="3" name="Gridiron Cheerleader"
+            numGridCollisionPoints="0" shadowSize="11" stageHP="0" tags="cansacrifice">
+        <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
+    </entity>
+    <entity anm2path="familiars/gridiron_waterboy.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0"
+            collisionMass="3" collisionRadius="10" friction="1" id="3" name="Gridiron Water Boy"
+            numGridCollisionPoints="0" shadowSize="11" stageHP="0" tags="cansacrifice">
+        <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
+    </entity>
+    <entity anm2path="familiars/gridiron_tackling_dummy.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0"
+            collisionMass="10" collisionRadius="11" friction="1" id="3" name="Gridiron Tackling Dummy"
+            numGridCollisionPoints="0" shadowSize="12" stageHP="0">
+        <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
+    </entity>
+</entities>
