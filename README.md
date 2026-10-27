@@ -45,6 +45,14 @@ Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats
 | **Coin Toss** | Card | Flip a coin. **Heads:** +1.5 Damage for the room. **Tails:** fully recharges your active item and slows every enemy. |
 | **Timeout!** | Pill | Freezes every enemy for 3 seconds, clears enemy shots, and heals half a heart. |
 
+## Playable character: The Quarterback
+| Version | Health | Starts with | Play style |
+|---|---|---|---|
+| **The Quarterback** | 3 red hearts | Football Helmet, Team Jersey, **Playbook** (pocket active) | Every 3rd shot is a football, and all his footballs fly 25% faster and hit 25% harder. +0.2 shot speed. **Birthright:** every other shot is a football. |
+| **Tainted Quarterback** | 2 red + 1 soul | Chin Strap, Shoulder Pads, **Kicking Tee** (pocket active) | Throws **only footballs**: much slower fire rate, but each one hits hard. **Birthright:** footballs home in on enemies. |
+
+Both appear on the character select screen with their own page, portrait, co-op and death-screen art.
+
 ## Boss & enemies
 | Entity | Where | What it does |
 |---|---|---|
@@ -118,8 +126,15 @@ tests/smoke_test.lua            runs the mod against a mock of the Isaac API
 tools/make_sprites.py           renders item/tear sprites from pixel maps (needs Pillow)
 tools/make_costumes.py          generates costume sheets + .anm2 on Isaac's rig (needs Pillow)
 tools/make_sounds.py            synthesizes the referee whistle (stdlib only)
+tools/make_entities.py          familiar, enemy and boss sprites + anm2 (needs Pillow)
+tools/make_character.py         the Quarterback's sheets and menu art (needs Pillow + the CC0 template)
 tools/package.py                builds the release zip
 ```
+
+## Credits
+- Character menu layouts and the base player sheet come from the CC0 [IsaacTemplates](https://github.com/manaphoenix/IsaacTemplates) character template (recolored and redrawn by `tools/make_character.py`).
+- Costume rig reference: [isaac-costume-templates](https://github.com/catinsurance/isaac-costume-templates).
+- Settings menu: [Dead Sea Scrolls](https://github.com/Meowlala/DeadSeaScrollsMenu) (public domain).
 
 ## Testing
 `tests/smoke_test.lua` loads `main.lua` against a mock of the game's Lua API and runs every item through its callbacks.

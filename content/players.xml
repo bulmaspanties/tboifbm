@@ -1,0 +1,10 @@
+<players nameimageroot="gfx/ui/boss/" portraitroot="gfx/ui/stage/" root="gfx/characters/costumes/">
+    <!-- Starting gear is given from scripts/quarterback.lua (mod items can't be listed here).
+         The menu art lives in content/gfx/*.anm2, with animations named "Quarterback". -->
+    <player name="Quarterback" skin="character_quarterback.png" skinColor="-1" hp="6" bombs="1" coins="3"
+            nameimage="playername_quarterback.png" portrait="playerportrait_quarterback.png"
+            birthright="Franchise player: every other shot is a football" />
+    <player name="Quarterback" skin="character_quarterback_b.png" skinColor="-1" hp="4" armor="2" bombs="1"
+            nameimage="playername_quarterback_b.png" portrait="playerportrait_quarterback_b.png"
+            bSkinParent="Quarterback" birthright="Gunslinger: footballs home in on enemies" />
+</players>

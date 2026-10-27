@@ -167,6 +167,15 @@ return function(mod)
         LINEBACKER_CHANCE     = 0.25,  -- (menu) chance to replace an early boss
         FOOTBALL_ENEMY_CHANCE = 0.08,  -- (menu) chance a basic enemy is a Mascot/Referee
 
+        -- The Quarterback
+        QB_EVERY_NTH          = 3,     -- every Nth shot is a football (2 with Birthright)
+        QB_ARM_SPEED          = 1.25,  -- his footballs fly faster...
+        QB_ARM_DAMAGE         = 1.25,  -- ...and hit harder
+        QB_SHOT_SPEED         = 0.2,
+        TQB_FIRE_DELAY_MULT   = 1.8,   -- Tainted: every shot is a football, but slower
+        TQB_BALL_DMG_MULT     = 1.5,
+        TQB_DAMAGE            = 0.5,
+
         -- Set bonus
         SUITED_UP_PIECES      = 3,
         SUITED_UP_DAMAGE      = 1.0,
@@ -193,6 +202,7 @@ return function(mod)
     function mod.tackleWindupMult() return 1 end
     function mod.tackleDamageMult() return 1 end
     function mod.currentChallenge() return nil end
+    function mod.quarterbackKind() return nil end
 
     -- Wearable gear counts toward Suited Up; actives and the bucket don't.
     mod.GEAR = {

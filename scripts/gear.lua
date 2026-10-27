@@ -296,8 +296,21 @@ return function(mod)
             d.trickShots = d.trickShots - 1
             football = true
         end
+        local qb = mod.quarterbackKind(player)
+        local birthright = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+        if qb == "normal" then
+            d.qbShots = (d.qbShots or 0) + 1
+            if d.qbShots % (birthright and 2 or Cfg.QB_EVERY_NTH) == 0 then football = true end
+        elseif qb == "tainted" then
+            football = true
+        end
         if football then
-            mod.makeFootball(tear, Cfg.JERSEY_BALL_DMG_MULT)
+            mod.makeFootball(tear, qb == "tainted" and Cfg.TQB_BALL_DMG_MULT or Cfg.JERSEY_BALL_DMG_MULT)
+            if qb then   -- a quarterback's arm
+                tear.Velocity = tear.Velocity * Cfg.QB_ARM_SPEED
+                tear.CollisionDamage = tear.CollisionDamage * Cfg.QB_ARM_DAMAGE
+                if qb == "tainted" and birthright then tear:AddTearFlags(TearFlags.TEAR_HOMING) end
+            end
         end
 
         -- Receiver Gloves: throw back one caught shot alongside this tear.

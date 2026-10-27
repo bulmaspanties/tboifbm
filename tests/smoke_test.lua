@@ -81,6 +81,34 @@ for attrs in entitiesXml:gmatch("<entity%s+(.-)>") do
     check(readFile("resources/gfx/" .. anm2) ~= nil, "entity anm2 missing: " .. anm2)
 end
 
+local playersXml = assert(readFile("content/players.xml"))
+local playerTypes = {}
+do
+    local root = playersXml:match('%sroot="(.-)"')
+    local nameRoot, portraitRoot = playersXml:match('nameimageroot="(.-)"'), playersXml:match('portraitroot="(.-)"')
+    local n = 40
+    for attrs in playersXml:gmatch("<player%s+(.-)/>") do
+        n = n + 1
+        local name = attrs:match('name="(.-)"')
+        local tainted = attrs:find("bSkinParent") ~= nil
+        playerTypes[name .. (tainted and "#b" or "")] = n
+        for key, base in pairs({ skin = root, nameimage = nameRoot, portrait = portraitRoot }) do
+            local file = attrs:match(key .. '="(.-)"')
+            check(file and readFile("resources/" .. base .. file) ~= nil, "players.xml " .. key .. " missing: " .. tostring(file))
+        end
+        for _, menu in ipairs({ "charactermenu", "characterportraits", "coop menu", "death screen" }) do
+            local file = "content/gfx/" .. menu .. (tainted and (menu:find(" ") and " alt" or "alt") or "") .. ".anm2"
+            local xml = readFile(file)
+            check(xml and xml:find('Animation Name="' .. name .. '"', 1, true), file .. " has an animation for " .. name)
+            for sheet in (xml or ""):gmatch('Spritesheet Path="(.-)"') do
+                if sheet ~= "baby_select.png" then   -- vanilla sheet
+                    check(readFile("content/gfx/" .. sheet) ~= nil, file .. " sheet missing: " .. sheet)
+                end
+            end
+        end
+    end
+end
+
 local challengeXml = assert(readFile("content/challenges.xml"))
 local challengeIds, challengeCount = {}, 0
 for name in challengeXml:gmatch('<challenge name="(.-)"') do
@@ -112,6 +140,7 @@ CoinSubType = enum()
 DamageFlag = enum()
 RenderMode = enum()
 RoomType = { ROOM_DEFAULT = 1, ROOM_BOSS = 5 }
+CollectibleType = { COLLECTIBLE_BIRTHRIGHT = 619 }
 HeartSubType = { HEART_FULL = 1, HEART_HALF = 2, HEART_SOUL = 3, HEART_DOUBLEPACK = 5, HEART_SCARED = 9 }
 Direction = { LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3 }
 EntityCollisionClass = { ENTCOLL_NONE = 0, ENTCOLL_PLAYERONLY = 1, ENTCOLL_PLAYEROBJECTS = 2, ENTCOLL_ENEMIES = 3, ENTCOLL_ALL = 4 }
@@ -332,6 +361,7 @@ local function newPlayer(ptype)
     end
     function p:GetActiveItem() return self.active or 0 end
     function p:GetCardRNG() return self.rng end
+    function p:SetPocketActiveItem(id) self.pocket = id end
     function p:AddCard(id) self.card = id end
     function p:FullCharge() self.charged = true; return true end
     function p:GetEffects() return { GetCollectibleEffectNum = function() return 0 end } end
@@ -500,6 +530,7 @@ Isaac = {
     GetScreenWidth = function() return 480 end,
     GetCardIdByName = function(name) return cardIds[name] or -1 end,
     GetEntityVariantByName = function(name) return entityByName[name] and entityByName[name].variant or -1 end,
+    GetPlayerTypeByName = function(name, tainted) return playerTypes[name .. (tainted and "#b" or "")] or -1 end,
     GetEntityTypeByName = function(name) return entityByName[name] and entityByName[name].type or 0 end,
     GetItemConfig = function() return { GetCollectible = function(_, id) return { ID = id } end } end,
     FindByType = function(type, variant)
@@ -1102,6 +1133,55 @@ Cfg.FOOTBALL_ENEMY_CHANCE = 0
 check(dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 10, 0, 0, 0, 1050) == nil, "the setting can turn foes off")
 Cfg.FOOTBALL_ENEMY_CHANCE = mod.Defaults.FOOTBALL_ENEMY_CHANCE
 world.stage = nil
+
+-- The Quarterback ----------------------------------------------------------------------------
+local PT = mod.PlayerTypes
+check(PT.QUARTERBACK > 0 and PT.QUARTERBACK_B > 0 and PT.QUARTERBACK ~= PT.QUARTERBACK_B, "both quarterbacks registered")
+local qb = newPlayer(PT.QUARTERBACK)
+players[1] = qb
+world.entities = { qb }
+dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
+check(qb:HasCollectible(Items.HELMET) and qb:HasCollectible(Items.JERSEY) and qb.pocket == Items.PLAYBOOK,
+    "the quarterback starts with helmet, jersey and the playbook")
+qb.items[Items.JERSEY] = 0   -- isolate his own football rhythm
+local balls, fast = 0, true
+for i = 1, 6 do
+    local t = qb:FireTear(qb.Position, Vector(10, 0))
+    dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, t)
+    if t.data.GridironFootball then
+        balls = balls + 1
+        fast = fast and t.Velocity.X > 10
+    end
+end
+check(balls == 2 and fast, "every third shot is a faster football")
+qb.items[CollectibleType.COLLECTIBLE_BIRTHRIGHT] = 1
+balls = 0
+for i = 1, 6 do
+    local t = qb:FireTear(qb.Position, Vector(10, 0))
+    dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, t)
+    if t.data.GridironFootball then balls = balls + 1 end
+end
+check(balls == 3, "birthright: every other shot")
+
+local tqb = newPlayer(PT.QUARTERBACK_B)
+players[1] = tqb
+world.entities = { tqb }
+dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
+check(tqb:HasCollectible(Items.CHIN_STRAP) and tqb.pocket == Items.KICKING_TEE, "tainted starts with chin strap and the tee")
+tqb:EvaluateItems()
+check(tqb.MaxFireDelay > 10, "tainted fires slower")
+local allBalls = true
+for i = 1, 4 do
+    local t = tqb:FireTear(tqb.Position, Vector(10, 0))
+    dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, t)
+    allBalls = allBalls and t.data.GridironFootball ~= nil
+end
+check(allBalls, "tainted throws only footballs")
+local isaac = newPlayer(0)
+players[1] = isaac
+world.entities = { isaac }
+dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
+check(not isaac:HasCollectible(Items.HELMET), "other characters get nothing")
 
 -- Challenges ---------------------------------------------------------------------------
 for key, c in pairs(mod.CHALLENGES) do check(c.id and c.id > 0, "challenge in challenges.xml: " .. key) end

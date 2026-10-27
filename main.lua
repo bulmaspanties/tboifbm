@@ -15,9 +15,10 @@
 -- scripts/extras.lua    Foam Finger, Super Bowl Ring, Coin Toss card, Timeout! pill
 -- scripts/familiars.lua Cheerleader, Water Boy, Tackling Dummy
 -- scripts/monsters.lua  The Linebacker (boss), Mascot and Referee
+-- scripts/quarterback.lua playable character + tainted version
 
 local mod = RegisterMod("Gridiron", 1)
 
-for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters" }) do
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "quarterback" }) do
     include("scripts." .. name)(mod)
 end
