@@ -46,6 +46,10 @@ return function(mod)
             for _, id in pairs(mod.Trinkets) do
                 if id > 0 then drop(PickupVariant.PICKUP_TRINKET, id) end
             end
+            if mod.Cards.COIN_TOSS > 0 then drop(PickupVariant.PICKUP_TAROTCARD, mod.Cards.COIN_TOSS) end
+            if mod.Pills.TIMEOUT >= 0 then
+                drop(PickupVariant.PICKUP_PILL, Game():GetItemPool():ForceAddPillEffect(mod.Pills.TIMEOUT))
+            end
             return "gave all Gridiron passives; actives and trinkets are on the floor"
         elseif args[1] == "hide" or args[1] == "show" then
             return setSlot(args[2], args[1] == "show")

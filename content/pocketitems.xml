@@ -1,0 +1,6 @@
+<pocketitems>
+    <!-- pickup="1" reuses the tarot card back for the floor pickup; the HUD front is
+         the "Coin Toss" animation in content/gfx/ui_cardfronts.anm2 -->
+    <card type="object" name="Coin Toss" description="Heads you receive, tails you defer" hud="Coin Toss" pickup="1" mimiccharge="2" />
+    <pilleffect name="Timeout!" description="Everybody stop" class="2+" mimiccharge="4" />
+</pocketitems>

@@ -18,9 +18,19 @@ return function(mod)
         WHISTLE     = Isaac.GetItemIdByName("Coach's Whistle"),
         GATORADE    = Isaac.GetItemIdByName("Gatorade Bucket"),
         PANTS       = Isaac.GetItemIdByName("Padded Pants"),
+        CHIN_STRAP  = Isaac.GetItemIdByName("Chin Strap"),
+        FOAM_FINGER = Isaac.GetItemIdByName("Foam Finger"),
+        RING        = Isaac.GetItemIdByName("Super Bowl Ring"),
     }
     mod.Trinkets = {
         FLAG  = Isaac.GetTrinketIdByName("Referee Flag"),
+        PROTOCOL = Isaac.GetTrinketIdByName("Concussion Protocol"),
+    }
+    mod.Cards = {
+        COIN_TOSS = Isaac.GetCardIdByName("Coin Toss"),
+    }
+    mod.Pills = {
+        TIMEOUT = Isaac.GetPillEffectByName("Timeout!"),
     }
     mod.Sounds = {
         WHISTLE = Isaac.GetSoundIdByName("Gridiron Whistle"),
@@ -120,6 +130,28 @@ return function(mod)
         PANTS_MAX_CHANCE      = 0.6,
         PANTS_STIFF_ARM       = 16,    -- knockback on the enemy you shrugged off
 
+        -- Chin Strap
+        CHIN_STRAP_DMG_MULT   = 1.5,
+        CHIN_STRAP_STUN       = 30,
+        CHIN_STRAP_SOLO_WINDUP = 1.5,  -- windup multiplier when tackling without the Helmet
+
+        -- Foam Finger
+        FINGER_BONUS          = 0.5,
+
+        -- Super Bowl Ring
+        RING_DAMAGE           = 0.35,
+        RING_LUCK             = 1,
+
+        -- Concussion Protocol
+        PROTOCOL_DAZE         = 60,
+
+        -- Coin Toss
+        COIN_HEADS_DAMAGE     = 1.5,
+        COIN_TAILS_SLOW       = 150,
+
+        -- Timeout!
+        TIMEOUT_FREEZE        = 90,
+
         -- Set bonus
         SUITED_UP_PIECES      = 3,
         SUITED_UP_DAMAGE      = 1.0,
@@ -151,6 +183,7 @@ return function(mod)
     mod.GEAR = {
         mod.Items.HELMET, mod.Items.PADS, mod.Items.JERSEY, mod.Items.CLEATS,
         mod.Items.EYE_BLACK, mod.Items.GLOVES, mod.Items.MOUTHGUARD, mod.Items.PANTS,
+        mod.Items.CHIN_STRAP,
     }
 
     mod.ACTIVE_ITEMS = {
@@ -170,7 +203,7 @@ return function(mod)
         local d = player:GetData()
         d.Gridiron = d.Gridiron or {
             runFrames = 0, yardDist = 0, firstDowns = 0, shots = 0, caught = 0,
-            playIndex = 0, trickShots = 0, bucket = 0,
+            playIndex = 0, trickShots = 0, bucket = 0, rings = 0,
         }
         return d.Gridiron
     end

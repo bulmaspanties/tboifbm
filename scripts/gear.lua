@@ -45,6 +45,7 @@ return function(mod)
         end
 
         local windup = Cfg.TACKLE_WINDUP * mod.tackleWindupMult()
+        if not player:HasCollectible(Items.HELMET) then windup = windup * Cfg.CHIN_STRAP_SOLO_WINDUP end
         if mod.isSuitedUp(player) then windup = windup / 2 end
         windup = math.floor(windup)
         local wasTackling = d.tackling
@@ -71,11 +72,16 @@ return function(mod)
                 if (ed.GridironTackleCD or 0) <= now then
                     ed.GridironTackleCD = now + Cfg.TACKLE_HIT_COOLDOWN
                     local dmg = (player.Damage * Cfg.TACKLE_DMG_MULT + Cfg.TACKLE_DMG_FLAT) * mod.tackleDamageMult()
+                    local strapped = player:HasCollectible(Items.CHIN_STRAP)
+                    if strapped then dmg = dmg * Cfg.CHIN_STRAP_DMG_MULT end
                     e:TakeDamage(dmg, 0, EntityRef(player), 0)
                     local push = d.runDir * Cfg.TACKLE_KNOCKBACK
                     if e:IsBoss() then push = push * 0.25 end
                     e:AddVelocity(push)
                     e:AddConfusion(EntityRef(player), Cfg.TACKLE_CONFUSE, true)
+                    if strapped then
+                        e:AddFreeze(EntityRef(player), e:IsBoss() and 10 or Cfg.CHIN_STRAP_STUN)
+                    end
                     sfx:Play(SoundEffect.SOUND_PUNCH)
                     sfx:Play(SoundEffect.SOUND_MEAT_IMPACTS, 0.6)
                     game:ShakeScreen(5)
@@ -129,7 +135,7 @@ return function(mod)
             game:GetHUD():ShowItemText("#" .. num, "Every " .. mod.footballInterval(num) .. " shots: go long")
         end
 
-        if player:HasCollectible(Items.HELMET) then
+        if player:HasCollectible(Items.HELMET) or player:HasCollectible(Items.CHIN_STRAP) then
             updateTackle(player, d)
         else
             d.tackling = false
@@ -159,6 +165,12 @@ return function(mod)
             if player:HasCollectible(Items.CLEATS) then
                 bonus = bonus + d.firstDowns * Cfg.FIRST_DOWN_DAMAGE
             end
+            if player:HasCollectible(Items.RING) then
+                bonus = bonus + d.rings * Cfg.RING_DAMAGE
+            end
+            if d.coinHeads then
+                bonus = bonus + Cfg.COIN_HEADS_DAMAGE
+            end
             if mod.isSuitedUp(player) then
                 bonus = bonus + Cfg.SUITED_UP_DAMAGE
             end
@@ -171,6 +183,7 @@ return function(mod)
             if d.play == "blitz" then player.MoveSpeed = player.MoveSpeed + Cfg.BLITZ_SPEED end
         elseif flag == CacheFlag.CACHE_LUCK then
             player.Luck = player.Luck + player:GetCollectibleNum(Items.EYE_BLACK) * Cfg.EYE_BLACK_LUCK
+                + player:GetCollectibleNum(Items.RING) * Cfg.RING_LUCK
         elseif flag == CacheFlag.CACHE_FIREDELAY then
             if d.play == "blitz" then player.MaxFireDelay = player.MaxFireDelay * Cfg.BLITZ_FIRE_DELAY_MULT end
         elseif flag == CacheFlag.CACHE_RANGE then
@@ -192,10 +205,11 @@ return function(mod)
             d.tackling = false
             d.guardUsed = false
             d.hitThisRoom = false
-            if d.firstDowns > 0 or d.yardDist > 0 or d.touchdown then
+            if d.firstDowns > 0 or d.yardDist > 0 or d.touchdown or d.coinHeads then
                 d.firstDowns = 0
                 d.yardDist = 0
                 d.touchdown = false
+                d.coinHeads = false
                 mod.refreshCache(player)
             end
         end)
@@ -443,6 +457,17 @@ return function(mod)
             throwFlag(player, source)
         end
 
+        -- Concussion Protocol: everyone in the room gets their bell rung.
+        if Trinkets.PROTOCOL > 0 and player:HasTrinket(Trinkets.PROTOCOL) then
+            local frames = Cfg.PROTOCOL_DAZE * player:GetTrinketMultiplier(Trinkets.PROTOCOL)
+            for _, e in ipairs(Isaac.GetRoomEntities()) do
+                if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) then
+                    e:AddConfusion(EntityRef(player), frames, false)
+                end
+            end
+            mod.popOn(player, "PROTOCOL!", mod.Colors.blue)
+        end
+
         -- Shoulder Pads: the hit lands, but you pop everything around you.
         if player:HasCollectible(Items.PADS) then
             padPop(player, player.Position, 1)
@@ -450,20 +475,39 @@ return function(mod)
     end
     mod:AddCallback(ModCallbacks.MC_ENTITY_TAKE_DMG, mod.OnPlayerDamage, EntityType.ENTITY_PLAYER)
 
-    -- Eye Black: tears hit harder the farther they travel.
+    local function playerFromSource(source)
+        local e = source and source.Entity
+        if not e then return nil end
+        local p = e:ToPlayer()
+        if p then return p end
+        local spawner = e.SpawnerEntity
+        return spawner and spawner:ToPlayer()
+    end
+
+    -- Damage bonuses on enemies, combined so the hit is re-applied only once:
+    -- Eye Black (long-range tears) and Foam Finger (the marked #1 enemy).
     function mod:OnEnemyDamage(entity, amount, flags, source, countdown)
         if reapplyingEnemy then return end
-        if not entity:IsVulnerableEnemy() then return end
-        if not source or source.Type ~= EntityType.ENTITY_TEAR or not source.Entity then return end
+        if not entity:IsVulnerableEnemy() or not source or not source.Entity then return end
 
-        local origin = source.Entity:GetData().GridironOrigin
-        if not origin then return end
-        local dist = (source.Entity.Position - origin):Length()
-        local bonus = math.min(dist / Cfg.EYE_BLACK_RANGE_FULL, 1) * Cfg.EYE_BLACK_MAX_BONUS
-        if bonus < 0.05 then return end
+        local mult = 1
+        if source.Type == EntityType.ENTITY_TEAR then
+            local origin = source.Entity:GetData().GridironOrigin
+            if origin then
+                local dist = (source.Entity.Position - origin):Length()
+                mult = mult + math.min(dist / Cfg.EYE_BLACK_RANGE_FULL, 1) * Cfg.EYE_BLACK_MAX_BONUS
+            end
+        end
+        if mod.isMarked and mod.isMarked(entity) then
+            local player = playerFromSource(source)
+            if player and player:HasCollectible(Items.FOAM_FINGER) then
+                mult = mult + Cfg.FINGER_BONUS
+            end
+        end
+        if mult < 1.05 then return end
 
         reapplyingEnemy = true
-        entity:TakeDamage(amount * (1 + bonus), flags, source, countdown)
+        entity:TakeDamage(amount * mult, flags, source, countdown)
         reapplyingEnemy = false
         return false
     end

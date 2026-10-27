@@ -53,6 +53,22 @@ for name, body in soundsXml:gmatch('<sound name="(.-)">(.-)</sound>') do
     check(readFile("resources/sfx/" .. path) ~= nil, "sound file missing: " .. path)
 end
 
+local pocketXml = assert(readFile("content/pocketitems.xml"))
+local cardIds, pillIds = {}, {}
+local cardFronts = assert(readFile("content/gfx/ui_cardfronts.anm2"), "custom cards need content/gfx/ui_cardfronts.anm2")
+for hud in pocketXml:gmatch('<card[^>]-hud="(.-)"') do
+    cardIds[hud] = 300 + #cardIds + 1
+    check(cardFronts:find('Animation Name="' .. hud .. '"', 1, true), "card front animation for " .. hud)
+end
+for sheet in cardFronts:gmatch('Spritesheet Path="(.-)"') do
+    check(readFile("content/gfx/" .. sheet) ~= nil, "card front sheet missing: " .. sheet)
+end
+local pillCount = 0
+for name in pocketXml:gmatch('<pilleffect[^>]-name="(.-)"') do
+    pillIds[name] = 60 + pillCount
+    pillCount = pillCount + 1
+end
+
 local challengeXml = assert(readFile("content/challenges.xml"))
 local challengeIds, challengeCount = {}, 0
 for name in challengeXml:gmatch('<challenge name="(.-)"') do
@@ -89,6 +105,9 @@ Direction = { LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3 }
 EntityType = { ENTITY_PLAYER = 1, ENTITY_TEAR = 2, ENTITY_PROJECTILE = 9, ENTITY_PICKUP = 5,
     ENTITY_EFFECT = 1000, ENTITY_GAPER = 10 }
 REPENTANCE = true
+ActiveSlot = { SLOT_PRIMARY = 0, SLOT_SECONDARY = 1, SLOT_POCKET = 2 }
+function GetPtrHash(e) return e.__id end
+local nextPtr = 0
 Options = { HUDOffset = 0 }
 
 -- Vector / Color ------------------------------------------------------------------
@@ -238,6 +257,10 @@ local function newEntity(t)
     e.sprite = Sprite()
     e.exists = true
     e.damageTaken = 0
+    nextPtr = nextPtr + 1
+    e.__id = nextPtr
+    e.MaxHitPoints = e.MaxHitPoints or e.HitPoints
+    function e:IsDead() return self.HitPoints <= 0 end
     function e:GetData() return self.data end
     function e:GetSprite() return self.sprite end
     function e:ToPlayer() return self.isPlayer and self or nil end
@@ -286,6 +309,8 @@ local function newPlayer(ptype)
         if mod and mod.ACTIVE_ITEMS[id] then self.active = id end
     end
     function p:GetActiveItem() return self.active or 0 end
+    function p:GetCardRNG() return self.rng end
+    function p:AddCard(id) self.card = id end
     function p:FullCharge() self.charged = true; return true end
     function p:HasTrinket(id) return self.trinkets[id] == true end
     function p:AddTrinket(id) self.trinkets[id] = true end
@@ -362,6 +387,7 @@ function Game()
         GetRoom = function() return room end,
         GetHUD = function() return hud end,
         GetLevel = function() return { GetStage = function() return 2 end } end,
+        GetItemPool = function() return { ForceAddPillEffect = function(_, effect) return 7 end } end,
         GetSeeds = function() return { GetStartSeed = function() return 123456 end } end,
         GetFrameCount = function() return world.frame end,
         ShakeScreen = function() end,
@@ -404,6 +430,8 @@ Isaac = {
     end,
     WorldToScreen = function(pos) return pos * 0.65 end,
     GetScreenWidth = function() return 480 end,
+    GetCardIdByName = function(name) return cardIds[name] or -1 end,
+    GetPillEffectByName = function(name) return pillIds[name] or -1 end,
     GetChallenge = function() return world.challenge end,
     GetChallengeIdByName = function(name) return challengeIds[name] or -1 end,
     HasModData = function() return world.modData ~= nil end,
@@ -415,6 +443,8 @@ local eidEntries = 0
 EID = {
     addCollectible = function(_, id) check(id and id > 0, "EID for unknown collectible"); eidEntries = eidEntries + 1 end,
     addTrinket = function(_, id) check(id and id > 0, "EID for unknown trinket"); eidEntries = eidEntries + 1 end,
+    addCard = function(_, id) check(id and id > 0, "EID for unknown card"); eidEntries = eidEntries + 1 end,
+    addPill = function(_, id) check(id and id >= 0, "EID for unknown pill"); eidEntries = eidEntries + 1 end,
 }
 
 -- Load the mod ------------------------------------------------------------------------
@@ -424,6 +454,8 @@ local Items, Trinkets, Cfg = mod.Items, mod.Trinkets, mod.Cfg
 for key, id in pairs(Items) do check(id > 0, "item name not found in items.xml: " .. key) end
 for key, id in pairs(Trinkets) do check(id > 0, "trinket name not found in items.xml: " .. key) end
 for key, id in pairs(mod.Sounds) do check(id > 0, "sound not found in sounds.xml: " .. key) end
+for key, id in pairs(mod.Cards) do check(id > 0, "card not found in pocketitems.xml: " .. key) end
+for key, id in pairs(mod.Pills) do check(id >= 0, "pill not found in pocketitems.xml: " .. key) end
 local itemCount, trinketCount = 0, 0
 for _ in pairs(itemIds) do itemCount = itemCount + 1 end
 for _ in pairs(trinketIds) do trinketCount = trinketCount + 1 end
@@ -721,6 +753,12 @@ for _, e in ipairs(world.spawned) do
     end
 end
 check(dropped == 4 + trinketCount, "give command drops actives and trinkets")
+local droppedCard, droppedPill = false, false
+for _, e in ipairs(world.spawned) do
+    if e.Variant == PickupVariant.PICKUP_TAROTCARD and e.SubType == mod.Cards.COIN_TOSS then droppedCard = true end
+    if e.Variant == PickupVariant.PICKUP_PILL then droppedPill = true end
+end
+check(droppedCard and droppedPill, "give command drops the coin toss card and a timeout pill")
 check(p2:HasCollectible(Items.PANTS), "padded pants are a passive now")
 check(dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "hide legs"):find("hiding"), "hide command")
 check(mod.Settings.charRules["0"].legs == false, "hide command stores a rule")
@@ -748,6 +786,77 @@ check(cd.caught == 2 and cd.bucket == 1 and cd.playIndex == 2 and cd.jerseyShown
 dispatch(ModCallbacks.MC_PRE_GAME_EXIT, nil, false)
 dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
 check(mod.GetSaveData().run == nil, "a new run starts clean")
+
+-- Batch 3 --------------------------------------------------------------------------------
+local b3 = newPlayer()
+players[1] = b3
+newRoom(false)
+-- Chin Strap alone lets you tackle (slower), and tackles stun
+b3.items[Items.CHIN_STRAP] = 1
+b3.Position, b3.Velocity = Vector(0, 0), Vector(5, 0)
+tick(math.floor(Cfg.TACKLE_WINDUP * Cfg.CHIN_STRAP_SOLO_WINDUP) + 2)
+local strapVictim = newEnemy(b3.Position + Vector(20, 0), 200)
+tick()
+check(strapVictim.damageTaken > 0 and strapVictim.frozen, "chin strap tackles without the helmet and stuns")
+b3.Velocity = Vector(0, 0)
+tick()
+
+-- Foam Finger marks the toughest enemy for bonus damage and a penny
+newRoom(false)
+b3.items[Items.FOAM_FINGER] = 1
+local small = newEnemy(Vector(100, 0), 10)
+local big = newEnemy(Vector(-100, 0), 80)
+tick(16)
+check(mod.isMarked(big) and not mod.isMarked(small), "foam finger marks the toughest enemy")
+local fingerTear = b3:FireTear(Vector(-90, 0), Vector(-1, 0))
+big:TakeDamage(10, 0, EntityRef(fingerTear), 0)
+check(big.damageTaken > 10, "marked enemy takes bonus damage")
+small:TakeDamage(5, 0, EntityRef(fingerTear), 0)
+check(small.damageTaken == 5, "unmarked enemy takes normal damage")
+local spawnedBefore = #world.spawned
+dispatch(ModCallbacks.MC_POST_ENTITY_KILL, nil, big)
+check(#world.spawned > spawnedBefore, "the #1 enemy drops a penny")
+
+-- Super Bowl Ring
+b3.items[Items.RING] = 1
+newRoom(false, RoomType.ROOM_BOSS)
+dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, b3.rng, Vector(0, 0))
+b3:EvaluateItems()
+check(mod.pdata(b3).rings == 1 and b3.Luck >= Cfg.RING_LUCK, "boss clear adds a ring")
+local ringDmg = b3.Damage
+newRoom(false)
+dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, b3.rng, Vector(0, 0))
+check(mod.pdata(b3).rings == 1, "normal rooms don't add rings")
+
+-- Concussion Protocol
+newRoom(false)
+b3.trinkets[Trinkets.PROTOCOL] = true
+b3.rng.value = 0.99
+local dazed = newEnemy(Vector(200, 0))
+b3:TakeDamage(1, 0, EntityRef(newProjectile(b3.Position)), 0)
+check(dazed.confused, "concussion protocol dazes the room")
+
+-- Coin Toss: heads (rng 0 -> RandomInt(2) = 1 in the mock, so force both outcomes)
+b3.rng.RandomInt = function() return 0 end
+dispatch(ModCallbacks.MC_USE_CARD, mod.Cards.COIN_TOSS, mod.Cards.COIN_TOSS, b3, 0)
+b3:EvaluateItems()
+check(b3.Damage > ringDmg, "heads gives damage for the room")
+newRoom(false)
+b3:EvaluateItems()
+check(math.abs(b3.Damage - ringDmg) < 1e-6, "heads bonus ends with the room")
+b3.rng.RandomInt = function() return 1 end
+b3.charged = false
+local slowMe = newEnemy(Vector(50, 0))
+dispatch(ModCallbacks.MC_USE_CARD, mod.Cards.COIN_TOSS, mod.Cards.COIN_TOSS, b3, 0)
+check(b3.charged and slowMe.slowed, "tails recharges and slows")
+
+-- Timeout! pill
+newRoom(false)
+local froze = newEnemy(Vector(50, 0))
+local shotT = newProjectile(Vector(10, 10))
+b3.hearts = 2
+dispatch(ModCallbacks.MC_USE_PILL, mod.Pills.TIMEOUT, mod.Pills.TIMEOUT, b3, 0)
+check(froze.frozen and not shotT.exists and b3.hearts == 3, "timeout freezes, clears shots and heals")
 
 -- Challenges ---------------------------------------------------------------------------
 for key, c in pairs(mod.CHALLENGES) do check(c.id and c.id > 0, "challenge in challenges.xml: " .. key) end

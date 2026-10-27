@@ -16,7 +16,7 @@ return function(mod)
         },
         groundgame = {
             name = "Ground Game",
-            items = { Items.HELMET, Items.PADS, Items.CLEATS, Items.PANTS, Items.KICKING_TEE },
+            items = { Items.HELMET, Items.PADS, Items.CLEATS, Items.PANTS, Items.CHIN_STRAP, Items.KICKING_TEE },
             intro = { "Ground game", "No passing - run them over" },
         },
     }

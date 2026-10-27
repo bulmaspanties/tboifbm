@@ -57,6 +57,23 @@ return function(mod)
         EID:addCollectible(Items.PANTS,
             pct(Cfg.PANTS_IGNORE_CHANCE) .. " chance to ignore damage from touching an enemy, and stiff-arm it away#" ..
             "Extra copies stack (up to " .. pct(Cfg.PANTS_MAX_CHANCE) .. ")#Counts toward Suited Up")
+        EID:addCollectible(Items.CHIN_STRAP,
+            "Tackles deal +50% damage and stun enemies#" ..
+            "Lets you tackle without the Football Helmet (slower windup)#Counts toward Suited Up")
+        EID:addCollectible(Items.FOAM_FINGER,
+            "The toughest enemy in each room is marked #1#" ..
+            "You deal +50% damage to it#It drops a penny when it dies")
+        EID:addCollectible(Items.RING,
+            "↑ +1 Luck#Every boss room you clear adds a ring: +0.35 Damage for the rest of the run")
+        EID:addTrinket(Trinkets.PROTOCOL,
+            "Taking damage confuses every enemy in the room for 2 seconds")
+        if mod.Cards.COIN_TOSS and mod.Cards.COIN_TOSS > 0 then
+            EID:addCard(mod.Cards.COIN_TOSS,
+                "Flip a coin:#Heads: +1.5 Damage for the room#Tails: fully recharges your active item and slows all enemies")
+        end
+        if mod.Pills.TIMEOUT and mod.Pills.TIMEOUT >= 0 then
+            EID:addPill(mod.Pills.TIMEOUT, "Freezes all enemies for 3 seconds, clears enemy shots and heals half a heart")
+        end
         EID:addTrinket(Trinkets.FLAG,
             "When an enemy or its shot hits you, it gets flagged:#" ..
             "takes 10 + 3x floor number damage and is slowed")

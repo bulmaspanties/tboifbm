@@ -12,9 +12,10 @@
 -- scripts/menu.lua      Dead Sea Scrolls settings menu
 -- scripts/commands.lua  debug console commands (`gridiron`)
 -- scripts/challenges.lua Fourth and Long, Two-Minute Drill, Ground Game
+-- scripts/extras.lua    Foam Finger, Super Bowl Ring, Coin Toss card, Timeout! pill
 
 local mod = RegisterMod("Gridiron", 1)
 
-for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges" }) do
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras" }) do
     include("scripts." .. name)(mod)
 end

@@ -12,5 +12,9 @@
     <active id="11" name="Coach's Whistle" description="Offsides!" gfx="coachs_whistle.png" quality="2" maxcharges="4" />
     <passive id="12" name="Gatorade Bucket" description="Stay hydrated" gfx="gatorade_bucket.png" quality="2" />
     <passive id="13" name="Padded Pants" description="Thigh pads included" gfx="padded_pants.png" quality="2" />
+    <passive id="14" name="Chin Strap" description="Buckle up" gfx="chin_strap.png" quality="2" tags="offensive" />
+    <passive id="15" name="Foam Finger" description="We're number one!" gfx="foam_finger.png" quality="2" tags="offensive" />
+    <passive id="16" name="Super Bowl Ring" description="Hardware" gfx="super_bowl_ring.png" quality="3" cache="damage luck" />
+    <trinket id="3" name="Concussion Protocol" description="Ring their bell" gfx="concussion_protocol.png" />
     <trinket id="2" name="Referee Flag" description="Flag on the play" gfx="referee_flag.png" />
 </items>

@@ -46,6 +46,13 @@ PALETTE = {
     "o": (186, 78, 18, 255),
     "O": (238, 122, 32, 255),
     "P": (255, 176, 86, 255),
+    # gold (ring, coin)
+    "a": (176, 124, 28, 255),
+    "A": (236, 186, 58, 255),
+    "U": (255, 234, 150, 255),
+    # ice pack blue
+    "c": (70, 150, 200, 255),
+    "C": (130, 200, 236, 255),
 }
 
 SPRITES = {}
@@ -498,6 +505,82 @@ def referee_flag():
     put(g, [(8, 7)], "N")
     return rows_of(outline(g))
 
+def chin_strap():
+    g = blank()
+    # strap arcing under a chin cup, with snaps at both ends
+    for x in range(4, 28):
+        t = (x - 15.5) / 11.5
+        y = int(round(11 + 9 * (1 - t * t)))
+        rect(g, x, y, x, y + 1, "W")
+        g[y + 1][x] = "w"
+    ellipse(g, 15.5, 21, 6, 4, "W")                  # chin cup
+    ellipse(g, 15.5, 22, 4.5, 2.5, "w")
+    rect(g, 11, 18, 20, 18, "v")
+    for cx in (5, 26):                               # snaps
+        ellipse(g, cx, 11, 2.2, 2.2, "G")
+        put(g, [(cx, 11)], "g")
+    return rows_of(outline(g))
+
+
+def foam_finger():
+    g = blank()
+    rect(g, 13, 3, 18, 14, "B")                      # pointing finger
+    ellipse(g, 15.5, 3.5, 2.6, 1.6, "B")
+    ellipse(g, 15.5, 19, 9, 7, "B")                  # hand
+    rect(g, 10, 24, 21, 29, "B")                     # cuff / handle
+    rect(g, 10, 26, 21, 26, "Y")
+    rect(g, 13, 3, 13, 14, "L")                      # highlight
+    ellipse(g, 11, 17, 2, 1.5, "L")
+    put(g, [(9, 21), (10, 21), (11, 21), (12, 21), (9, 23), (10, 23), (11, 23), (12, 23),
+            (10, 20), (10, 22), (10, 24), (12, 20), (12, 22), (12, 24)], "W")   # "#"
+    rect(g, 15, 19, 16, 25, "W")                     # "1"
+    put(g, [(14, 20)], "W")
+    return rows_of(outline(g))
+
+
+def super_bowl_ring():
+    g = blank()
+    ellipse(g, 15.5, 19, 10, 8, "A")                 # band
+    ellipse(g, 15.5, 19, 6.5, 4.8, ".")
+    ellipse(g, 15.5, 25, 7, 1.5, "a")
+    ellipse(g, 15.5, 10, 7, 5, "A")                  # bezel
+    ellipse(g, 15.5, 10, 5, 3.4, "R")                # big red stone
+    ellipse(g, 14, 9, 2, 1.2, "H")
+    for x, y in ((8, 10), (23, 10), (15, 4), (16, 4)):
+        g[y][x] = "U"
+    ellipse(g, 9, 17, 1.2, 2.5, "U")                 # band shine
+    return rows_of(outline(g))
+
+
+def concussion_protocol():
+    g = blank()
+    rect(g, 7, 9, 24, 24, "C")                       # ice pack
+    rect(g, 7, 22, 24, 24, "c")
+    rect(g, 22, 9, 24, 24, "c")
+    rect(g, 13, 7, 18, 9, "C")                       # cap
+    rect(g, 14, 12, 17, 21, "W")                     # white cross
+    rect(g, 11, 15, 20, 18, "W")
+    put(g, [(9, 11), (10, 11), (9, 12)], "W")
+    return rows_of(outline(g))
+
+
+def coin_toss_front():
+    g = blank()
+    rect(g, 9, 4, 22, 27, "W")                       # card
+    rect(g, 22, 4, 22, 27, "w")
+    ellipse(g, 15.5, 15.5, 5.5, 5.5, "A")            # coin
+    ellipse(g, 15.5, 15.5, 3.6, 3.6, "U")
+    put(g, [(15, 13), (16, 13), (15, 14), (15, 15), (16, 15), (16, 16), (15, 17), (16, 17)], "a")  # "S"-ish
+    rect(g, 11, 6, 13, 6, "B")
+    rect(g, 18, 25, 20, 25, "B")
+    return rows_of(outline(g))
+
+
+SPRITES["items/collectibles/chin_strap.png"] = dict(rows=chin_strap())
+SPRITES["items/collectibles/foam_finger.png"] = dict(rows=foam_finger())
+SPRITES["items/collectibles/super_bowl_ring.png"] = dict(rows=super_bowl_ring())
+SPRITES["items/trinkets/concussion_protocol.png"] = dict(rows=concussion_protocol())
+SPRITES["content:gridiron_cardfronts.png"] = dict(rows=coin_toss_front())
 SPRITES["items/collectibles/playbook.png"] = dict(rows=playbook())
 SPRITES["items/collectibles/coachs_whistle.png"] = dict(rows=coachs_whistle())
 SPRITES["items/collectibles/gatorade_bucket.png"] = dict(rows=gatorade_bucket())
@@ -615,7 +698,8 @@ def render(spec):
 
 def main():
     for rel, spec in SPRITES.items():
-        out = GFX / rel
+        # "content:" sprites (card fronts) live next to content/gfx/ui_cardfronts.anm2
+        out = ROOT / "content/gfx" / rel[8:] if rel.startswith("content:") else GFX / rel
         out.parent.mkdir(parents=True, exist_ok=True)
         render(spec).save(out)
     print(f"{len(SPRITES)} sprites written")
