@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.3
+- Fix: the Quarterback character-select pages no longer draw a big figure in the middle of the page, where it piled up under the character wheel.
+
 ## 0.4.2
 - Fix: running with a live tackle (fast when Suited Up) spawned screen-filling smoke clouds that flashed on every move. The trail is now a small, faint turf puff.
 

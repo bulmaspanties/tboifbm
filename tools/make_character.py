@@ -148,8 +148,7 @@ def build_menu(template_png, out_png, title_ink, fig, name_box, portrait_box):
     clear(page, (150, 24, 332, 64), paper)
     title = text_image(NAME.upper(), 22, title_ink)
     paste_center(page, title, (128, 24, 352, 60))
-    # a big drawing of him on the page, plus a play diagram
-    paste_center(page, scaled(fig, 3), (160, 68, 320, 214))
+    # the middle of the page stays blank: the game draws the character wheel there
     play_diagram(page, 150, 222, title_ink)
     # the little name tag and the wheel portrait
     clear(page, name_box)
