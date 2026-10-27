@@ -58,7 +58,7 @@ return function(mod)
         end
         player:SetColor(Color(1, 1, 1, 1, 0.3, 0.18, 0), 2, 1, false, false)
         if d.runFrames % 6 == 0 then
-            -- small, faint kicked-up turf (never DUST_CLOUD: that's a screen-filling fog)
+            -- small, faint kicked-up turf (not the smoke-cloud effect: that one fills the screen)
             local puff = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0,
                 player.Position - d.runDir * 12, Vector.Zero, player)
             puff.SpriteScale = Vector(0.35, 0.35)

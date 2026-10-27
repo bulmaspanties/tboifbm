@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.2
+- Fix: running with a live tackle (fast when Suited Up) spawned screen-filling smoke clouds that flashed on every move. The trail is now a small, faint turf puff.
+
 ## 0.4.1
 - Cleaner helmet side view: smooth shell, simple ear hole, and a thin cage facemask that protrudes past the face (no more stacked bars across the brow).
 

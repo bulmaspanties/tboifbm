@@ -22,7 +22,7 @@ Debug console: [b]gridiron give[/b] spawns all the gear, [b]gridiron boss[/b] su
 
 Requires Repentance+. REPENTOGON is not required.
 Source and bug reports: github.com/bulmaspanties/tboifbm</description>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
     <visibility>Private</visibility>
     <tag id="Items"/>
     <tag id="Characters"/>
