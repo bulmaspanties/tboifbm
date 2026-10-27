@@ -44,8 +44,9 @@ return function(mod)
             d.runDir = nil
         end
 
-        local windup = Cfg.TACKLE_WINDUP
-        if mod.isSuitedUp(player) then windup = math.floor(windup / 2) end
+        local windup = Cfg.TACKLE_WINDUP * mod.tackleWindupMult()
+        if mod.isSuitedUp(player) then windup = windup / 2 end
+        windup = math.floor(windup)
         local wasTackling = d.tackling
         d.tackling = d.runDir ~= nil and d.runFrames >= windup
         if not d.tackling then return end
@@ -69,7 +70,7 @@ return function(mod)
                 local ed = e:GetData()
                 if (ed.GridironTackleCD or 0) <= now then
                     ed.GridironTackleCD = now + Cfg.TACKLE_HIT_COOLDOWN
-                    local dmg = player.Damage * Cfg.TACKLE_DMG_MULT + Cfg.TACKLE_DMG_FLAT
+                    local dmg = (player.Damage * Cfg.TACKLE_DMG_MULT + Cfg.TACKLE_DMG_FLAT) * mod.tackleDamageMult()
                     e:TakeDamage(dmg, 0, EntityRef(player), 0)
                     local push = d.runDir * Cfg.TACKLE_KNOCKBACK
                     if e:IsBoss() then push = push * 0.25 end

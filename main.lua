@@ -11,9 +11,10 @@
 -- scripts/eid.lua       External Item Descriptions
 -- scripts/menu.lua      Dead Sea Scrolls settings menu
 -- scripts/commands.lua  debug console commands (`gridiron`)
+-- scripts/challenges.lua Fourth and Long, Two-Minute Drill, Ground Game
 
 local mod = RegisterMod("Gridiron", 1)
 
-for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands" }) do
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges" }) do
     include("scripts." .. name)(mod)
 end

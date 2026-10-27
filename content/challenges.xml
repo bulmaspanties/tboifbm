@@ -1,0 +1,6 @@
+<challenges version="1">
+    <!-- Gridiron items are given from scripts/challenges.lua: mod item ids are only known at runtime. -->
+    <challenge name="Fourth and Long" playertype="0" endstage="8" />
+    <challenge name="Two-Minute Drill" playertype="0" endstage="6" />
+    <challenge name="Ground Game" playertype="0" endstage="6" canshoot="false" />
+</challenges>

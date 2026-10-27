@@ -62,7 +62,7 @@ return function(mod)
     }
 
     local function snapshotRun()
-        local run = { players = {} }
+        local run = { players = {}, state = mod.RunState }
         mod.forEachPlayer(function(player, i)
             local d = mod.pdata(player)
             local p = {}
@@ -73,6 +73,7 @@ return function(mod)
     end
 
     local function restoreRun(run)
+        mod.RunState = run.state or {}
         mod.forEachPlayer(function(player, i)
             local saved = run.players and run.players[tostring(i)]
             if not saved then return end
@@ -96,6 +97,7 @@ return function(mod)
             restoreRun(save.run)
         else
             save.run = nil
+            mod.RunState = {}
         end
     end
     mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.OnGameStartedSave)

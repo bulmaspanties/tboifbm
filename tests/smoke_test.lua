@@ -53,6 +53,13 @@ for name, body in soundsXml:gmatch('<sound name="(.-)">(.-)</sound>') do
     check(readFile("resources/sfx/" .. path) ~= nil, "sound file missing: " .. path)
 end
 
+local challengeXml = assert(readFile("content/challenges.xml"))
+local challengeIds, challengeCount = {}, 0
+for name in challengeXml:gmatch('<challenge name="(.-)"') do
+    challengeCount = challengeCount + 1
+    challengeIds[name] = 100 + challengeCount
+end
+
 -- Enums: every unknown key gets a fresh power of two so bit ops behave ----------
 local bit = 0
 local function enum(fixed)
@@ -77,6 +84,7 @@ CoinSubType = enum()
 DamageFlag = enum()
 RenderMode = enum()
 RoomType = { ROOM_DEFAULT = 1, ROOM_BOSS = 5 }
+HeartSubType = { HEART_FULL = 1, HEART_HALF = 2, HEART_SOUL = 3, HEART_DOUBLEPACK = 5, HEART_SCARED = 9 }
 Direction = { LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3 }
 EntityType = { ENTITY_PLAYER = 1, ENTITY_TEAR = 2, ENTITY_PROJECTILE = 9, ENTITY_PICKUP = 5,
     ENTITY_EFFECT = 1000, ENTITY_GAPER = 10 }
@@ -197,7 +205,7 @@ package.preload["json"] = function()
 end
 
 -- World -------------------------------------------------------------------------------
-local world = { entities = {}, frame = 0, roomClear = false, roomType = RoomType.ROOM_DEFAULT,
+local world = { challenge = 0, entities = {}, frame = 0, roomClear = false, roomType = RoomType.ROOM_DEFAULT,
     spawned = {}, hudText = {}, modData = nil }
 local mod -- set by RegisterMod
 
@@ -273,7 +281,12 @@ local function newPlayer(ptype)
     p.hearts, p.maxHearts, p.soul = 6, 6, 0
     function p:HasCollectible(id) return (self.items[id] or 0) > 0 end
     function p:GetCollectibleNum(id) return self.items[id] or 0 end
-    function p:AddCollectible(id) self.items[id] = (self.items[id] or 0) + 1 end
+    function p:AddCollectible(id)
+        self.items[id] = (self.items[id] or 0) + 1
+        if mod and mod.ACTIVE_ITEMS[id] then self.active = id end
+    end
+    function p:GetActiveItem() return self.active or 0 end
+    function p:FullCharge() self.charged = true; return true end
     function p:HasTrinket(id) return self.trinkets[id] == true end
     function p:AddTrinket(id) self.trinkets[id] = true end
     function p:GetTrinketMultiplier() return 1 end
@@ -390,6 +403,9 @@ Isaac = {
         return e
     end,
     WorldToScreen = function(pos) return pos * 0.65 end,
+    GetScreenWidth = function() return 480 end,
+    GetChallenge = function() return world.challenge end,
+    GetChallengeIdByName = function(name) return challengeIds[name] or -1 end,
     HasModData = function() return world.modData ~= nil end,
     LoadModData = function() return world.modData end,
     SaveModData = function(_, s) world.modData = s end,
@@ -732,6 +748,52 @@ check(cd.caught == 2 and cd.bucket == 1 and cd.playIndex == 2 and cd.jerseyShown
 dispatch(ModCallbacks.MC_PRE_GAME_EXIT, nil, false)
 dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
 check(mod.GetSaveData().run == nil, "a new run starts clean")
+
+-- Challenges ---------------------------------------------------------------------------
+for key, c in pairs(mod.CHALLENGES) do check(c.id and c.id > 0, "challenge in challenges.xml: " .. key) end
+local function startChallenge(key)
+    world.challenge = mod.CHALLENGES[key].id
+    local cp = newPlayer()
+    players[1] = cp
+    world.entities = { cp }
+    dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
+    return cp
+end
+
+local fl = startChallenge("fourthandlong")
+check(fl:HasCollectible(Items.HELMET) and fl:HasCollectible(Items.GATORADE), "fourth and long hands out its gear")
+fl:EvaluateItems()
+check(mod.isSuitedUp(fl), "fourth and long starts suited up")
+local heart = newEntity({ Type = EntityType.ENTITY_PICKUP, Variant = PickupVariant.PICKUP_HEART, SubType = HeartSubType.HEART_FULL })
+function heart:Morph(t, v, st) self.Variant, self.SubType = v, st end
+local soul = newEntity({ Type = EntityType.ENTITY_PICKUP, Variant = PickupVariant.PICKUP_HEART, SubType = HeartSubType.HEART_SOUL })
+function soul:Morph(t, v, st) self.Variant, self.SubType = v, st end
+dispatch(ModCallbacks.MC_POST_PICKUP_INIT, PickupVariant.PICKUP_HEART, heart)
+dispatch(ModCallbacks.MC_POST_PICKUP_INIT, PickupVariant.PICKUP_HEART, soul)
+check(heart.Variant == PickupVariant.PICKUP_COIN, "red hearts become pennies")
+check(soul.Variant == PickupVariant.PICKUP_HEART, "soul hearts are untouched")
+
+local tm = startChallenge("twominute")
+check(tm:GetActiveItem() == Items.PLAYBOOK, "two-minute drill starts with the playbook")
+local start = mod.RunState.clock
+tick(30)
+check(mod.RunState.clock == start - 30, "the game clock runs")
+dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, tm.rng, Vector(0, 0))
+check(mod.RunState.clock == start - 30 + 300 and tm.charged, "clears add 10s and recharge the playbook")
+drawnText = {}
+tick()
+local sawClock = false
+for _, line in ipairs(drawnText) do if line:match("^%d+:%d%d$") then sawClock = true end end
+check(sawClock, "clock is drawn")
+mod.RunState.clock = 1
+local hpTm = tm.damageTaken
+tick(1 + 15 * 30)
+check(tm.damageTaken > hpTm, "overtime costs health")
+
+startChallenge("groundgame")
+check(mod.tackleDamageMult() == 2 and mod.tackleWindupMult() == 0.5, "ground game boosts tackles")
+world.challenge = 0
+check(mod.tackleDamageMult() == 1 and mod.currentChallenge() == nil, "no challenge, no rules")
 
 -- Settings survive a restart (fresh load reads the stored blob)
 findButton("gameplay", "kick damage").store(70)

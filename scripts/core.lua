@@ -139,6 +139,14 @@ return function(mod)
 
     mod.FOOTBALL_ANM2 = "gfx/gridiron_football_tear.anm2"
 
+    -- Run-wide state that isn't tied to one player (saved with the run).
+    mod.RunState = {}
+
+    -- Defaults for hooks that later scripts (challenges.lua) override.
+    function mod.tackleWindupMult() return 1 end
+    function mod.tackleDamageMult() return 1 end
+    function mod.currentChallenge() return nil end
+
     -- Wearable gear counts toward Suited Up; actives and the bucket don't.
     mod.GEAR = {
         mod.Items.HELMET, mod.Items.PADS, mod.Items.JERSEY, mod.Items.CLEATS,
