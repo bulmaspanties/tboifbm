@@ -12,6 +12,7 @@ Suit up! Football gear with its own mechanics: no reskins, no stat-only items.
 [*][b]3 trinkets, a card and a pill[/b]: Referee Flag, Concussion Protocol, Turf Burn, Coin Toss, Timeout!
 [*][b]Wear 3+ pieces to get Suited Up[/b]: bonus damage, faster tackles, gold glow
 [*][b]Worn costumes[/b]: modern helmet with facemask, jersey over pads, pants and cleats, eye black
+[*][b]Pick your team colours[/b]: helmet, jersey and pants, 10 colours each, from the settings menu
 [*][b]A new boss[/b]: The Linebacker, plus Mascot and Referee enemies
 [*][b]A new character[/b]: The Quarterback and Tainted Quarterback
 [*][b]3 challenges[/b]: Fourth and Long, Two-Minute Drill, Ground Game
@@ -35,7 +36,7 @@ Debug console: [b]gridiron give[/b] drops all the gear as pedestals, [b]gridiron
 
 Requires Repentance+. REPENTOGON is not required.
 Source and bug reports: github.com/bulmaspanties/tboifbm</description>
-    <version>0.6.0</version>
+    <version>0.6.1</version>
     <visibility>Private</visibility>
     <tag id="Items"/>
     <tag id="Characters"/>

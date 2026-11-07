@@ -104,6 +104,25 @@ return function(mod)
         }
     end
 
+    -- Uniform colours: each choice swaps in a pre-made costume colourway.
+    local function colorChoice(label, kind, key, tip)
+        local colors = mod.UNIFORM_COLORS[kind]
+        local function indexOf(c)
+            for i, name in ipairs(colors) do if name == c then return i end end
+            return 1
+        end
+        return {
+            str = label, choices = colors, setting = 1, variable = "Gridiron_" .. key,
+            load = function() return indexOf(mod.Settings[key]) end,
+            store = function(v)
+                mod.SetSetting(key, colors[v])
+                mod.StoreSaveData()
+                mod.refreshAllCostumes()
+            end,
+            tooltip = { strset = tip },
+        }
+    end
+
     local directory = {
         main = {
             title = "gridiron",
@@ -111,6 +130,7 @@ return function(mod)
                 { str = "resume game", action = "resume" },
                 { str = "gameplay", dest = "gameplay" },
                 { str = "visuals", dest = "visuals" },
+                { str = "uniform", dest = "uniform" },
                 { str = "costume fit", dest = "character" },
                 { str = "menu settings", dest = "menusettings" },
                 dssmod.changelogsButton,
@@ -153,6 +173,26 @@ return function(mod)
                 toggle("suited up glow", "suitedGlow", { "gold pulse while", "suited up" }),
                 toggle("hud text", "hud", { "downs, plays and", "bucket under", "your character" }),
                 toggle("popup text", "popups", { "callouts like", "tackle! and", "it's good!" }),
+            },
+        },
+        uniform = {
+            title = "uniform",
+            buttons = {
+                colorChoice("helmet", "helmet", "helmetColor", { "helmet shell", "colour" }),
+                colorChoice("jersey", "jersey", "jerseyColor", { "jersey colour", "(trim matches)" }),
+                colorChoice("pants", "pants", "pantsColor", { "pants colour" }),
+                { str = "", fsize = 2, nosel = true },
+                {
+                    str = "team defaults",
+                    func = function()
+                        for _, key in ipairs({ "helmetColor", "jerseyColor", "pantsColor" }) do
+                            mod.SetSetting(key, mod.SettingDefaults[key])
+                        end
+                        mod.StoreSaveData()
+                        mod.refreshAllCostumes()
+                    end,
+                    tooltip = { strset = { "red helmet,", "blue jersey,", "white pants" } },
+                },
             },
         },
         character = {

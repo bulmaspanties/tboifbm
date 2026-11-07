@@ -1455,6 +1455,36 @@ check(eidText[Items.HELMET]:find("Mars", 1, true), "EID lists the helmet's syner
 check(eidText[Items.WRISTBAND]:find("Homing items", 1, true), "EID lists the wristband's synergies")
 check(eidText[Items.GATORADE]:find("Holy Water", 1, true), "EID lists the bucket's synergies")
 
+-- Uniform colours: the menu swaps in the matching costume colourway
+local up = newPlayer()
+players = { up }
+world.entities = { up }
+newRoom(false)
+up.items[Items.HELMET], up.items[Items.JERSEY], up.items[Items.PADS], up.items[Items.PANTS] = 1, 1, 1, 1
+tick()
+check(costumeOn(up, "helmet") and costumeOn(up, "torso_jerseypads") and costumeOn(up, "legs_pants"), "default uniform")
+findButton("uniform", "helmet").store(8)        -- black
+findButton("uniform", "jersey").store(2)        -- red
+findButton("uniform", "pants").store(3)         -- gold
+tick()
+check(costumeOn(up, "helmet_black") and not costumeOn(up, "helmet"), "helmet colour swaps the helmet costume")
+check(costumeOn(up, "torso_jerseypads_red") and not costumeOn(up, "torso_jerseypads"), "jersey colour swaps the torso")
+check(costumeOn(up, "legs_pants_gold"), "pants colour swaps the legs")
+check(mod.GetSaveData().settings.jerseyColor == "red", "uniform colours are saved")
+for kind, list in pairs(mod.UNIFORM_COLORS) do
+    for _, color in ipairs(list) do
+        local base = kind == "helmet" and "helmet" or kind == "jersey" and "torso_jersey" or "legs_pants"
+        local name = base .. (color == list[1] and "" or "_" .. color)
+        check(costumePaths["gfx/characters/gridiron_" .. name .. ".anm2"], "costume exists for " .. kind .. " " .. color)
+    end
+end
+findButton("uniform", "team defaults").func()
+tick()
+check(costumeOn(up, "helmet") and costumeOn(up, "torso_jerseypads") and costumeOn(up, "legs_pants"), "team defaults restore the uniform")
+findButton("uniform", "jersey").store(4)
+mod.ResetSettings()
+check(mod.Settings.jerseyColor == "blue", "reset settings restores the uniform colours too")
+
 -- Settings survive a restart (fresh load reads the stored blob)
 findButton("gameplay", "kick damage").store(70)
 mod.StoreSaveData()

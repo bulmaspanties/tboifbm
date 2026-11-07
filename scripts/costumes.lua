@@ -10,20 +10,31 @@ return function(mod)
     end
 
     -- slot -> variant -> costume id. Pieces sharing a body layer come combined.
+    -- Coloured pieces have one costume per uniform colour: key "jersey" is the default
+    -- colour, "jersey_red" etc. are the others (see tools/make_costumes.py).
     local Costumes = {
-        helmet = { helmet = nullCostume("helmet") },
+        helmet = {},
         eyeblack = { eyeblack = nullCostume("eyeblack") },
-        torso = {
-            jersey     = nullCostume("torso_jersey"),
-            pads       = nullCostume("torso_pads"),
-            jerseypads = nullCostume("torso_jerseypads"),
-        },
-        legs = {
-            pants       = nullCostume("legs_pants"),
-            cleats      = nullCostume("legs_cleats"),
-            pantscleats = nullCostume("legs_pantscleats"),
-        },
+        torso = { pads = nullCostume("torso_pads") },
+        legs = { cleats = nullCostume("legs_cleats") },
     }
+    local function colorSuffix(kind, color)
+        return color == mod.UNIFORM_COLORS[kind][1] and "" or "_" .. color
+    end
+    for _, color in ipairs(mod.UNIFORM_COLORS.helmet) do
+        local key = "helmet" .. colorSuffix("helmet", color)
+        Costumes.helmet[key] = nullCostume(key)
+    end
+    for _, color in ipairs(mod.UNIFORM_COLORS.jersey) do
+        local sfx = colorSuffix("jersey", color)
+        Costumes.torso["jersey" .. sfx] = nullCostume("torso_jersey" .. sfx)
+        Costumes.torso["jerseypads" .. sfx] = nullCostume("torso_jerseypads" .. sfx)
+    end
+    for _, color in ipairs(mod.UNIFORM_COLORS.pants) do
+        local sfx = colorSuffix("pants", color)
+        Costumes.legs["pants" .. sfx] = nullCostume("legs_pants" .. sfx)
+        Costumes.legs["pantscleats" .. sfx] = nullCostume("legs_pantscleats" .. sfx)
+    end
     mod.Costumes = Costumes
     mod.COSTUME_SLOTS = { "helmet", "eyeblack", "torso", "legs" }
 
@@ -43,15 +54,26 @@ return function(mod)
 
     local function desiredCostumes(player)
         local want = { helmet = "none", eyeblack = "none", torso = "none", legs = "none" }
-        if player:HasCollectible(Items.HELMET) then want.helmet = "helmet" end
+        local S = mod.Settings
+        local helmetKey = "helmet" .. colorSuffix("helmet", S.helmetColor)
+        local jerseySfx = colorSuffix("jersey", S.jerseyColor)
+        local pantsSfx = colorSuffix("pants", S.pantsColor)
+        if player:HasCollectible(Items.HELMET) then want.helmet = helmetKey end
         if player:HasCollectible(Items.EYE_BLACK) then want.eyeblack = "eyeblack" end
 
         local jersey, pads = player:HasCollectible(Items.JERSEY), player:HasCollectible(Items.PADS)
-        want.torso = (jersey and pads and "jerseypads") or (jersey and "jersey") or (pads and "pads") or "none"
+        want.torso = (jersey and pads and "jerseypads" .. jerseySfx) or (jersey and "jersey" .. jerseySfx)
+            or (pads and "pads") or "none"
 
         local pants = player:HasCollectible(Items.PANTS)
         local cleats = player:HasCollectible(Items.CLEATS)
-        want.legs = (pants and cleats and "pantscleats") or (pants and "pants") or (cleats and "cleats") or "none"
+        want.legs = (pants and cleats and "pantscleats" .. pantsSfx) or (pants and "pants" .. pantsSfx)
+            or (cleats and "cleats") or "none"
+
+        -- a colour that isn't in the lists (old save, edited file) falls back to the default
+        for slot, key in pairs(want) do
+            if key ~= "none" and not Costumes[slot][key] then want[slot] = "none" end
+        end
 
         for slot in pairs(want) do
             if not slotAllowed(player, slot) then want[slot] = "none" end

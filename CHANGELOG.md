@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.1
+- **Uniform colours:** a new *uniform* page in the settings menu lets you pick the helmet, jersey and pants colours (10 each). The jersey trim and stripes match each colour. Saved between runs, and reset with *team defaults*.
+
 ## 0.6.0
 - **Chin Strap is now part of the Football Helmet**: every tackle stuns (bosses briefly). Tainted Quarterback starts with the Helmet instead, and Ground Game drops the strap.
 - New **QB Wristband** (passive, counts toward Suited Up): +0.16 shot speed; every football you throw homes in and deals +25% damage.

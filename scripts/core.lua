@@ -217,6 +217,18 @@ return function(mod)
         suitedGlow = true,     -- gold pulse while Suited Up
         hud = true,            -- small text readouts under the player
         popups = true,         -- floating callouts ("TACKLE!", "IT'S GOOD!")
+        helmetColor = "red",   -- uniform colours (menu: uniform); each is a pre-made costume
+        jerseyColor = "blue",
+        pantsColor = "white",
+    }
+    mod.SettingDefaults = {}
+    for k, v in pairs(mod.Settings) do mod.SettingDefaults[k] = v end
+
+    -- Must match the lists in tools/make_costumes.py (first entry = default, un-suffixed files).
+    mod.UNIFORM_COLORS = {
+        helmet = { "red", "blue", "navy", "green", "orange", "purple", "gold", "black", "silver", "white" },
+        jersey = { "blue", "red", "navy", "green", "orange", "purple", "gold", "black", "silver", "white" },
+        pants  = { "white", "silver", "gold", "black", "navy", "red", "blue", "green", "orange", "purple" },
     }
 
     mod.FOOTBALL_ANM2 = "gfx/gridiron_football_tear.anm2"

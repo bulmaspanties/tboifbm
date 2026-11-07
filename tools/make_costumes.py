@@ -51,6 +51,53 @@ CLEATS = [(20, 20, 24, 255), (40, 40, 46, 255), (60, 60, 68, 255)]
 
 TORSO_LAST_ROW = 19   # body cell rows <= this are torso, below are legs
 
+# --- uniform colourways (picked in the settings menu: scripts/costumes.lua) ----------
+# name: (dark, mid, light, gloss), plus the stripe/trim colour that goes with it.
+# The first entry of each list is the default and keeps the un-suffixed file names.
+TEAM_COLORS = {
+    "red":    ([(118, 14, 22), (176, 28, 38), (218, 50, 58), (250, 150, 150)], (246, 246, 242)),
+    "blue":   ([(25, 45, 120), (40, 75, 175), (70, 110, 210), (170, 200, 250)], (240, 200, 50)),
+    "navy":   ([(14, 22, 52), (26, 38, 84), (46, 62, 120), (130, 150, 200)], (236, 236, 230)),
+    "green":  ([(16, 70, 36), (28, 112, 56), (52, 152, 80), (160, 220, 170)], (240, 200, 50)),
+    "orange": ([(150, 60, 10), (220, 100, 20), (245, 140, 50), (255, 210, 160)], (40, 40, 46)),
+    "purple": ([(60, 25, 100), (95, 45, 150), (130, 75, 190), (200, 170, 240)], (240, 200, 50)),
+    "gold":   ([(150, 110, 20), (205, 160, 40), (235, 195, 70), (255, 240, 170)], (40, 40, 46)),
+    "black":  ([(22, 22, 28), (40, 40, 48), (64, 64, 76), (150, 150, 165)], (240, 200, 50)),
+    "silver": ([(120, 124, 134), (170, 174, 184), (205, 208, 216), (245, 246, 250)], (26, 38, 84)),
+    "white":  ([(170, 170, 165), (215, 215, 210), (242, 242, 238), (255, 255, 255)], (176, 28, 38)),
+}
+HELMET_COLORS = ["red", "blue", "navy", "green", "orange", "purple", "gold", "black", "silver", "white"]
+JERSEY_COLORS = ["blue", "red", "navy", "green", "orange", "purple", "gold", "black", "silver", "white"]
+PANTS_COLORS = ["white", "silver", "gold", "black", "navy", "red", "blue", "green", "orange", "purple"]
+
+
+def rgba(c):
+    return tuple(c) + (255,)
+
+
+def use_helmet_color(name):
+    global HELMET, HELMET_STRIPE, HELMET_STRIPE_SHADE
+    tones, stripe = TEAM_COLORS[name]
+    HELMET = [rgba(t) for t in tones]
+    HELMET_STRIPE = rgba(stripe)
+    HELMET_STRIPE_SHADE = (200, 200, 196, 255) if stripe == (246, 246, 242) else rgba(tuple(int(c * 0.82) for c in stripe))
+
+
+def use_jersey_color(name):
+    global JERSEY, JERSEY_TRIM
+    tones, trim = TEAM_COLORS[name]
+    JERSEY = [rgba(t) for t in tones[:3]]
+    JERSEY_TRIM = rgba(trim)
+
+
+def use_pants_color(name):
+    global PANTS
+    PANTS = [rgba(t) for t in TEAM_COLORS[name][0][:3]]
+
+
+def suffix(name, default):
+    return "" if name == default else "_" + name
+
 
 # --- helpers -----------------------------------------------------------------
 def is_dark(px):
@@ -434,11 +481,12 @@ def main(template_root):
         "gridiron_helmet": (paint_helmet, "head5"),
         "gridiron_eyeblack": (paint_eye_black, "head1"),
     }
-    # the collectible sprite is the costume's side view, so they always match
+    # the collectible sprite is the costume's side view (default colours), so they always match
+    use_helmet_color(HELMET_COLORS[0])
     finish(helmet_item_icon(head.crop((2 * CELL, 0, 3 * CELL, CELL)))).save(
         ROOT / "resources/gfx/items/collectibles/football_helmet.png")
 
-    for name, (painter, layer) in head_costumes.items():
+    def head_sheet(name, painter, layer):
         sheet = Image.new("RGBA", head.size, CLEAR)
         for i, view, frame in head_frames(head):
             sheet.paste(painter(frame, view), (i * CELL, 0))
@@ -446,34 +494,49 @@ def main(template_root):
         write_anm2(tdir / "compact_head.anm2", CHAR_DIR / f"{name}.anm2",
                    f"costumes/{name}.png", layer, "head0")
 
-    # body rows 0-1 are the side view (right / left), rows 2-3 front/back
-    torso = {
-        "gridiron_torso_jersey": (True, False),
-        "gridiron_torso_pads": (False, True),
-        "gridiron_torso_jerseypads": (True, True),
-    }
-    for name, (jersey, pads) in torso.items():
+    def body_sheet(name, paint, layer):
         sheet = Image.new("RGBA", body.size, CLEAR)
         for cx, cy in cells(body):
             cell = body.crop((cx, cy, cx + CELL, cy + CELL))
-            sheet.paste(paint_torso(cell, jersey, pads, cy < 64), (cx, cy))
+            sheet.paste(paint(cell, cy), (cx, cy))
         sheet.save(SHEET_DIR / f"{name}.png")
         write_anm2(tdir / "compact_body.anm2", CHAR_DIR / f"{name}.anm2",
-                   f"costumes/{name}.png", "body1", "body0")
+                   f"costumes/{name}.png", layer, "body0")
 
-    legs = {
-        "gridiron_legs_pants": (True, False),
-        "gridiron_legs_cleats": (False, True),
-        "gridiron_legs_pantscleats": (True, True),
-    }
-    for name, (pants, cleats) in legs.items():
-        sheet = Image.new("RGBA", body.size, CLEAR)
-        for cx, cy in cells(body):
-            cell = body.crop((cx, cy, cx + CELL, cy + CELL))
-            sheet.paste(paint_legs(cell, pants, cleats), (cx, cy))
-        sheet.save(SHEET_DIR / f"{name}.png")
-        write_anm2(tdir / "compact_body.anm2", CHAR_DIR / f"{name}.anm2",
-                   f"costumes/{name}.png", "body0", "body0")
+    head_sheet("gridiron_eyeblack", paint_eye_black, "head1")
+    for color in HELMET_COLORS:
+        use_helmet_color(color)
+        head_sheet("gridiron_helmet" + suffix(color, HELMET_COLORS[0]), paint_helmet, "head5")
+
+    # body rows 0-1 are the side view (right / left), rows 2-3 front/back
+    body_sheet("gridiron_torso_pads", lambda cell, cy: paint_torso(cell, False, True, cy < 64), "body1")
+    for color in JERSEY_COLORS:
+        use_jersey_color(color)
+        sfx = suffix(color, JERSEY_COLORS[0])
+        body_sheet("gridiron_torso_jersey" + sfx, lambda cell, cy: paint_torso(cell, True, False, cy < 64), "body1")
+        body_sheet("gridiron_torso_jerseypads" + sfx, lambda cell, cy: paint_torso(cell, True, True, cy < 64), "body1")
+
+    body_sheet("gridiron_legs_cleats", lambda cell, cy: paint_legs(cell, False, True), "body0")
+    for color in PANTS_COLORS:
+        use_pants_color(color)
+        sfx = suffix(color, PANTS_COLORS[0])
+        body_sheet("gridiron_legs_pants" + sfx, lambda cell, cy: paint_legs(cell, True, False), "body0")
+        body_sheet("gridiron_legs_pantscleats" + sfx, lambda cell, cy: paint_legs(cell, True, True), "body0")
+
+    # every colourway is a null costume of its own (written for content/costumes2.xml)
+    lines = ['<costumes anm2root="gfx/" version="1">',
+             '    <!-- Generated by tools/make_costumes.py. All Gridiron costumes are null costumes applied',
+             '         from scripts/costumes.lua, so they can be toggled, hidden per character and recoloured',
+             '         (each uniform colour is its own costume). Pieces sharing a body layer come combined. -->']
+    names = ["helmet" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS] + ["eyeblack", "torso_pads"]
+    names += [n + suffix(c, JERSEY_COLORS[0]) for c in JERSEY_COLORS for n in ("torso_jersey", "torso_jerseypads")]
+    names += ["legs_cleats"] + [n + suffix(c, PANTS_COLORS[0]) for c in PANTS_COLORS
+                                for n in ("legs_pants", "legs_pantscleats")]
+    for n in names:
+        prio = ' priority="99"' if n.startswith("helmet") else ""
+        lines.append(f'    <costume anm2path="characters/gridiron_{n}.anm2" type="none"{prio} />')
+    lines.append("</costumes>")
+    (ROOT / "content/costumes2.xml").write_text("\n".join(lines) + "\n")
     print("costumes written")
 
 
