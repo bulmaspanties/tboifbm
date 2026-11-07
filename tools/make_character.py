@@ -97,8 +97,17 @@ def figure(costume_templates, tainted=False, kind="qb"):
     if kind == "kicker":
         layer(b, "gridiron_legs_pantscleats" if tainted else "gridiron_legs_cleats", (0, 64, 32, 96))
         layer(h, "gridiron_kicker_headband_b" if tainted else "gridiron_kicker_headband", (0, 0, 32, 32))
+    elif tainted:
+        # Tainted QB, as he starts: bare pads (no jersey), a cracked and bloodied helmet
+        layer(b, "gridiron_torso_pads", (0, 64, 32, 96))
+        layer(h, "gridiron_helmet", (0, 0, 32, 32))
+        hp = h.load()
+        for x, y in ((12, 2), (13, 3), (12, 4), (13, 5), (14, 6), (13, 7)):
+            hp[x, y] = (40, 14, 16, 255)                             # crack through the shell
+        for x, y in ((19, 3), (19, 4), (20, 5), (19, 6), (20, 7), (20, 8), (21, 9)):
+            hp[x, y] = (150, 10, 18, 255)                            # blood running down
     else:
-        layer(b, "gridiron_legs_pantscleats" if tainted else "gridiron_legs_cleats", (0, 64, 32, 96))
+        layer(b, "gridiron_legs_cleats", (0, 64, 32, 96))
         layer(b, "gridiron_torso_jerseypads", (0, 64, 32, 96))
         layer(h, "gridiron_eyeblack", (0, 0, 32, 32))
         layer(h, "gridiron_helmet", (0, 0, 32, 32))

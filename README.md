@@ -1,13 +1,38 @@
-# Gridiron
+<p align="center"><img src="docs/banner.png" alt="Gridiron: American football for The Binding of Isaac: Repentance+"></p>
 
-A mod for **The Binding of Isaac: Repentance+** (all DLC) that adds American football gear.
-None of the items replaces a vanilla item, and none is just cosmetic: each one has its own mechanic.
-It uses only the vanilla Lua API, so REPENTOGON is **not** required.
+<p align="center">
+  <a href="https://github.com/bulmaspanties/tboifbm/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/bulmaspanties/tboifbm?label=download&style=for-the-badge&color=f4cc34"></a>
+  <img alt="Repentance+" src="https://img.shields.io/badge/Repentance%2B-all%20DLC-c0232a?style=for-the-badge">
+  <img alt="No REPENTOGON needed" src="https://img.shields.io/badge/REPENTOGON-not%20needed-2a7d3a?style=for-the-badge">
+</p>
 
-![Item sprites and worn costumes](docs/preview.png)
+**Gridiron** suits Isaac up for football. Every item is real gear with its own mechanic: no reskins, no stat-only filler, nothing replaced.
+Tackle with the helmet, deflect with the pads, catch with the gloves, punt with the tee, and when you're wearing three pieces you're **Suited Up**.
+Then take on a rival Linebacker, a stadium full of grotesque football enemies, and **The Franchise**.
+
+**[⬇ Download the latest release](https://github.com/bulmaspanties/tboifbm/releases/latest)**, unzip it into your `mods` folder, and enable **Gridiron**.
+
+## Highlights
+- **27 items and trinkets**: wearable gear, actives, familiars, and four **Q4 legends** (Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary)
+- **Four characters**: The Quarterback and The Kicker, plus tainted versions that play completely differently
+- **Two bosses, a miniboss and 10 football enemies** in Isaac's own grotesque style, with gold **Team Captain** champions
+- **Worn costumes** fitted per character (roomy helmets for big hair, horn holes for horns), in **11 team colours**, pink included
+- **All-Pro** transformation, a **Halftime show** event, **completion notes**, and dozens of **base-game synergies**
+- **Stadium sounds**, a settings menu (press **C**), External Item Descriptions support, and save & continue
+
+<p align="center"><img src="docs/characters.png" alt="The Quarterback, Tainted QB, The Kicker and Tainted Kicker"></p>
+<p align="center"><img src="docs/items.png" alt="Every item and trinket"></p>
+<p align="center"><img src="docs/enemies.png" alt="The football enemies"></p>
+<p align="center"><img src="docs/bosses.png" alt="The Linebacker, the Coach and The Franchise"></p>
+<p align="center"><img src="docs/uniforms.png" alt="Uniform colours"></p>
+
+## Everything in detail
+Click a section to expand it.
+
+<details>
+<summary><b>Items</b></summary>
 
 ## Items
-
 | Item | Type | Pools | What it does |
 |---|---|---|---|
 | **Football Helmet** | Passive (Q3) | Treasure | **Tackle:** run in a straight line for ~1s and Isaac starts glowing. Running into enemies then deals 3× damage + 5, knocks them back hard, confuses them and **stuns** them (the chin strap is built in). You take no contact damage while tackling. **Facemask:** 40% chance to block enemy shots that hit you from the direction you're facing. |
@@ -59,8 +84,12 @@ Clearing a normal room has a **6% chance** (once per floor, adjustable in the me
 | **Coin Toss** | Card | Flip a coin. **Heads:** +1.5 Damage for the room. **Tails:** fully recharges your active item and slows every enemy. |
 | **Timeout!** | Pill | Freezes every enemy for 3 seconds, clears enemy shots, and heals half a heart. |
 
-## Base-game synergies
+</details>
 
+<details>
+<summary><b>Base-game synergies</b></summary>
+
+## Base-game synergies
 | Gridiron item | With | Effect |
 |---|---|---|
 | Football Helmet | Mars | Every dash is a tackle |
@@ -84,6 +113,11 @@ Clearing a normal room has a **6% chance** (once per floor, adjustable in the me
 
 These also appear in External Item Descriptions.
 
+</details>
+
+<details>
+<summary><b>Playable characters: The Quarterback and The Kicker</b></summary>
+
 ## Playable characters: The Quarterback and The Kicker
 | Version | Health | Starts with | Play style |
 |---|---|---|---|
@@ -98,7 +132,12 @@ All four appear on the character select screen with their own page, portrait, co
 ### Completion notes
 Every Gridiron character tracks the vanilla marks: **Mom's Heart, Isaac, Satan, ???, The Lamb, Boss Rush, Hush, Mega Satan, Delirium, Mother, The Beast, Ultra Greed and Ultra Greedier**, each as normal or hard. You get a callout when you earn one, and each character has a **completion notes** page in the settings menu. The game doesn't let mods draw marks on the character-select paper, so they live in the menu. They're bragging rights: nothing is locked behind them.
 
-## Boss & enemies
+</details>
+
+<details>
+<summary><b>Bosses & enemies</b></summary>
+
+## Bosses & enemies
 | Entity | Where | What it does |
 |---|---|---|
 | **The Linebacker** (boss) | May replace Monstro, Gurdy, Gurdy Jr., Duke of Flies or Dingle on floors 2–6 (25%) | Walks you down, then either **telegraphs a charge** (crouches and flashes) and blitzes across the room, getting **stunned** if he hits a wall, or **spikes a football** that bursts into shots. Below half health he enrages: faster, plus a **pile-up jump** that lands with a ring of shots. |
@@ -119,6 +158,11 @@ Every Gridiron character tracks the vanilla marks: **Mom's Heart, Isaac, Satan, 
 Each football enemy replaces the vanilla enemy listed, on floors 1–8, at the "football foes" chance (10% by default; the Coach half that).
 Both chances can be changed (or set to 0) in the menu. Use `gridiron spawn <name>` to summon any one of them. When the Linebacker replaces a boss, the intro screen still shows the original boss.
 
+</details>
+
+<details>
+<summary><b>Challenges</b></summary>
+
 ## Challenges
 Find these under **Challenges → Custom**:
 | Challenge | Goal | Rules |
@@ -126,6 +170,8 @@ Find these under **Challenges → Custom**:
 | **Fourth and Long** | Mom's Heart | Start Suited Up (Helmet, Pads, Jersey) with the Gatorade Bucket. Red hearts turn into pennies, so Gatorade showers are your only healing. |
 | **Two-Minute Drill** | Mom | Start with the Playbook, Cleats and Eye Black. Each floor runs on a 2:00 game clock; every cleared room adds 10 seconds and recharges the Playbook. In overtime you lose half a heart every 15 seconds. |
 | **Ground Game** | Mom | You can't shoot. Start with the Helmet, Pads, Cleats, Pants and Kicking Tee. Tackles deal double damage and wind up twice as fast. |
+
+</details>
 
 ## Installing
 1. Download `gridiron-vX.Y.Z.zip` from the [latest release](https://github.com/bulmaspanties/tboifbm/releases/latest).
@@ -158,6 +204,9 @@ The Release workflow runs the smoke test, builds the zip with `tools/package.py`
 
 If **External Item Descriptions** is installed, every item shows its description (numbers follow your settings).
 
+<details>
+<summary><b>Settings menu</b></summary>
+
 ## Settings menu
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
 - **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, Franchise boss chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
@@ -167,6 +216,11 @@ Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or 
 - **costume fit:** hide the helmet, eye black, jersey/pads or pants/cleats for the character you're playing right now
 
 Settings are saved and kept between runs. Your run state (caught balls, bucket, jersey, current play…) also survives **save & continue**.
+
+</details>
+
+<details>
+<summary><b>Console commands</b></summary>
 
 ## Console commands
 Open the debug console with `~`:
@@ -179,6 +233,11 @@ Open the debug console with `~`:
 | `gridiron hide <slot>` / `gridiron show <slot>` | Hide/show a costume piece for your current character (`helmet`, `eyeblack`, `torso`, `legs`) |
 | `gridiron reset` | Reset all settings to defaults |
 
+</details>
+
+<details>
+<summary><b>Costumes</b></summary>
+
 ## Costumes
 Your character wears what you pick up: the helmet (with facemask) and eye black on the head, jersey and/or shoulder pads on the torso, and pants and/or cleats on the legs.
 All costumes are managed in Lua, so they can be turned off, hidden per character, and are re-applied after anything that resets costumes.
@@ -189,36 +248,59 @@ They're drawn on Isaac's body shape, with fixes per character, sized from each c
 
 If a piece still looks wrong on a character, hide it from **costume fit** in the menu (or `gridiron hide <slot>`).
 
+</details>
+
+<details>
+<summary><b>Layout</b></summary>
+
 ## Layout
 ```
-metadata.xml                    mod manifest
+metadata.xml                    mod manifest (name, Workshop description, tags, version)
 main.lua                        loads the scripts below
-scripts/core.lua                item ids, tuning (Cfg), settings, shared helpers
-scripts/gear.lua                passive items, trinkets, stats
+scripts/core.lua                item ids, tuning (Cfg), settings, shared helpers and hooks
+scripts/gear.lua                passive items, trinkets, stats, All-Pro, Turf Burn
 scripts/actives.lua             Kicking Tee, Pigskin, Playbook, Coach's Whistle
-scripts/costumes.lua            worn gear (null costumes, per-character hiding)
+scripts/endzone.lua             End Zone active and its floor paint
+scripts/legends.lua             Q4 items: Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary
+scripts/costumes.lua            worn gear, uniform colours, per-character fit, pedestal recolours
 scripts/hud.lua                 Suited Up glow, held balls, text readouts
 scripts/save.lua                settings + save & continue persistence
 scripts/eid.lua                 External Item Descriptions
-scripts/menu.lua                Dead Sea Scrolls settings page
-scripts/commands.lua            `gridiron` console commands
+scripts/menu.lua                Dead Sea Scrolls settings pages
+scripts/commands.lua            `gridiron` console commands (paced, crash-safe drops)
+scripts/challenges.lua          challenge rules
+scripts/extras.lua              Foam Finger, Super Bowl Ring, Coin Toss, Timeout!
+scripts/familiars.lua           Cheerleader, Water Boy, Tackling Dummy
+scripts/monsters.lua            the Linebacker, Mascot, Referee, enemy spawn swaps
+scripts/foes.lua                Lineman, Blitzer, Punter, Huddle, Cooler, Chain Gang, Sacker, Coach, Team Captains
+scripts/franchise.lua           The Franchise (two-phase final boss)
+scripts/quarterback.lua         The Quarterback + Tainted
+scripts/kicker.lua              The Kicker + Tainted
+scripts/halftime.lua            the Halftime show event
+scripts/synergies.lua           interactions with base-game items
+scripts/completion.lua          completion notes
 scripts/dssmenucore.lua         Dead Sea Scrolls library (public domain, unmodified)
-content/                        items, pools, costumes, sounds
-resources/gfx/...               item sprites, costumes, football tear, DSS menu art
-resources/sfx/...               referee whistle, DSS menu sounds
-tests/smoke_test.lua            runs the mod against a mock of the Isaac API
-tools/make_sprites.py           renders item/tear sprites from pixel maps (needs Pillow)
-tools/make_costumes.py          generates costume sheets + .anm2 on Isaac's rig (needs Pillow)
-tools/make_sounds.py            synthesizes the referee whistle (stdlib only)
-tools/make_entities.py          familiar, enemy and boss sprites + anm2 (needs Pillow)
-tools/make_character.py         the Quarterback's sheets and menu art (needs Pillow + the CC0 template)
-tools/package.py                builds the release zip
+content/                        items, pools, costumes, entities, players, sounds, menu art
+resources/                      sprites, costumes, sounds
+tests/smoke_test.lua            runs the mod against a mock of the Isaac API (2000+ checks)
+tools/                          generators for every sprite, costume, sound and the README images
+reference/                      vanilla character/boss sprites used as art reference (not shipped)
 ```
+
+</details>
+
+<details>
+<summary><b>Credits</b></summary>
 
 ## Credits
 - Character menu layouts and the base player sheet come from the CC0 [IsaacTemplates](https://github.com/manaphoenix/IsaacTemplates) character template (recolored and redrawn by `tools/make_character.py`).
 - Costume rig reference: [isaac-costume-templates](https://github.com/catinsurance/isaac-costume-templates).
 - Settings menu: [Dead Sea Scrolls](https://github.com/Meowlala/DeadSeaScrollsMenu) (public domain).
+
+</details>
+
+<details>
+<summary><b>Testing</b></summary>
 
 ## Testing
 `tests/smoke_test.lua` loads `main.lua` against a mock of the game's Lua API and runs every item through its callbacks.
@@ -227,8 +309,15 @@ Run it from the repo root with Lua 5.3 or newer:
 ```
 lua tests/smoke_test.lua
 ```
-It catches typos, nil errors and broken wiring. Balance and game feel still need a real playtest.
+It runs over 2000 checks and catches typos, nil errors and broken wiring. Balance and game feel still need a real playtest.
+
+</details>
+
+<details>
+<summary><b>Roadmap</b></summary>
 
 ## Roadmap
-- Playtest and balance pass
-- Per-character costume fixes (send screenshots of anything that looks off)
+- Your playtest notes: balance, game feel, anything that looks off on a character
+- In-game screenshots and GIFs for this page
+
+</details>
