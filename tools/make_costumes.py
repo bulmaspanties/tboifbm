@@ -14,6 +14,8 @@ from pathlib import Path
 
 from PIL import Image
 
+from iconstyle import finish
+
 ROOT = Path(__file__).resolve().parent.parent
 CHAR_DIR = ROOT / "resources/gfx/characters"
 SHEET_DIR = CHAR_DIR / "costumes"
@@ -123,6 +125,50 @@ def bar(o, points, shade_below=True):
                 o[x, y + 1] = FACEMASK_SHADE
 
 
+def sleek(shell, mask, rows, view):
+    """Reshape the round head into a modern shell: long, low crown with a raised
+    center ridge, a squared brow, and jaw guards / back flare that kick outward."""
+    grown = set(shell)
+
+    def add(x, y):
+        if 0 <= x < CELL and 0 <= y < CELL:
+            grown.add((x, y))
+
+    top = min(y for (_, y) in shell)
+    if view == "right":
+        for y in range(top + 2, top + 10):            # stretch the crown backward: longer, not taller
+            if y in rows:
+                add(rows[y][0] - 1, y)
+        for y in (10, 11, 12):                        # visor shelf jutting out over the face
+            if y in rows:
+                for dx in (1, 2):
+                    add(rows[y][1] + dx, y)
+        for y in range(14, 24):                       # jaw guard sweeps forward toward the chin
+            reach = 17 + (y - 14) * 4 // 9
+            for x in range(12, reach + 1):
+                add(x, y)
+        for y in range(18, 23):                       # rear flare at the base of the shell
+            if y in rows:
+                add(rows[y][0] - 1, y)
+    else:
+        for y in range(top, top + 1):                 # raised center ridge instead of a dome
+            for x in range(12, 20):
+                add(x, y - 1)
+        for y in (8, 9, 10, 11):                      # wider, squarer brow / temples
+            if y in rows:
+                add(rows[y][0] - 1, y)
+                add(rows[y][1] + 1, y)
+        flare = range(19, 24) if view == "down" else range(19, 25)
+        for y in flare:                               # jaw guards / back flare kick outward
+            if y in rows:
+                lo, hi = rows[y]
+                if (lo, y) in grown:
+                    add(lo - 1, y)
+                if (hi, y) in grown:
+                    add(hi + 1, y)
+    return grown
+
+
 def paint_helmet(src, view):
     """Modern helmet: bulkier glossy shell, center stripe, bumpers, cage facemask."""
     out = Image.new("RGBA", (CELL, CELL), CLEAR)
@@ -148,11 +194,7 @@ def paint_helmet(src, view):
         return x <= 19
 
     shell = {(x, y) for (x, y) in mask if in_shell(x, y)}
-    # helmets sit taller than a bare head: add one row on top of the crown
-    grown = set(shell)
-    for (x, y) in shell:
-        if y <= 4 and (x, y - 1) not in mask and y - 1 >= 0:
-            grown.add((x, y - 1))
+    grown = sleek(shell, mask, rows, view)
     rim = outline_mask(grown, CELL, CELL)
     for (x, y) in grown:
         near_rim = any((x + dx, y + dy) in rim for dx, dy in ((1, 0), (0, 1), (1, 1)))
@@ -176,6 +218,10 @@ def paint_helmet(src, view):
             for x in (lo + side, hi - side):
                 if (x, y) in grown:
                     o[x, y] = HELMET[0]
+        # crown vents either side of the stripe
+        for x, y in ((11, 4), (12, 4), (19, 4), (20, 4)):
+            if (x, y) in grown and o[x, y] != OUTLINE:
+                o[x, y] = OUTLINE
         # forehead badge (like the Schutt / Riddell front plate)
         for x in range(14, 18):
             o[x, 9] = BUMPER[1]
@@ -210,6 +256,11 @@ def paint_helmet(src, view):
             col = [y for y in range(CELL) if (x, y) in grown and o[x, y] != OUTLINE]
             if col:
                 o[x, col[0]] = HELMET_STRIPE
+        # one clean panel seam from the visor back over the ear
+        for x in range(13, 26):
+            y = 9 if x >= 17 else 10
+            if (x, y) in grown and o[x, y] not in (OUTLINE, HELMET_STRIPE):
+                o[x, y] = HELMET[0]
         # ear hole with a screw below it (kept simple, like the real shell)
         for x, y in ((9, 15), (10, 15), (9, 16), (10, 16), (11, 16)):
             o[x, y] = OUTLINE
@@ -384,7 +435,7 @@ def main(template_root):
         "gridiron_eyeblack": (paint_eye_black, "head1"),
     }
     # the collectible sprite is the costume's side view, so they always match
-    helmet_item_icon(head.crop((2 * CELL, 0, 3 * CELL, CELL))).save(
+    finish(helmet_item_icon(head.crop((2 * CELL, 0, 3 * CELL, CELL)))).save(
         ROOT / "resources/gfx/items/collectibles/football_helmet.png")
 
     for name, (painter, layer) in head_costumes.items():

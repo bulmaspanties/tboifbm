@@ -93,7 +93,7 @@ return function(mod)
 
     function mod:OnCacheCheer(player, flag)
         if flag == CacheFlag.CACHE_FIREDELAY and (pdata(player).cheerTimer or 0) > 0 then
-            player.MaxFireDelay = player.MaxFireDelay * Cfg.CHEER_FIRE_DELAY_MULT
+            player.MaxFireDelay = player.MaxFireDelay * Cfg.CHEER_FIRE_DELAY_MULT ^ mod.familiarBoost(player)
         end
     end
     mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.OnCacheCheer)
@@ -103,7 +103,7 @@ return function(mod)
         local boss = game:GetRoom():GetType() == RoomType.ROOM_BOSS
         forEachPlayer(function(player)
             for _, fam in ipairs(familiarsOf(player, Variants.WATER_BOY)) do
-                local chance = Cfg.WATER_BOY_CHANCE + player.Luck * 0.02
+                local chance = (Cfg.WATER_BOY_CHANCE + player.Luck * 0.02) * mod.familiarBoost(player)
                 if boss or player:GetCollectibleRNG(Items.WATER_BOY):RandomFloat() < chance then
                     Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_HALF,
                         fam.Position, Vector(0, 2), fam)
@@ -128,7 +128,7 @@ return function(mod)
         fam.OrbitDistance = EntityFamiliar.GetOrbitDistance(DUMMY_ORBIT_LAYER)
         fam.OrbitSpeed = 0.02
         fam.Velocity = fam:GetOrbitPosition(player.Position + player.Velocity) - fam.Position
-        for _, e in ipairs(Isaac.FindInRadius(fam.Position, Cfg.DUMMY_TAUNT_RADIUS, EntityPartition.ENEMY)) do
+        for _, e in ipairs(Isaac.FindInRadius(fam.Position, Cfg.DUMMY_TAUNT_RADIUS * mod.familiarBoost(player), EntityPartition.ENEMY)) do
             if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) and not e:IsBoss() then
                 e:AddVelocity((fam.Position - e.Position):Resized(Cfg.DUMMY_TAUNT_PULL))
             end

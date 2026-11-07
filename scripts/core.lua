@@ -179,6 +179,17 @@ return function(mod)
         -- Set bonus
         SUITED_UP_PIECES      = 3,
         SUITED_UP_DAMAGE      = 1.0,
+
+        -- Base-game synergies (scripts/synergies.lua)
+        MARS_DASH_SPEED       = 9,     -- velocity that counts as a Mars dash
+        BIG_TACKLE_DAMAGE     = 1.25,  -- Leo / Thunder Thighs / Magic Mushroom / Bucket of Lard
+        BIG_TACKLE_KNOCKBACK  = 1.5,
+        MAGNET_CATCH_BONUS    = 0.2,   -- Magneto / Telekinesis + Receiver Gloves
+        INFAMY_DEFLECT_BONUS  = 0.15,  -- Infamy + Shoulder Pads
+        BOOM_KICK_RADIUS      = 1.5,   -- explosive items + Kicking Tee
+        BFFS_FAMILIAR_BOOST   = 1.5,
+        SHOWER_CREEP_SCALE    = 2.5,   -- Gatorade shower creep
+        SHOWER_CREEP_FRAMES   = 240,
     }
     mod.Config = mod.Cfg -- older name
 
@@ -203,6 +214,14 @@ return function(mod)
     function mod.tackleDamageMult() return 1 end
     function mod.currentChallenge() return nil end
     function mod.quarterbackKind() return nil end
+    -- base-game synergy hooks (scripts/synergies.lua)
+    function mod.tackleSynergy() return 1, 1, 1 end
+    function mod.catchBonus() return 0 end
+    function mod.deflectBonus() return 0 end
+    function mod.kickRadiusMult() return 1 end
+    function mod.fumblePullMult() return 1 end
+    function mod.familiarBoost() return 1 end
+    function mod.onGatoradeShower() end
 
     -- Wearable gear counts toward Suited Up; actives and the bucket don't.
     mod.GEAR = {

@@ -1,10 +1,11 @@
 -- Debug console commands, handy for playtesting:
---   gridiron give            give every passive; drop the actives and trinkets nearby
+--   gridiron give            drop every item as a pedestal (walk over them: they count for the collection)
+--   gridiron give quick      give every passive instantly (skips the collection); drop the rest
 --   gridiron hide <slot>     hide a costume piece for your current character
 --   gridiron show <slot>     show it again          (slots: helmet eyeblack torso legs)
 --   gridiron reset           reset all settings to defaults
 return function(mod)
-    local HELP = "gridiron give | boss | enemies | hide <slot> | show <slot> | reset   (slots: helmet eyeblack torso legs)"
+    local HELP = "gridiron give [quick] | boss | enemies | hide <slot> | show <slot> | reset   (slots: helmet eyeblack torso legs)"
 
     local function setSlot(slot, visible)
         local valid = false
@@ -27,7 +28,10 @@ return function(mod)
         for word in (params or ""):gmatch("%S+") do args[#args + 1] = word:lower() end
 
         if args[1] == "give" then
-            -- Passives go straight in; actives and trinkets drop around you so you can swap.
+            -- Default: every item is a real pedestal. Picking an item up is what adds it to
+            -- the collection (and the pause screen's My Stuff list); giving it directly doesn't.
+            -- "quick" hands passives straight over for fast testing.
+            local quick = args[2] == "quick"
             local player = Isaac.GetPlayer(0)
             local room = Game():GetRoom()
             local function drop(variant, id)
@@ -36,7 +40,7 @@ return function(mod)
             end
             for _, id in pairs(mod.Items) do
                 if id > 0 then
-                    if mod.ACTIVE_ITEMS[id] then
+                    if not quick or mod.ACTIVE_ITEMS[id] then
                         drop(PickupVariant.PICKUP_COLLECTIBLE, id)
                     elseif not player:HasCollectible(id) then
                         player:AddCollectible(id)
@@ -50,7 +54,8 @@ return function(mod)
             if mod.Pills.TIMEOUT >= 0 then
                 drop(PickupVariant.PICKUP_PILL, Game():GetItemPool():ForceAddPillEffect(mod.Pills.TIMEOUT))
             end
-            return "gave all Gridiron passives; actives and trinkets are on the floor"
+            if quick then return "gave all Gridiron passives; actives and trinkets are on the floor" end
+            return "dropped every Gridiron item: walk over them to pick them up"
         elseif args[1] == "boss" or args[1] == "enemies" then
             local player = Isaac.GetPlayer(0)
             local room = Game():GetRoom()

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0
+- **Base-game synergies:** Mars, Aries, Taurus and size-up items with tackles; Magneto and Telekinesis with Receiver Gloves; Infamy with Shoulder Pads; explosive items with the Kicking Tee; magnets with the Pigskin; Holy Water, lemons, Ball of Tar and Juicy Sack with the Gatorade Bucket; BFFS! with the familiars. Team Jersey and the Quarterback now throw footballs with Brimstone, Technology, Mom's Knife and other weapons that don't fire tears. EID lists each item's synergies.
+- **Helmet:** sleeker, modern shell. Longer and lower crown, a visor shelf over the face, a forward-swept jaw guard, a flared back, and a squared brow. The facemask is unchanged.
+- **Art pass:** every item, trinket and card icon gets the vanilla treatment: one heavy outline, slightly muted colours and rounded rim lighting. Eye Black is redrawn as an open tin of grease.
+- `gridiron give` now drops real pedestals, so the items count for your collection and show in the pause screen's *My Stuff* list. `gridiron give quick` keeps the old instant behaviour.
+
 ## 0.4.3
 - Fix: the Quarterback character-select pages no longer draw a big figure in the middle of the page, where it piled up under the character wheel.
 

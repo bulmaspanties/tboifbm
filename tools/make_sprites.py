@@ -10,6 +10,8 @@ from pathlib import Path
 
 from PIL import Image
 
+from iconstyle import finish
+
 ROOT = Path(__file__).resolve().parent.parent
 GFX = ROOT / "resources/gfx"
 
@@ -183,41 +185,6 @@ SPRITES["items/collectibles/football_cleats.png"] = dict(rows=[
 ])
 
 # --- Eye Black (grease stick + two swipes) ------------------------------------
-SPRITES["items/collectibles/eye_black.png"] = dict(rows=[
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-    "................KKKKKKKKKKKK....",
-    "...............KkkNNnkkkkkkkK...",
-    "..............KkkNkkkkkkkkkK....",
-    ".............KkkkkkkkkkkkkK.....",
-    "..............KKKKKKKKKKKK......",
-    "................................",
-    "....KKKKKK......................",
-    "...KnnNNnnK.....................",
-    "...KkkkkkkK.....KKKKKKKKKKKK....",
-    "...KkkkkkkK....KkkNNnkkkkkkkK...",
-    "...KKKKKKKK...KkkNkkkkkkkkkK....",
-    "...KGGGGGgK..KkkkkkkkkkkkkK.....",
-    "...KGWGGGgK...KKKKKKKKKKKK......",
-    "...KGWGGGgK.....................",
-    "...KGWGGGgK.....................",
-    "...KGGGGGgK.....................",
-    "...KRRRRRrK.....................",
-    "...KSSSSRrK.....................",
-    "...KRRRRRrK.....................",
-    "...KGGGGGgK.....................",
-    "...KGWGGGgK.....................",
-    "...KGGGGGgK.....................",
-    "...KGGGGGgK.....................",
-    "....KKKKKK......................",
-    "................................",
-    "................................",
-    "................................",
-    "................................",
-])
-
 # --- Padded Pants (passive, mirrored) -----------------------------------------
 SPRITES["items/collectibles/padded_pants.png"] = dict(mirror=True, rows=[
     "................",
@@ -576,6 +543,26 @@ def coin_toss_front():
     return rows_of(outline(g))
 
 
+def eye_black():
+    """An open tin of eye black: dark grease with a finger swipe, the lid leaning behind."""
+    g = blank()
+    ellipse(g, 21.5, 11.5, 7, 7, "N")                # lid, leaning behind the tin
+    ellipse(g, 21.5, 11.5, 5.6, 5.6, "n")
+    ellipse(g, 20.5, 10.5, 2.2, 2.2, "N")            # pressed logo on the lid
+    rect(g, 5, 17, 22, 25, "N")                       # tin wall: grey metal
+    rect(g, 5, 17, 7, 25, "G")                        # lit left side
+    rect(g, 20, 17, 22, 25, "n")                      # shaded right side
+    ellipse(g, 13.5, 25.5, 9, 2.6, "n")               # rounded base
+    ellipse(g, 13.5, 16.5, 9, 3.2, "G")               # silver rim
+    ellipse(g, 13.5, 16.5, 7.6, 2.3, "k")             # grease
+    put(g, [(10, 16), (11, 16), (12, 15), (13, 15), (14, 16), (15, 16)], "n")   # the finger swipe
+    rect(g, 8, 20, 18, 23, "W")                       # label: two eye-black stripes
+    rect(g, 9, 21, 12, 22, "k")
+    rect(g, 14, 21, 17, 22, "k")
+    return rows_of(outline(g))
+
+
+SPRITES["items/collectibles/eye_black.png"] = dict(rows=eye_black())
 SPRITES["items/collectibles/chin_strap.png"] = dict(rows=chin_strap())
 SPRITES["items/collectibles/foam_finger.png"] = dict(rows=foam_finger())
 SPRITES["items/collectibles/super_bowl_ring.png"] = dict(rows=super_bowl_ring())
@@ -701,7 +688,10 @@ def main():
         # "content:" sprites (card fronts) live next to content/gfx/ui_cardfronts.anm2
         out = ROOT / "content/gfx" / rel[8:] if rel.startswith("content:") else GFX / rel
         out.parent.mkdir(parents=True, exist_ok=True)
-        render(spec).save(out)
+        img = render(spec)
+        if rel.startswith(("items/", "content:")):
+            img = finish(img)   # icons get the vanilla outline/shading pass; the tear does not
+        img.save(out)
     print(f"{len(SPRITES)} sprites written")
 
 

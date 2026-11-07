@@ -44,7 +44,7 @@ return function(mod)
 
         -- It's good if the explosion is going to finish something off.
         local good = false
-        for _, e in ipairs(Isaac.FindInRadius(ball.pos, Cfg.KICK_RADIUS, EntityPartition.ENEMY)) do
+        for _, e in ipairs(Isaac.FindInRadius(ball.pos, Cfg.KICK_RADIUS * mod.kickRadiusMult(player), EntityPartition.ENEMY)) do
             if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) and e.HitPoints <= dmg then
                 good = true
             end
@@ -53,7 +53,7 @@ return function(mod)
         mod.kickExploding = true
         mod.kickBlastFrame = game:GetFrameCount()
         game:BombExplosionEffects(ball.pos, dmg, TearFlags.TEAR_NORMAL, Color.Default, player,
-            Cfg.KICK_RADIUS_MULT, true, false, DamageFlag.DAMAGE_EXPLOSION)
+            Cfg.KICK_RADIUS_MULT * mod.kickRadiusMult(player), true, false, DamageFlag.DAMAGE_EXPLOSION)
         mod.kickExploding = false
 
         if good then
@@ -91,11 +91,12 @@ return function(mod)
         ball.life = ball.life - 1
         local player = ball.player
 
-        for _, e in ipairs(Isaac.FindInRadius(ball.pos, Cfg.FUMBLE_PULL_RADIUS, EntityPartition.ENEMY)) do
+        local magnet = mod.fumblePullMult(player)
+        for _, e in ipairs(Isaac.FindInRadius(ball.pos, Cfg.FUMBLE_PULL_RADIUS * magnet, EntityPartition.ENEMY)) do
             if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) and not e:IsBoss() then
                 local toBall = ball.pos - e.Position
                 if toBall:Length() > 8 then
-                    e:AddVelocity(toBall:Resized(Cfg.FUMBLE_PULL))
+                    e:AddVelocity(toBall:Resized(Cfg.FUMBLE_PULL * magnet))
                 end
                 if ball.life % 30 == 0 then
                     e:AddConfusion(EntityRef(player), 35, false)

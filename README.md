@@ -45,6 +45,23 @@ Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats
 | **Coin Toss** | Card | Flip a coin. **Heads:** +1.5 Damage for the room. **Tails:** fully recharges your active item and slows every enemy. |
 | **Timeout!** | Pill | Freezes every enemy for 3 seconds, clears enemy shots, and heals half a heart. |
 
+## Base-game synergies
+
+| Gridiron item | With | Effect |
+|---|---|---|
+| Football Helmet / Chin Strap | Mars | Every dash is a tackle |
+| Football Helmet / Chin Strap | Aries, Taurus | Tackles go live twice as fast |
+| Football Helmet / Chin Strap | Leo, Thunder Thighs, Magic Mushroom, Bucket of Lard | Tackles deal +25% damage and knock enemies 50% farther |
+| Receiver Gloves | Magneto, Telekinesis | +20% catch chance |
+| Shoulder Pads | Infamy | +15% deflect chance |
+| Team Jersey / The Quarterback | Brimstone, Technology, Mom's Knife, Epic Fetus, the Forgotten's bone, ... | Still throw a football every few attacks |
+| Kicking Tee | Ipecac, Dr. Fetus, Epic Fetus, Bomber Boy, Mr. Mega | +50% blast radius |
+| Pigskin | Strange Attractor, Magneto | Pulls enemies twice as hard, from twice as far |
+| Gatorade Bucket | Holy Water, Free Lemonade, Lemon Mishap, Ball of Tar, Juicy Sack | The shower leaves matching creep |
+| Cheerleader / Water Boy / Tackling Dummy | BFFS! | Stronger routines / more hearts / wider pull |
+
+These also appear in External Item Descriptions.
+
 ## Playable character: The Quarterback
 | Version | Health | Starts with | Play style |
 |---|---|---|---|
@@ -75,7 +92,7 @@ Find these under **Challenges → Custom**:
 2. Unzip it into your Isaac `mods` folder, so you end up with `mods/gridiron/metadata.xml`. On Steam/Windows that's
    `C:\Program Files (x86)\Steam\steamapps\common\The Binding of Isaac Rebirth\mods`.
 3. Launch the game and turn on **Gridiron** in the Mods menu.
-4. To try everything at once, open the debug console (`~`) and type `gridiron give`.
+4. To try everything at once, open the debug console (`~`) and type `gridiron give` and walk over the pedestals.
 
 ### Publishing to the Steam Workshop
 1. Install the release zip into your `mods` folder as above (it includes `thumb.png`, the Workshop preview).
@@ -103,7 +120,8 @@ Settings are saved and kept between runs. Your run state (caught balls, bucket, 
 Open the debug console with `~`:
 | Command | What it does |
 |---|---|
-| `gridiron give` | Gives every passive; drops all actives and trinkets around you |
+| `gridiron give` | Drops every item as a pedestal. Walk over them: picking an item up is what adds it to your collection and the pause screen's *My Stuff* list |
+| `gridiron give quick` | Gives every passive instantly (they show as "?" in *My Stuff* until you find them for real); drops actives and trinkets |
 | `gridiron boss` / `gridiron enemies` | Spawn the Linebacker, or a Mascot and a Referee, next to you |
 | `gridiron hide <slot>` / `gridiron show <slot>` | Hide/show a costume piece for your current character (`helmet`, `eyeblack`, `torso`, `legs`) |
 | `gridiron reset` | Reset all settings to defaults |

@@ -140,7 +140,8 @@ CoinSubType = enum()
 DamageFlag = enum()
 RenderMode = enum()
 RoomType = { ROOM_DEFAULT = 1, ROOM_BOSS = 5 }
-CollectibleType = { COLLECTIBLE_BIRTHRIGHT = 619 }
+CollectibleType = enum({ COLLECTIBLE_BIRTHRIGHT = 619 })
+WeaponType = enum()
 HeartSubType = { HEART_FULL = 1, HEART_HALF = 2, HEART_SOUL = 3, HEART_DOUBLEPACK = 5, HEART_SCARED = 9 }
 Direction = { LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3 }
 EntityCollisionClass = { ENTCOLL_NONE = 0, ENTCOLL_PLAYERONLY = 1, ENTCOLL_PLAYEROBJECTS = 2, ENTCOLL_ENEMIES = 3, ENTCOLL_ALL = 4 }
@@ -353,6 +354,8 @@ local function newPlayer(ptype)
     p.rng = newRng(0.0)
     p.ptype = ptype or 0
     p.hearts, p.maxHearts, p.soul = 6, 6, 0
+    p.weapon, p.FireDelay = WeaponType.WEAPON_TEARS, 0
+    function p:HasWeaponType(w) return self.weapon == w end
     function p:HasCollectible(id) return (self.items[id] or 0) > 0 end
     function p:GetCollectibleNum(id) return self.items[id] or 0 end
     function p:AddCollectible(id)
@@ -550,16 +553,18 @@ Isaac = {
     SaveModData = function(_, s) world.modData = s end,
 }
 
-local eidEntries = 0
+local eidEntries, eidText = 0, {}
 EID = {
-    addCollectible = function(_, id) check(id and id > 0, "EID for unknown collectible"); eidEntries = eidEntries + 1 end,
+    addCollectible = function(_, id, text)
+        check(id and id > 0, "EID for unknown collectible"); eidEntries = eidEntries + 1; eidText[id] = text
+    end,
     addTrinket = function(_, id) check(id and id > 0, "EID for unknown trinket"); eidEntries = eidEntries + 1 end,
     addCard = function(_, id) check(id and id > 0, "EID for unknown card"); eidEntries = eidEntries + 1 end,
     addPill = function(_, id) check(id and id >= 0, "EID for unknown pill"); eidEntries = eidEntries + 1 end,
 }
 
 -- Effects that fill the screen must never be spawned by gameplay code (v0.4.1 tackle-trail bug).
-for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "extras", "familiars", "monsters", "quarterback", "challenges" }) do
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "extras", "familiars", "monsters", "quarterback", "challenges", "synergies" }) do
     local src = readFile("scripts/" .. name .. ".lua") or ""
     check(not src:find("DUST_CLOUD", 1, true), "scripts/" .. name .. ".lua must not spawn DUST_CLOUD")
 end
@@ -867,7 +872,19 @@ check(costumeOn(p, "helmet"), "showing the helmet again for this character")
 local p2 = newPlayer()
 players[1] = p2
 world.entities = { p2 }
-check(dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "give"):find("gave"), "give command")
+local spawnedBefore = #world.spawned
+check(dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "give"):find("dropped"), "give command")
+local pedestals = 0
+local isOurs = {}
+for _, id in pairs(Items) do isOurs[id] = true end
+for i = spawnedBefore + 1, #world.spawned do
+    local e = world.spawned[i]
+    if e.Variant == PickupVariant.PICKUP_COLLECTIBLE and isOurs[e.SubType] then pedestals = pedestals + 1 end
+end
+check(pedestals == itemCount, "give drops every item as a pedestal (so pickups count for the collection)")
+check(not p2:HasCollectible(Items.HELMET), "give doesn't hand items over directly")
+world.spawned = {}
+check(dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "give quick"):find("gave"), "give quick command")
 local hasAll = true
 for _, id in pairs(Items) do
     if not mod.ACTIVE_ITEMS[id] then hasAll = hasAll and p2:HasCollectible(id) end
@@ -1234,6 +1251,97 @@ startChallenge("groundgame")
 check(mod.tackleDamageMult() == 2 and mod.tackleWindupMult() == 0.5, "ground game boosts tackles")
 world.challenge = 0
 check(mod.tackleDamageMult() == 1 and mod.currentChallenge() == nil, "no challenge, no rules")
+
+-- Base-game synergies ----------------------------------------------------------------------
+local C = CollectibleType
+local sp = newPlayer()
+players = { sp }
+world.entities = { sp }
+newRoom(false)
+sp.items[Items.HELMET] = 1
+
+-- Mars: a dash is a tackle at once; Aries/Taurus halve the windup; size-ups hit harder
+sp.items[C.COLLECTIBLE_MARS] = 1
+sp.Position, sp.Velocity = Vector(0, 0), Vector(Cfg.MARS_DASH_SPEED + 3, 0)
+tick()
+check(mod.pdata(sp).tackling, "a Mars dash is a tackle right away")
+sp.Velocity = Vector(0, 0)
+tick()
+sp.items[C.COLLECTIBLE_MARS] = nil
+check(mod.tackleSynergy(sp) == 1, "no synergy items, normal windup")
+sp.items[C.COLLECTIBLE_ARIES] = 1
+check(mod.tackleSynergy(sp) == 0.5, "Aries speeds up the tackle")
+sp.items[C.COLLECTIBLE_LEO] = 1
+local _, bigDmg, bigKnock = mod.tackleSynergy(sp)
+check(bigDmg > 1 and bigKnock > 1, "size-up items hit harder and farther")
+
+-- Magneto helps the gloves catch a shot they would otherwise miss
+sp.items[Items.GLOVES] = 1
+sp.rng.value = Cfg.GLOVES_CATCH_CHANCE + 0.1
+check(dispatch(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, nil, newProjectile(sp.Position), sp, false) ~= true,
+    "without magnets that roll is a miss")
+sp.items[C.COLLECTIBLE_MAGNETO] = 1
+check(dispatch(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, nil, newProjectile(sp.Position), sp, false) == true,
+    "Magneto helps the gloves catch")
+sp.items[Items.GLOVES] = nil
+
+-- Infamy helps the pads deflect (shot from the side, so the facemask stays out of it)
+sp.items[Items.PADS] = 1
+sp.aim = Vector(1, 0)
+sp.rng.value = Cfg.PADS_DEFLECT_CHANCE + 0.05
+check(dispatch(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, nil, newProjectile(sp.Position + Vector(-5, 0)), sp, false) ~= true,
+    "without Infamy that roll is a miss")
+sp.items[C.COLLECTIBLE_INFAMY] = 1
+check(dispatch(ModCallbacks.MC_PRE_PROJECTILE_COLLISION, nil, newProjectile(sp.Position + Vector(-5, 0)), sp, false) == true,
+    "Infamy helps the pads deflect")
+sp.aim = Vector(0, 0)
+
+-- explosive kicks, magnetic fumbles, BFFS! familiars
+check(mod.kickRadiusMult(sp) == 1, "plain kick radius")
+sp.items[C.COLLECTIBLE_IPECAC] = 1
+check(mod.kickRadiusMult(sp) > 1, "Ipecac makes a bigger field goal")
+check(mod.fumblePullMult(sp) == 2, "Magneto pulls enemies to the fumble harder")
+check(mod.familiarBoost(sp) == 1, "no BFFS, no boost")
+sp.items[C.COLLECTIBLE_BFFS] = 1
+check(mod.familiarBoost(sp) > 1, "BFFS boosts the sideline crew")
+
+-- Gatorade + Holy Water: the shower leaves holy water creep
+sp.items[Items.GATORADE] = 1
+sp.items[C.COLLECTIBLE_HOLY_WATER] = 1
+newRoom(false, RoomType.ROOM_BOSS)
+world.spawned = {}
+dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, sp.rng, Vector(0, 0))
+local creep = false
+for _, e in ipairs(world.spawned) do
+    if e.Type == EntityType.ENTITY_EFFECT and e.Variant == EffectVariant.PLAYER_CREEP_HOLYWATER then creep = e end
+end
+check(creep and creep.Timeout == Cfg.SHOWER_CREEP_FRAMES, "the gatorade shower leaves holy water creep")
+
+-- Brimstone (no tears) still throws Team Jersey footballs; tears builds don't get extras
+local bp = newPlayer()
+players = { bp }
+world.entities = { bp }
+newRoom(false)
+bp.items[Items.JERSEY] = 1
+local function attack(n)
+    local thrown = 0
+    for _ = 1, n do
+        bp.FireDelay = 10
+        tick()
+        bp.FireDelay = 0
+        tick()
+    end
+    for _, e in ipairs(world.entities) do
+        if e.Type == EntityType.ENTITY_TEAR and e.data.GridironFootball then thrown = thrown + 1 end
+    end
+    return thrown
+end
+check(attack(20) == 0, "tear builds get no extra footballs (the tear callback handles them)")
+bp.weapon = WeaponType.WEAPON_BRIMSTONE
+check(attack(20) >= 2, "Brimstone still throws a football every few attacks")
+
+check(eidText[Items.HELMET]:find("Mars", 1, true), "EID lists the helmet's synergies")
+check(eidText[Items.GATORADE]:find("Holy Water", 1, true), "EID lists the bucket's synergies")
 
 -- Settings survive a restart (fresh load reads the stored blob)
 findButton("gameplay", "kick damage").store(70)

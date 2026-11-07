@@ -44,7 +44,8 @@ return function(mod)
             d.runDir = nil
         end
 
-        local windup = Cfg.TACKLE_WINDUP * mod.tackleWindupMult()
+        local synWindup, synDamage, synKnock = mod.tackleSynergy(player)
+        local windup = Cfg.TACKLE_WINDUP * mod.tackleWindupMult() * synWindup
         if not player:HasCollectible(Items.HELMET) then windup = windup * Cfg.CHIN_STRAP_SOLO_WINDUP end
         if mod.isSuitedUp(player) then windup = windup / 2 end
         windup = math.floor(windup)
@@ -72,11 +73,11 @@ return function(mod)
                 local ed = e:GetData()
                 if (ed.GridironTackleCD or 0) <= now then
                     ed.GridironTackleCD = now + Cfg.TACKLE_HIT_COOLDOWN
-                    local dmg = (player.Damage * Cfg.TACKLE_DMG_MULT + Cfg.TACKLE_DMG_FLAT) * mod.tackleDamageMult()
+                    local dmg = (player.Damage * Cfg.TACKLE_DMG_MULT + Cfg.TACKLE_DMG_FLAT) * mod.tackleDamageMult() * synDamage
                     local strapped = player:HasCollectible(Items.CHIN_STRAP)
                     if strapped then dmg = dmg * Cfg.CHIN_STRAP_DMG_MULT end
                     e:TakeDamage(dmg, 0, EntityRef(player), 0)
-                    local push = d.runDir * Cfg.TACKLE_KNOCKBACK
+                    local push = d.runDir * (Cfg.TACKLE_KNOCKBACK * synKnock)
                     if e:IsBoss() then push = push * 0.25 end
                     e:AddVelocity(push)
                     e:AddConfusion(EntityRef(player), Cfg.TACKLE_CONFUSE, true)
@@ -253,6 +254,7 @@ return function(mod)
         sfx:Play(SoundEffect.SOUND_SPLATTER, 1.2)
         mod.popOn(player, "GATORADE SHOWER!", mod.Colors.orange)
         game:GetHUD():ShowItemText("Gatorade shower!", "Victory tastes like orange")
+        mod.onGatoradeShower(player)
     end
 
     function mod:OnRoomClearAward()
@@ -277,7 +279,7 @@ return function(mod)
     local throwingCaught = false
 
     function mod:OnFireTear(tear)
-        if throwingCaught then return end
+        if throwingCaught or mod.firingExtra then return end
         local player = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
         if not player then return end
         local d = pdata(player)
@@ -363,7 +365,7 @@ return function(mod)
         -- Hands are free only when you're not shooting.
         if player:HasCollectible(Items.GLOVES) and d.caught < Cfg.GLOVES_MAX_HELD
             and player:GetAimDirection():Length() < 0.1 then
-            if rngFor(player, Items.GLOVES):RandomFloat() < Cfg.GLOVES_CATCH_CHANCE then
+            if rngFor(player, Items.GLOVES):RandomFloat() < Cfg.GLOVES_CATCH_CHANCE + mod.catchBonus(player) then
                 proj:Remove()
                 d.caught = d.caught + 1
                 sfx:Play(SoundEffect.SOUND_PLOP, 1.2)
@@ -387,7 +389,7 @@ return function(mod)
         end
 
         if player:HasCollectible(Items.PADS) then
-            if rngFor(player, Items.PADS):RandomFloat() < Cfg.PADS_DEFLECT_CHANCE then
+            if rngFor(player, Items.PADS):RandomFloat() < Cfg.PADS_DEFLECT_CHANCE + mod.deflectBonus(player) then
                 proj.Velocity = proj.Velocity * -1.3
                 proj:AddProjectileFlags(ProjectileFlags.HIT_ENEMIES | ProjectileFlags.CANT_HIT_PLAYER)
                 proj.Color = Color(0.5, 0.7, 1, 1, 0, 0, 0.2)

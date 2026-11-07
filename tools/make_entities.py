@@ -311,6 +311,7 @@ def anm2(sheet_name, size, anims, pivot):
 
 def main():
     from PIL import Image
+    from iconstyle import finish
     for rel, spec in ENTITIES.items():
         size = spec.get("size", 32)
         frames = spec["frames"]
@@ -321,7 +322,7 @@ def main():
         png.parent.mkdir(parents=True, exist_ok=True)
         strip.save(png)
         if "icon" in spec:   # pedestal sprite = the first frame
-            render_rows(frames[0], size).save(GFX / spec["icon"])
+            finish(render_rows(frames[0], size)).save(GFX / spec["icon"])
         pivot = spec.get("pivot", (size // 2, size - 4))
         (GFX / f"{rel}.anm2").write_text(anm2(png.name, size, spec["anims"], pivot))
     print(f"{len(ENTITIES)} entities written")
