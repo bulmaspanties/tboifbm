@@ -1342,6 +1342,45 @@ npcTick(co, 240)
 check(#Isaac.FindByType(MT, MV.LINEMAN) > linemen, "short-handed, the coach subs in a lineman")
 dispatch(ModCallbacks.MC_POST_NPC_DEATH, MT, co)
 check(mod.currentCoachPlay() == nil, "fire the coach and the play is off")
+-- Team Captains: gold champions with a twist
+local function captain(variant, pos, seed)
+    local n = mod.spawnMonster(variant, pos)
+    n.InitSeed = seed or 1
+    dispatch(ModCallbacks.MC_POST_NPC_INIT, MT, n)
+    return n
+end
+local cap = captain(MV.PUNTER, Vector(220, 0))
+check(cap:GetData().captain and cap.MaxHitPoints > 100, "low seeds make a captain with more health")
+before = #world.spawned
+npcTick(cap, 42 + 11)
+check(#projectilesSince(before) == 3, "a captain punter punts a spread of three")
+cap.exists = false
+local notCap = captain(MV.PUNTER, Vector(220, 0), 999)
+check(not notCap:GetData().captain, "most seeds stay regular")
+notCap.exists = false
+local noCoachCap = captain(MV.COACH, Vector(220, 0))
+check(not noCoachCap:GetData().captain, "the coach is never a captain")
+noCoachCap.exists = false
+local capHuddle = captain(MV.HUDDLE, Vector(150, 0))
+npcTick(capHuddle)
+local capMembers = 0
+for _, m in ipairs(Isaac.FindByType(MT, MV.HUDDLE)) do
+    if m.exists then capMembers = capMembers + 1; check(m:GetData().captain, "the whole captain huddle is gold") end
+end
+check(capMembers == 6, "a captain's huddle is six deep")
+for _, m in ipairs(Isaac.FindByType(MT, MV.HUDDLE)) do m.exists = false end
+local capSack = captain(MV.SACKER, Vector(60, 0))
+npcTick(capSack, 1 + 30 + 17)
+before = #world.spawned
+npcTick(capSack, 26)
+check(#projectilesSince(before) == 8, "a captain sacker erupts in a ring of eight")
+capSack.exists = false
+local capLine = captain(MV.LINEMAN, Vector(200, 5))
+npcTick(capLine, 31 + 19)
+capLine.hitWall = true
+npcTick(capLine, 5)
+check(capLine:GetData().mode == "dig" and capLine:GetData().chain == 1, "a captain lineman lines up another charge")
+capLine.exists = false
 math.random = realRandom2
 end
 

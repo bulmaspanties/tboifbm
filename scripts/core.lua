@@ -192,6 +192,8 @@ return function(mod)
         COACH_CHANCE_MULT     = 0.5,   -- the Coach (replacing a Fatty) is rarer
         COACH_PLAY_FRAMES     = 150,   -- how long a called play lasts
         COACH_BLITZ_SPEED     = 1.12,
+        CAPTAIN_CHANCE        = 0.15,  -- a football enemy is a gold Team Captain
+        CAPTAIN_HP_MULT       = 1.5,
 
         -- The Quarterback
         QB_EVERY_NTH          = 3,     -- every Nth shot is a football (2 with Birthright)

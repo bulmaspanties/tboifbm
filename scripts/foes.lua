@@ -45,8 +45,19 @@ return function(mod)
                     sfx:Play(SoundEffect.SOUND_FORESTBOSS_STOMPS, 0.5, 0, false, 1.4)
                     mod.playSound("CLACK", 0.7)
                 end
-                d.mode, d.timer, d.cooldown = "walk", 0, 45
-                s:Play("Walk", true)
+                -- a captain doesn't stop: he lines you up again and goes, three times
+                if d.captain and (d.chain or 0) < 2 then
+                    d.chain = (d.chain or 0) + 1
+                    local diff2 = target.Position - npc.Position
+                    d.dir = math.abs(diff2.X) > math.abs(diff2.Y) and Vector(diff2.X > 0 and 1 or -1, 0)
+                        or Vector(0, diff2.Y > 0 and 1 or -1)
+                    d.mode, d.timer = "dig", 8
+                    s:Play("Dig", true)
+                else
+                    d.chain = 0
+                    d.mode, d.timer, d.cooldown = "walk", 0, 45
+                    s:Play("Walk", true)
+                end
             end
         end
     end
@@ -79,7 +90,12 @@ return function(mod)
             end
         else
             npc.Velocity = d.dir * 11
-            if d.timer <= 0 then
+            if d.timer <= 0 and d.captain and not d.doubled then
+                d.doubled = true                                  -- a captain dives twice
+                d.mode, d.timer = "windup", 8
+                s:Play("Fly", true)
+            elseif d.timer <= 0 then
+                d.doubled = false
                 d.mode, d.timer = "orbit", 60 + math.random(40)
                 d.angle = (npc.Position - target.Position):GetAngleDegrees()
                 s:Play("Fly", true)
@@ -89,9 +105,10 @@ return function(mod)
     end
 
     -- Punter: stays put, boots spiked footballs over the rocks at you -----------------------
-    local function puntFootball(npc, target)
+    local function puntFootball(npc, target, angle)
         local dist = (target.Position - npc.Position):Length()
-        local p = shoot(npc, toward(npc, target, math.max(3, math.min(9, dist / 28))), 1.6, Color(0.55, 0.3, 0.15, 1))
+        local vel = toward(npc, target, math.max(3, math.min(9, dist / 28)))
+        local p = shoot(npc, angle and vel:Rotated(angle) or vel, 1.6, Color(0.55, 0.3, 0.15, 1))
         p.FallingSpeed = -18
         p.FallingAccel = 1.2
         p:AddProjectileFlags(ProjectileFlags.BURST)
@@ -115,6 +132,10 @@ return function(mod)
         elseif d.mode == "kick" then
             if d.timer == 8 then
                 puntFootball(npc, target)
+                if d.captain then                                 -- a captain punts a spread
+                    puntFootball(npc, target, -25)
+                    puntFootball(npc, target, 25)
+                end
                 sfx:Play(SoundEffect.SOUND_PUNCH, 0.8, 0, false, 0.8)
             end
             if d.timer <= 0 then
@@ -142,10 +163,12 @@ return function(mod)
             if not d.group then                                  -- a fresh huddle: this one leads
                 d.group, d.slot, d.leader = GetPtrHash(npc), 0, npc
                 if npc.SubType == 0 then                          -- and brings the rest
-                    for i = 1, 3 do
-                        local m = Isaac.Spawn(TYPE, V.HUDDLE, 1, npc.Position + Vector.FromAngle(i * 90) * 16, Vector.Zero, npc)
+                    d.size = d.captain and 6 or 4                 -- a captain's huddle is six deep
+                    for i = 1, d.size - 1 do
+                        local m = Isaac.Spawn(TYPE, V.HUDDLE, 1, npc.Position + Vector.FromAngle(i * 360 / d.size) * 16, Vector.Zero, npc)
                         local md = m:GetData()
-                        md.group, md.slot, md.leader = d.group, i, npc
+                        md.group, md.slot, md.leader, md.size = d.group, i, npc, d.size
+                        if d.captain then mod.makeCaptain(m) end
                     end
                 end
             end
@@ -160,7 +183,7 @@ return function(mod)
         elseif d.leader == npc then
             npc.Pathfinder:FindGridPath(target.Position, 0.25, 900, true)
         else
-            local spot = d.leader.Position + Vector.FromAngle(d.slot * 90 + game:GetFrameCount() * 2) * 16
+            local spot = d.leader.Position + Vector.FromAngle(d.slot * 360 / (d.size or 4) + game:GetFrameCount() * 2) * 16
             npc.Velocity = (spot - npc.Position) * 0.3
         end
         face(npc, s, target.Position.X)
@@ -189,7 +212,7 @@ return function(mod)
         d.timer = d.timer - 1
         npc.Pathfinder:FindGridPath(target.Position, 0.3, 900, true)
         if d.timer <= 0 then
-            d.timer = 45
+            d.timer = d.captain and 15 or 45                      -- a captain leaves a trail
             creep(npc.Position, 0.6, 90)
         end
         face(npc, s, target.Position.X)
@@ -213,6 +236,7 @@ return function(mod)
             if npc.SubType == 0 then
                 local partner = Isaac.Spawn(TYPE, V.CHAIN_GANG, 1, npc.Position + Vector(60, 0), Vector.Zero, npc)
                 partner:GetData().partner = npc
+                if d.captain then mod.makeCaptain(partner) end
                 d.partner = partner
             end
             s:Play("Walk", true)
@@ -221,14 +245,14 @@ return function(mod)
         local toMe = npc.Position - target.Position
         local flank = target.Position + toMe:Rotated(90 * side):Resized(50)
         if hasPartner(d) then
-            npc.Pathfinder:FindGridPath(flank, 0.38, 900, true)
+            npc.Pathfinder:FindGridPath(flank, d.captain and 0.5 or 0.38, 900, true)
             local gap = d.partner.Position - npc.Position
             if gap:Length() > CHAIN_MAX then npc:AddVelocity(gap:Resized(1.5)) end   -- the chain pulls
             -- the chain hurts: only the first ref checks, so it's one hit per touch
             if npc.SubType == 0 then
                 for i = 0, game:GetNumPlayers() - 1 do
                     local p = Isaac.GetPlayer(i)
-                    if segmentDistance(p.Position, npc.Position, d.partner.Position) < p.Size + 4 then
+                    if segmentDistance(p.Position, npc.Position, d.partner.Position) < p.Size + (d.captain and 10 or 4) then
                         p:TakeDamage(1, 0, EntityRef(npc), 30)
                     end
                 end
@@ -290,7 +314,8 @@ return function(mod)
         elseif d.mode == "up" then
             npc.Velocity = npc.Velocity * 0.6
             if d.timer == 25 then
-                for i = 0, 3 do shoot(npc, Vector.FromAngle(45 + i * 90) * 7, 1) end
+                local n = d.captain and 8 or 4                   -- a captain erupts in a full ring
+                for i = 0, n - 1 do shoot(npc, Vector.FromAngle(45 + i * 360 / n) * 7, 1) end
             end
             if d.timer <= 0 then
                 d.mode, d.timer = "dig", 10
@@ -389,7 +414,7 @@ return function(mod)
 
     function mod:OnFoeDeath(npc)
         if npc.Variant == V.COOLER then
-            creep(npc.Position, 2.6, 300)                      -- the bucket spills
+            creep(npc.Position, npc:GetData().captain and 3.6 or 2.6, 300)   -- the bucket spills
             for i = 0, 5 do shoot(npc, Vector.FromAngle(i * 60) * 6, 1, ORANGE) end
             sfx:Play(SoundEffect.SOUND_SPLATTER, 1.1)
             mod.popAt(npc.Position, "SPLASH!", mod.Colors.orange)
@@ -401,6 +426,27 @@ return function(mod)
         end
     end
     mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.OnFoeDeath, TYPE)
+
+    -- Team Captains: a gold champion version of any football enemy, with a twist each ----------
+    local CAPTAIN_GOLD = Color(1, 0.9, 0.55, 1, 0.22, 0.16, 0)
+    local NO_CAPTAIN = { [V.LINEBACKER] = true, [V.COACH] = true }
+
+    function mod.makeCaptain(npc)
+        local d = npc:GetData()
+        if d.captain then return end
+        d.captain = true
+        npc.MaxHitPoints = npc.MaxHitPoints * Cfg.CAPTAIN_HP_MULT
+        npc.HitPoints = npc.MaxHitPoints
+        npc.Color = CAPTAIN_GOLD
+        if npc.SubType == 0 then mod.popOn(npc, "CAPTAIN!", mod.Colors.gold, 1.0) end
+    end
+
+    function mod:OnFoeInit(npc)
+        if NO_CAPTAIN[npc.Variant] or npc.SubType ~= 0 then return end   -- partners follow their leader
+        if npc.IsChampion and npc:IsChampion() then return end            -- vanilla champions stay vanilla
+        if ((npc.InitSeed or 0) % 1000) / 1000 < Cfg.CAPTAIN_CHANCE then mod.makeCaptain(npc) end
+    end
+    mod:AddCallback(ModCallbacks.MC_POST_NPC_INIT, mod.OnFoeInit, TYPE)
 
     function mod:OnNewRoomFoes()
         brokenHuddles, coachPlay, coachPlayTimer = {}, nil, 0

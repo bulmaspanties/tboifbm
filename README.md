@@ -101,6 +101,8 @@ Both appear on the character select screen with their own page, portrait, co-op 
 | **Sacker** | Hopper | **Tunnels underground** (can't be hit) toward you, bursts up right underneath you, then swipes shots in four directions before digging back in. |
 | **The Coach** (miniboss) | Fatty (rarer) | Hangs back and **calls plays** for everyone else: **Blitz** (the team speeds up), **Prevent D** (they take half damage), **Pep Talk** (they heal). Short-handed, he **subs in a Lineman**. |
 
+**Team Captains:** any football enemy (not the Linebacker or the Coach) has a 15% chance to be a **gold Captain** with 50% more health and a twist: the Lineman chains three charges, the Blitzer dives twice, the Punter and Mascot fire spreads of three, the Referee throws three flags, the Huddle is six deep, the Cooler leaves a trail and a bigger puddle, the Chain Gang is faster with a wider chain, and the Sacker erupts in a ring of eight. Vanilla champions stay vanilla.
+
 Each football enemy replaces the vanilla enemy listed, on floors 1–8, at the "football foes" chance (10% by default; the Coach half that).
 Both chances can be changed (or set to 0) in the menu. Use `gridiron spawn <name>` to summon any one of them. When the Linebacker replaces a boss, the intro screen still shows the original boss.
 

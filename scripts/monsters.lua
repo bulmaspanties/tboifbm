@@ -62,6 +62,10 @@ return function(mod)
             npc.Velocity = npc.Velocity * 0.8
             if d.timer == 12 then
                 shoot(npc, toward(npc, target, 6), 1.8, SHIRT)
+                if d.captain then                                 -- captain: a three-shirt volley
+                    shoot(npc, toward(npc, target, 6):Rotated(-20), 1.8, SHIRT)
+                    shoot(npc, toward(npc, target, 6):Rotated(20), 1.8, SHIRT)
+                end
                 sfx:Play(SoundEffect.SOUND_SHELLGAME, 0.7, 0, false, 0.7)
             end
             if d.timer <= 0 then
@@ -94,6 +98,10 @@ return function(mod)
             npc.Velocity = npc.Velocity * 0.8
             if d.timer == 8 then
                 shoot(npc, toward(npc, target, 8), 1.4, FLAG)
+                if d.captain then                                 -- captain: flags everywhere
+                    shoot(npc, toward(npc, target, 8):Rotated(-30), 1.4, FLAG)
+                    shoot(npc, toward(npc, target, 8):Rotated(30), 1.4, FLAG)
+                end
                 mod.popOn(npc, "FLAG!", mod.Colors.yellow, 0.8)
             end
             if d.timer <= 0 then
