@@ -98,6 +98,7 @@ return function(mod)
                         mod.scorch(player, e.Position, 1.3)
                     end
                     sfx:Play(SoundEffect.SOUND_PUNCH)
+                    mod.playSound("CLACK", 0.9)
                     sfx:Play(SoundEffect.SOUND_MEAT_IMPACTS, 0.6)
                     game:ShakeScreen(5)
                     Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.IMPACT, 0, e.Position, Vector.Zero, player)
@@ -124,6 +125,7 @@ return function(mod)
             sfx:Play(SoundEffect.SOUND_THUMBSUP, 0.7)
             local ord = ({ "1ST", "2ND", "3RD", "4TH" })[d.firstDowns] or ""
             mod.popOn(player, ord .. " DOWN!", mod.Colors.green)
+            if d.firstDowns == Cfg.MAX_FIRST_DOWNS then mod.playSound("CHEER", 0.5) end
         end
     end
 
@@ -137,6 +139,7 @@ return function(mod)
             if d.lastGearCount and count >= Cfg.SUITED_UP_PIECES and d.lastGearCount < Cfg.SUITED_UP_PIECES then
                 game:GetHUD():ShowItemText("Suited Up!", "Ready for kickoff")
                 sfx:Play(SoundEffect.SOUND_POWERUP_SPEWER)
+                mod.playSound("CHEER", 0.7)
                 if mod.OnSuitedUp then mod.OnSuitedUp(player) end
             end
             d.lastGearCount = count
@@ -285,6 +288,7 @@ return function(mod)
         splash.Color = orange
         mod.burst(player.Position, EffectVariant.TEAR_POOF_A, 8, orange, 18)
         sfx:Play(SoundEffect.SOUND_SPLATTER, 1.2)
+        mod.playSound("CHEER", 0.7)
         mod.popOn(player, "GATORADE SHOWER!", mod.Colors.orange)
         game:GetHUD():ShowItemText("Gatorade shower!", "Victory tastes like orange")
         mod.onGatoradeShower(player)
@@ -415,6 +419,7 @@ return function(mod)
                 if rngFor(player, Items.HELMET):RandomFloat() < Cfg.FACEMASK_BLOCK_CHANCE then
                     proj:Die()
                     sfx:Play(SoundEffect.SOUND_METAL_BLOCKBREAK, 0.5, 0, false, 1.4)
+                    mod.playSound("CLACK", 0.6)
                     mod.popOn(player, "BLOCKED", mod.Colors.grey, 0.8)
                     return true
                 end

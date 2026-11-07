@@ -96,6 +96,7 @@ return function(mod)
             tails(player)
             game:GetHUD():ShowItemText("It landed on its edge!", "Damage up, active recharged, enemies slowed")
             mod.popOn(player, "EDGE!", mod.Colors.gold, 1.3)
+            mod.playSound("CHEER", 0.6)
         elseif player:GetCardRNG(Cards.COIN_TOSS):RandomInt(2) == 0 then
             heads(player)
             game:GetHUD():ShowItemText("Heads!", "You receive: damage up for the room")

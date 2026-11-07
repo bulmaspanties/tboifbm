@@ -39,6 +39,11 @@ return function(mod)
     }
     mod.Sounds = {
         WHISTLE = Isaac.GetSoundIdByName("Gridiron Whistle"),
+        CHEER   = Isaac.GetSoundIdByName("Gridiron Cheer"),
+        BOO     = Isaac.GetSoundIdByName("Gridiron Boo"),
+        CLACK   = Isaac.GetSoundIdByName("Gridiron Clack"),
+        HORN    = Isaac.GetSoundIdByName("Gridiron Horn"),
+        FANFARE = Isaac.GetSoundIdByName("Gridiron Fanfare"),
     }
 
     -- Tuning -----------------------------------------------------------------
@@ -220,6 +225,7 @@ return function(mod)
         suitedGlow = true,     -- gold pulse while Suited Up
         hud = true,            -- small text readouts under the player
         popups = true,         -- floating callouts ("TACKLE!", "IT'S GOOD!")
+        crowd = true,          -- crowd cheers/boos, horn and fanfare
         helmetColor = "red",   -- uniform colours (menu: uniform); each is a pre-made costume
         jerseyColor = "blue",
         pantsColor = "white",
@@ -401,6 +407,15 @@ return function(mod)
         tear:GetData().GridironFootball = ball
         tear:GetSprite().Color = Color(1, 1, 1, 0)
         sfx:Play(SoundEffect.SOUND_SHELLGAME, 0.6, 0, false, 1.3)
+    end
+
+    -- Stadium sounds (crowd, horn, fanfare) can be turned off in the menu; the clack and
+    -- whistle are gameplay feedback and always play.
+    local STADIUM = { CHEER = true, BOO = true, HORN = true, FANFARE = true }
+    function mod.playSound(key, volume)
+        local id = mod.Sounds[key]
+        if not id or id <= 0 or (STADIUM[key] and not mod.Settings.crowd) then return end
+        sfx:Play(id, volume or 1)
     end
 
     function mod.playWhistle(volume)

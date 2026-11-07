@@ -232,6 +232,8 @@ return function(mod)
     function mod:OnNpcDeathGridiron(npc)
         if npc.Variant == V.LINEBACKER then
             mod.popAt(npc.Position, "SACKED!", mod.Colors.gold, 1.5)
+            mod.playSound("HORN", 0.9)
+            mod.playSound("CHEER", 0.8)
             game:ShakeScreen(16)
         end
     end

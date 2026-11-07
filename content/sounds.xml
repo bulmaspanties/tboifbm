@@ -11,4 +11,19 @@
     <sound name="Gridiron Whistle">
         <sample weight="1" path="gridiron_whistle.wav" />
     </sound>
+    <sound name="Gridiron Cheer">
+        <sample weight="1" path="gridiron_cheer.wav" />
+    </sound>
+    <sound name="Gridiron Boo">
+        <sample weight="1" path="gridiron_boo.wav" />
+    </sound>
+    <sound name="Gridiron Clack">
+        <sample weight="1" path="gridiron_clack.wav" />
+    </sound>
+    <sound name="Gridiron Horn">
+        <sample weight="1" path="gridiron_horn.wav" />
+    </sound>
+    <sound name="Gridiron Fanfare">
+        <sample weight="1" path="gridiron_fanfare.wav" />
+    </sound>
 </sounds>

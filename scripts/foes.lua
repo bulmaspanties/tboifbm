@@ -43,6 +43,7 @@ return function(mod)
                 if npc:CollidesWithGrid() then
                     game:ShakeScreen(4)
                     sfx:Play(SoundEffect.SOUND_FORESTBOSS_STOMPS, 0.5, 0, false, 1.4)
+                    mod.playSound("CLACK", 0.7)
                 end
                 d.mode, d.timer, d.cooldown = "walk", 0, 45
                 s:Play("Walk", true)
@@ -395,6 +396,8 @@ return function(mod)
         elseif npc.Variant == V.COACH then
             coachPlay = nil
             mod.popAt(npc.Position, "FIRED!", mod.Colors.gold, 1.4)
+            mod.playSound("HORN", 0.8)
+            mod.playSound("CHEER", 0.7)
         end
     end
     mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.OnFoeDeath, TYPE)

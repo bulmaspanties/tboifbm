@@ -30,6 +30,7 @@ return function(mod)
         sfx:Play(SoundEffect.SOUND_SUMMONSOUND, 0.6, 0, false, 1.2)
         game:GetHUD():ShowItemText("End Zone!", "Damage up while you stand in it")
         mod.popAt(pos, "SIX POINTS!", mod.Colors.gold, 1.2)
+        mod.playSound("HORN", 0.6)
         return true
     end
     mod:AddCallback(ModCallbacks.MC_USE_ITEM, mod.OnUseEndZone, Items.END_ZONE)

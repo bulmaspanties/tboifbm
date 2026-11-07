@@ -173,6 +173,7 @@ return function(mod)
                 toggle("suited up glow", "suitedGlow", { "gold pulse while", "suited up" }),
                 toggle("hud text", "hud", { "downs, plays and", "bucket under", "your character" }),
                 toggle("popup text", "popups", { "callouts like", "tackle! and", "it's good!" }),
+                toggle("crowd sounds", "crowd", { "cheers, boos,", "the stadium horn", "and fanfare" }),
             },
         },
         uniform = {

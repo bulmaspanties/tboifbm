@@ -1622,6 +1622,16 @@ findButton("uniform", "jersey").store(4)
 mod.ResetSettings()
 check(mod.Settings.jerseyColor == "blue", "reset settings restores the uniform colours too")
 
+-- Stadium sounds follow the crowd setting; gameplay feedback always plays
+for k in pairs(soundsPlayed) do soundsPlayed[k] = nil end
+findButton("visuals", "crowd sounds").store(2)
+mod.playSound("CHEER")
+mod.playSound("CLACK")
+check(not soundsPlayed[mod.Sounds.CHEER] and soundsPlayed[mod.Sounds.CLACK], "crowd off mutes the crowd, not the clack")
+findButton("visuals", "crowd sounds").store(1)
+mod.playSound("CHEER")
+check(soundsPlayed[mod.Sounds.CHEER], "crowd on cheers")
+
 -- Settings survive a restart (fresh load reads the stored blob)
 findButton("gameplay", "kick damage").store(70)
 mod.StoreSaveData()

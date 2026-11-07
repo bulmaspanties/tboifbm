@@ -65,6 +65,8 @@ return function(mod)
             end
             game:GetHUD():ShowItemText("It's good!", "Field goal: 3 points")
             sfx:Play(SoundEffect.SOUND_CASH_REGISTER)
+            mod.playSound("FANFARE", 0.8)
+            mod.playSound("CHEER", 0.6)
             mod.popAt(ball.pos, "IT'S GOOD!", mod.Colors.gold, 1.3)
             for i = 0, 5 do
                 Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.ULTRA_GREED_BLING, 0,
@@ -72,6 +74,7 @@ return function(mod)
             end
         else
             mod.popAt(ball.pos, "NO GOOD", mod.Colors.grey)
+            mod.playSound("BOO", 0.5)
         end
     end
 
@@ -86,6 +89,8 @@ return function(mod)
         game:GetHUD():ShowItemText(doubled and "Touchdown! In the end zone!" or "Touchdown!",
             doubled and "+2 Damage this room" or "+1 Damage this room")
         sfx:Play(SoundEffect.SOUND_THUMBSUP)
+        mod.playSound("FANFARE", 0.8)
+        mod.playSound("CHEER", doubled and 0.9 or 0.6)
         mod.popOn(player, "TOUCHDOWN!", mod.Colors.gold, 1.3)
         player:SetColor(Color(1, 1, 1, 1, 0.4, 0.3, 0), 15, 1, true, false)
     end
@@ -114,6 +119,7 @@ return function(mod)
         end
         if ball.life <= 0 then
             Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, ball.pos, Vector.Zero, nil)
+            mod.playSound("BOO", 0.4)   -- nobody recovered the fumble
             return true
         end
         return false
