@@ -65,6 +65,18 @@ return function(mod)
         addCollectible(Items.WRISTBAND,
             "↑ +0.16 Shot speed#" ..
             "Every football you throw homes in and deals +25% damage#Counts toward Suited Up")
+        addCollectible(Items.CHAMP_RING,
+            "↑ x" .. Cfg.CHAMP_RING_DMG_MULT .. " Damage multiplier#" ..
+            "Beating each floor's boss spawns a trophy: an extra boss item")
+        addCollectible(Items.HOF_JACKET,
+            "Counts as " .. Cfg.HOF_JACKET_PIECES .. " gear pieces: instantly Suited Up#" ..
+            "Suited Up gives double damage (+" .. Cfg.SUITED_UP_DAMAGE * 2 .. ")#Tackles go live 4x faster")
+        addCollectible(Items.GOLDEN_ARM,
+            "Every shot is a golden football: x" .. Cfg.GOLDEN_ARM_DMG_MULT .. " damage, piercing, spectral#" ..
+            "↑ +" .. Cfg.GOLDEN_ARM_SHOT_SPEED .. " Shot speed")
+        addCollectible(Items.HAIL_MARY,
+            "Throws a giant golden football across the room: 8x damage +30, piercing#" ..
+            "Where it lands: a beam of holy light and a ring of " .. Cfg.HAIL_MARY_BURST .. " footballs")
         addCollectible(Items.END_ZONE,
             "Paints an end zone under you for the rest of the room#" ..
             "Standing in it: +" .. Cfg.END_ZONE_DAMAGE .. " Damage#Enemies inside it are slowed")

@@ -117,10 +117,13 @@ for name in challengeXml:gmatch('<challenge name="(.-)"') do
 end
 
 -- Enums: every unknown key gets a fresh power of two so bit ops behave ----------
-local bit = 0
+-- Each enum counts its own bits, so values never collide within one enum (a shared
+-- counter wrapped after 60 names and made two CacheFlags equal).
 local function enum(fixed)
+    local bit = 0
     return setmetatable(fixed or {}, { __index = function(t, k)
-        bit = (bit % 60) + 1
+        bit = bit + 1
+        assert(bit < 63, "mock enum ran out of bits")
         rawset(t, k, 1 << bit)
         return t[k]
     end })
@@ -466,6 +469,7 @@ local room = {
     IsClear = function() return world.roomClear end,
     GetType = function() return world.roomType end,
     GetClampedPosition = function(_, pos) return pos end,
+    GetCenterPos = function() return Vector(320, 280) end,
     FindFreePickupSpawnPosition = function(_, pos) return pos end,
     GetRenderMode = function() return 0 end,
 }
@@ -1650,6 +1654,75 @@ check(costumeOn(lost, "helmet") and not costumeOn(lost, "legs_pants"), "the lost
 for _, color in ipairs(mod.UNIFORM_COLORS.helmet) do
     local name = "helmet_roomy" .. (color == mod.UNIFORM_COLORS.helmet[1] and "" or "_" .. color)
     check(costumePaths["gfx/characters/gridiron_" .. name .. ".anm2"], "roomy helmet exists in " .. color)
+end
+
+-- Q4 items -----------------------------------------------------------------------------------
+do
+    local q = newPlayer()
+    players = { q }
+    world.entities = { q }
+    newRoom(false)
+    q:EvaluateItems()
+    local plain = q.Damage
+
+    -- Championship Ring: damage multiplier and one trophy per floor
+    q.items[Items.CHAMP_RING] = 1
+    q:EvaluateItems()
+    check(math.abs(q.Damage - plain * Cfg.CHAMP_RING_DMG_MULT) < 1e-6, "championship ring multiplies damage")
+    world.stage = 4
+    newRoom(false, RoomType.ROOM_BOSS)
+    world.spawned = {}
+    dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, q.rng, Vector(0, 0))
+    local trophies = 0
+    for _, e in ipairs(world.spawned) do
+        if e.Variant == PickupVariant.PICKUP_COLLECTIBLE and e.SubType == 0 then trophies = trophies + 1 end
+    end
+    check(trophies == 1, "beating the boss with the ring drops a trophy item")
+    world.spawned = {}
+    dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, q.rng, Vector(0, 0))
+    check(#world.spawned == 0 or world.spawned[1].Variant ~= PickupVariant.PICKUP_COLLECTIBLE, "only one trophy per floor")
+    world.stage = nil
+    q.items[Items.CHAMP_RING] = nil
+
+    -- Hall of Fame Jacket: suited up on its own, double bonus
+    q.items[Items.HOF_JACKET] = 1
+    q:EvaluateItems()
+    check(mod.isSuitedUp(q), "the jacket alone suits you up")
+    check(math.abs(q.Damage - plain - Cfg.SUITED_UP_DAMAGE * 2) < 1e-6, "and doubles the suited up bonus")
+    q.items[Items.HOF_JACKET] = nil
+    q:EvaluateItems()
+
+    -- Golden Arm: every shot a golden football
+    newRoom(false)
+    q.items[Items.GOLDEN_ARM] = 1
+    q:EvaluateItems()
+    check(q.ShotSpeed > 1, "golden arm raises shot speed")
+    local all = true
+    for _ = 1, 5 do
+        local t = q:FireTear(q.Position, Vector(10, 0))
+        dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, t)
+        all = all and t.data.GridironFootball ~= nil and t.CollisionDamage > 3.5 * Cfg.JERSEY_BALL_DMG_MULT
+    end
+    check(all, "golden arm: every shot is a harder-hitting football")
+    q.items[Items.GOLDEN_ARM] = nil
+
+    -- Hail Mary: a giant golden ball that bursts in holy light
+    q.aim = Vector(1, 0)
+    local before = #world.entities
+    dispatch(ModCallbacks.MC_USE_ITEM, Items.HAIL_MARY, Items.HAIL_MARY, q.rng, q)
+    local ball = world.entities[#world.entities]
+    check(#world.entities == before + 1 and ball.Scale > 2 and ball.data.GridironFootball, "hail mary throws a giant football")
+    ball.Position = Vector(400, 0)
+    dispatch(ModCallbacks.MC_POST_UPDATE)
+    ball.exists = false
+    world.spawned = {}
+    local beforeBurst = #world.entities
+    dispatch(ModCallbacks.MC_POST_UPDATE)
+    local beam = false
+    for _, e in ipairs(world.spawned) do if e.Variant == EffectVariant.CRACK_THE_SKY then beam = e end end
+    check(beam and (beam.Position - Vector(400, 0)):Length() < 1, "it lands in a beam of holy light")
+    check(#world.entities - beforeBurst >= Cfg.HAIL_MARY_BURST, "and a ring of footballs")
+    q.aim = Vector(0, 0)
 end
 
 -- Settings survive a restart (fresh load reads the stored blob)

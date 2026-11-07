@@ -27,6 +27,10 @@ It uses only the vanilla Lua API, so REPENTOGON is **not** required.
 | **Coach's Whistle** | Active, 4 charges | Treasure, Boss, Crane Game | **Offsides!** Shoves every enemy away from you and slows them for 5 seconds, and wipes out all enemy shots. Bosses take damage instead of being shoved. |
 | **End Zone** | Active, 4 charges | Treasure | **Paints an end zone** on the floor for the room. Standing in it gives **+1.5 Damage**; enemies inside it are **slowed**. A Pigskin **touchdown scored in it counts double**. |
 | **Gatorade Bucket** | Passive (Q2) | Treasure, Shop, Beggar | Clearing a room **without getting hit** fills the bucket. Every 3 fills (or one no-hit boss room) you get a **Gatorade shower**: heal a full red heart, or half a soul heart if your red hearts are full. |
+| **Championship Ring** | Passive (**Q4**) | Treasure, Boss | **x1.25 Damage.** Beating each floor's boss spawns a **trophy**: an extra item from the boss pool. With the Super Bowl Ring, its rings are worth double. |
+| **Hall of Fame Jacket** | Passive (**Q4**) | Treasure, Secret | A letterman jacket that **counts as 3 gear pieces**: instantly Suited Up, the Suited Up bonus is **doubled** (+2 Damage), and tackles go live **4x faster**. |
+| **Golden Arm** | Passive (**Q4**) | Treasure, Devil | **Every shot is a golden football**: x1.5 damage, piercing, spectral. +0.3 Shot speed. |
+| **Hail Mary** | Active (**Q4**), 6 charges | Treasure, Angel | Heaves a **giant golden football** across the room (8x damage + 30, piercing). Where it lands: a **beam of holy light** and a ring of 10 footballs. |
 | **Concussion Protocol** | Trinket | Trinket pool | Taking damage **confuses every enemy** in the room for 2 seconds. |
 | **Turf Burn** | Trinket | Trinket pool | **Sprinting scorches the turf** behind you: the burning creep damages enemies. Tackled enemies get a big scorch mark. |
 | **Referee Flag** | Trinket | Trinket pool | **Flag on the play:** when an enemy or its shot hits you, that enemy takes 10 + 3× floor-number damage and is slowed. |

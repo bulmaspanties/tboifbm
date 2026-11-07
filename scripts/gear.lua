@@ -62,6 +62,7 @@ return function(mod)
         local synWindup, synDamage, synKnock = mod.tackleSynergy(player)
         local windup = Cfg.TACKLE_WINDUP * mod.tackleWindupMult() * synWindup
         if mod.isSuitedUp(player) then windup = windup / 2 end
+        if player:HasCollectible(Items.HOF_JACKET) then windup = windup / 2 end   -- Hall of Famer: quarter windup
         windup = math.floor(windup)
         local wasTackling = d.tackling
         d.tackling = d.runDir ~= nil and d.runFrames >= windup
@@ -207,12 +208,15 @@ return function(mod)
                 bonus = bonus + Cfg.COIN_HEADS_DAMAGE
             end
             if mod.isSuitedUp(player) then
-                bonus = bonus + Cfg.SUITED_UP_DAMAGE
+                bonus = bonus + Cfg.SUITED_UP_DAMAGE * (player:HasCollectible(Items.HOF_JACKET) and 2 or 1)
             end
             if d.touchdown then   -- 2 = scored in the End Zone: it counts double
                 bonus = bonus + Cfg.TOUCHDOWN_DAMAGE * (d.touchdown == 2 and 2 or 1)
             end
             player.Damage = player.Damage + bonus
+            if player:HasCollectible(Items.CHAMP_RING) then
+                player.Damage = player.Damage * Cfg.CHAMP_RING_DMG_MULT   -- Championship Ring: a dynasty
+            end
         elseif flag == CacheFlag.CACHE_SPEED then
             player.MoveSpeed = player.MoveSpeed + player:GetCollectibleNum(Items.CLEATS) * Cfg.CLEATS_SPEED
             if d.play == "blitz" then player.MoveSpeed = player.MoveSpeed + Cfg.BLITZ_SPEED end
@@ -226,6 +230,7 @@ return function(mod)
         elseif flag == CacheFlag.CACHE_SHOTSPEED then
             if d.play == "hailmary" then player.ShotSpeed = player.ShotSpeed + Cfg.HAIL_MARY_SHOT_SPEED end
             player.ShotSpeed = player.ShotSpeed + player:GetCollectibleNum(Items.WRISTBAND) * Cfg.WRISTBAND_SHOT_SPEED
+                + player:GetCollectibleNum(Items.GOLDEN_ARM) * Cfg.GOLDEN_ARM_SHOT_SPEED
         elseif flag == CacheFlag.CACHE_TEARFLAG then
             if d.play == "hailmary" then player.TearFlags = player.TearFlags | TearFlags.TEAR_PIERCING end
         end
@@ -325,7 +330,7 @@ return function(mod)
             tear:GetData().GridironOrigin = tear.Position
         end
 
-        local football = false
+        local football = player:HasCollectible(Items.GOLDEN_ARM)   -- every throw a dime
         if player:HasCollectible(Items.JERSEY) then
             d.shots = d.shots + 1
             if d.shots % mod.footballInterval(mod.jerseyNumber(player)) == 0 then

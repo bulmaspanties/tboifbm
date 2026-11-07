@@ -18,10 +18,11 @@
 -- scripts/foes.lua      Lineman, Blitzer, Punter, Huddle, Cooler, Chain Gang, Sacker, the Coach
 -- scripts/quarterback.lua playable character + tainted version
 -- scripts/endzone.lua    End Zone active and its floor paint
+-- scripts/legends.lua    Q4 items: Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary
 -- scripts/synergies.lua  interactions with base-game items
 
 local mod = RegisterMod("Gridiron", 1)
 
-for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "quarterback", "endzone", "synergies" }) do
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "quarterback", "endzone", "legends", "synergies" }) do
     include("scripts." .. name)(mod)
 end

@@ -20,6 +20,10 @@ return function(mod)
         PANTS       = Isaac.GetItemIdByName("Padded Pants"),
         WRISTBAND   = Isaac.GetItemIdByName("QB Wristband"),
         END_ZONE    = Isaac.GetItemIdByName("End Zone"),
+        CHAMP_RING  = Isaac.GetItemIdByName("Championship Ring"),
+        HOF_JACKET  = Isaac.GetItemIdByName("Hall of Fame Jacket"),
+        GOLDEN_ARM  = Isaac.GetItemIdByName("Golden Arm"),
+        HAIL_MARY   = Isaac.GetItemIdByName("Hail Mary"),
         FOAM_FINGER = Isaac.GetItemIdByName("Foam Finger"),
         RING        = Isaac.GetItemIdByName("Super Bowl Ring"),
         CHEERLEADER = Isaac.GetItemIdByName("Cheerleader"),
@@ -198,6 +202,15 @@ return function(mod)
         TQB_BALL_DMG_MULT     = 1.5,
         TQB_DAMAGE            = 0.5,
 
+        -- Q4 items (scripts/legends.lua)
+        CHAMP_RING_DMG_MULT   = 1.25,
+        HOF_JACKET_PIECES     = 3,     -- the jacket counts as this many gear pieces
+        GOLDEN_ARM_DMG_MULT   = 1.5,
+        GOLDEN_ARM_SHOT_SPEED = 0.3,
+        HAIL_MARY_SPEED       = 15,
+        HAIL_MARY_DMG_MULT    = 8,     -- x player damage, plus a flat 30
+        HAIL_MARY_BURST       = 10,
+
         -- Set bonus
         SUITED_UP_PIECES      = 3,
         SUITED_UP_DAMAGE      = 1.0,
@@ -277,6 +290,7 @@ return function(mod)
     mod.ACTIVE_ITEMS = {
         [mod.Items.KICKING_TEE] = true, [mod.Items.PIGSKIN] = true,
         [mod.Items.PLAYBOOK] = true, [mod.Items.WHISTLE] = true, [mod.Items.END_ZONE] = true,
+        [mod.Items.HAIL_MARY] = true,
     }
 
     mod.DIR_VECTORS = {
@@ -312,6 +326,9 @@ return function(mod)
         local n = 0
         for _, item in ipairs(mod.GEAR) do
             if item > 0 and player:HasCollectible(item) then n = n + 1 end
+        end
+        if mod.Items.HOF_JACKET > 0 and player:HasCollectible(mod.Items.HOF_JACKET) then
+            n = n + mod.Cfg.HOF_JACKET_PIECES   -- the Hall of Fame Jacket: suited up on its own
         end
         return n
     end
@@ -393,6 +410,8 @@ return function(mod)
 
     function mod.makeFootball(tear, dmgMult)
         local thrower = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
+        local golden = thrower and thrower:HasCollectible(mod.Items.GOLDEN_ARM)
+        if golden then dmgMult = dmgMult * mod.Cfg.GOLDEN_ARM_DMG_MULT end
         if thrower and thrower:HasCollectible(mod.Items.WRISTBAND) then
             -- QB Wristband: read the defense, every football finds a target
             dmgMult = dmgMult * mod.Cfg.WRISTBAND_BALL_DMG * mod.wristbandMult(thrower)
@@ -403,7 +422,9 @@ return function(mod)
         tear:AddTearFlags(TearFlags.TEAR_PIERCING | TearFlags.TEAR_SPECTRAL)
         tear.Color = Color(0.55, 0.3, 0.15, 1, 0.1, 0.05, 0) -- tints the splash on impact
         local ball = mod.newFootballSprite()
-        ball.Color = mod.footballTint(tear) or Color(1, 1, 1, 1)
+        ball.Color = mod.footballTint(tear)
+            or (golden and Color(1, 0.9, 0.45, 1, 0.45, 0.35, 0))   -- Golden Arm: solid gold balls
+            or Color(1, 1, 1, 1)
         tear:GetData().GridironFootball = ball
         tear:GetSprite().Color = Color(1, 1, 1, 0)
         sfx:Play(SoundEffect.SOUND_SHELLGAME, 0.6, 0, false, 1.3)

@@ -18,6 +18,10 @@
     <familiar id="17" name="Cheerleader" description="Give me a G!" gfx="cheerleader.png" quality="2" cache="familiars" />
     <familiar id="18" name="Water Boy" description="Stay hydrated" gfx="water_boy.png" quality="1" cache="familiars" />
     <familiar id="19" name="Tackling Dummy" description="Hit it, not me" gfx="tackling_dummy.png" quality="2" cache="familiars" />
+    <passive id="21" name="Championship Ring" description="Dynasty" gfx="championship_ring.png" quality="4" cache="damage" tags="summonable offensive" />
+    <passive id="22" name="Hall of Fame Jacket" description="First ballot" gfx="hall_of_fame_jacket.png" quality="4" cache="damage" tags="summonable" />
+    <passive id="23" name="Golden Arm" description="Every throw a dime" gfx="golden_arm.png" quality="4" cache="shotspeed" tags="summonable offensive" />
+    <active id="24" name="Hail Mary" description="Throw it up and pray" gfx="hail_mary.png" quality="4" maxcharges="6" tags="offensive" />
     <active id="20" name="End Zone" description="Six points" gfx="end_zone.png" quality="2" maxcharges="4" />
     <trinket id="1" name="Turf Burn" description="Leave a mark" gfx="turf_burn.png" />
     <trinket id="3" name="Concussion Protocol" description="Ring their bell" gfx="concussion_protocol.png" />

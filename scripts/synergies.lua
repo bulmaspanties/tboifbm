@@ -89,7 +89,9 @@ return function(mod)
 
     -- Super Bowl Ring: Money = Power / Greed's Gullet: the hardware is worth twice as much.
     function mod.ringMult(player)
-        return hasAny(player, { C.COLLECTIBLE_MONEY_EQUALS_POWER, C.COLLECTIBLE_GREEDS_GULLET }) and 2 or 1
+        local mult = hasAny(player, { C.COLLECTIBLE_MONEY_EQUALS_POWER, C.COLLECTIBLE_GREEDS_GULLET }) and 2 or 1
+        if player:HasCollectible(Items.CHAMP_RING) then mult = mult * 2 end   -- back-to-back rings
+        return mult
     end
 
     -- Foam Finger: Marked / Eye of the Occult: the #1 enemy takes double the bonus.
@@ -170,7 +172,12 @@ return function(mod)
             " Pony / White Pony / Taurus: first downs need half the yards",
         [Items.PANTS] = icon(C.COLLECTIBLE_THUNDER_THIGHS) .. icon(C.COLLECTIBLE_LEO) .. " Thunder Thighs / Leo: +15% shrug-off chance",
         [Items.RING] = icon(C.COLLECTIBLE_MONEY_EQUALS_POWER) .. icon(C.COLLECTIBLE_GREEDS_GULLET) ..
-            " Money = Power / Greed's Gullet: rings give double damage",
+            " Money = Power / Greed's Gullet: rings give double damage#" ..
+            icon(Items.CHAMP_RING) .. " Championship Ring: rings give double damage (stacks)",
+        [Items.CHAMP_RING] = icon(Items.RING) .. " Super Bowl Ring: its rings give double damage",
+        [Items.GOLDEN_ARM] = icon(Items.WRISTBAND) .. " QB Wristband: every golden football homes in#" ..
+            icon(C.COLLECTIBLE_BRIMSTONE) .. " Works with non-tear weapons too (every few attacks)",
+        [Items.HAIL_MARY] = icon(C.COLLECTIBLE_CAR_BATTERY) .. " Car Battery: two Hail Marys",
         [Items.FOAM_FINGER] = icon(C.COLLECTIBLE_MARKED) .. icon(C.COLLECTIBLE_EYE_OF_THE_OCCULT) ..
             " Marked / Eye of the Occult: +100% damage to the #1 enemy",
         [Items.WRISTBAND] = icon(C.COLLECTIBLE_SPOON_BENDER) .. icon(C.COLLECTIBLE_GODHEAD) .. icon(C.COLLECTIBLE_SACRED_HEART) ..

@@ -20,6 +20,10 @@
         <Item Name="Cheerleader" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Water Boy" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Tackling Dummy" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Championship Ring" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
+        <Item Name="Hall of Fame Jacket" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
+        <Item Name="Golden Arm" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
+        <Item Name="Hail Mary" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
     </Pool>
     <Pool Name="shop">
         <Item Name="Shoulder Pads" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -36,6 +40,7 @@
     <Pool Name="boss">
         <Item Name="Coach's Whistle" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Super Bowl Ring" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Championship Ring" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
     </Pool>
     <Pool Name="library">
         <Item Name="Playbook" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -74,6 +79,10 @@
         <Item Name="Cheerleader" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Water Boy" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Tackling Dummy" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Championship Ring" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
+        <Item Name="Hall of Fame Jacket" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
+        <Item Name="Golden Arm" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
+        <Item Name="Hail Mary" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
     </Pool>
     <Pool Name="greedShop">
         <Item Name="Shoulder Pads" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -90,5 +99,24 @@
     <Pool Name="greedBoss">
         <Item Name="Coach's Whistle" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Super Bowl Ring" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Championship Ring" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
+    </Pool>
+    <Pool Name="angel">
+        <Item Name="Hail Mary" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
+    </Pool>
+    <Pool Name="greedAngel">
+        <Item Name="Hail Mary" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
+    </Pool>
+    <Pool Name="devil">
+        <Item Name="Golden Arm" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
+    </Pool>
+    <Pool Name="greedDevil">
+        <Item Name="Golden Arm" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
+    </Pool>
+    <Pool Name="secret">
+        <Item Name="Hall of Fame Jacket" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
+    </Pool>
+    <Pool Name="greedSecret">
+        <Item Name="Hall of Fame Jacket" Weight="0.3" DecreaseBy="0.3" RemoveOn="0.1" />
     </Pool>
 </ItemPools>

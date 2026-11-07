@@ -614,7 +614,94 @@ def turf_burn():
     return rows_of(outline(g))
 
 
+def championship_ring():
+    """A massive championship ring: gold band, a crown face packed with diamonds and a red stone."""
+    g = blank()
+    ellipse(g, 15.5, 21, 9.5, 8, "a")                 # band
+    ellipse(g, 15.5, 21, 7.5, 6, "A")
+    ellipse(g, 15.5, 22.5, 5.2, 4.2, ".")             # finger hole
+    put(g, [(9, 18), (8, 20), (9, 24)], "U")          # band shine
+    rect(g, 6, 5, 25, 15, "a")                        # wide crown face
+    rect(g, 7, 6, 24, 14, "A")
+    for y in range(7, 14, 2):                         # pavé diamonds
+        for x in range(8 + (y // 2) % 2, 24, 2):
+            g[y][x] = "W"
+            if x + 1 < 24:
+                g[y][x + 1] = "C"
+    ellipse(g, 15.5, 10, 3.6, 3, "r")                 # the stone
+    ellipse(g, 15.5, 10, 2.6, 2, "R")
+    put(g, [(14, 9), (15, 9)], "H")
+    put(g, [(4, 4), (27, 5), (3, 12), (28, 13), (26, 2)], "U")   # sparkle
+    return rows_of(outline(g))
+
+
+def hall_of_fame_jacket():
+    """A letterman jacket: navy body, gold sleeves, striped cuffs and a chenille G."""
+    g = blank()
+    rect(g, 9, 7, 22, 26, "B")                        # body
+    rect(g, 9, 7, 10, 26, "L")
+    rect(g, 21, 7, 22, 26, "b")
+    rect(g, 3, 9, 8, 24, "Y")                         # sleeves
+    rect(g, 23, 9, 28, 24, "Y")
+    rect(g, 3, 9, 4, 24, "U")
+    rect(g, 27, 9, 28, 24, "y")
+    for y in (21, 23):                                # striped cuffs
+        rect(g, 3, y, 8, y, "W")
+        rect(g, 23, y, 28, y, "W")
+    rect(g, 9, 25, 22, 26, "Y")                       # waistband
+    rect(g, 9, 26, 22, 26, "W")
+    rect(g, 12, 5, 19, 7, "Y")                        # collar
+    rect(g, 15, 7, 16, 25, "b")                       # opening
+    put(g, [(16, 10), (16, 14), (16, 18), (16, 22)], "W")   # snaps
+    rect(g, 10, 11, 14, 16, "Y")                      # chenille G
+    rect(g, 11, 12, 13, 15, "y")
+    rect(g, 12, 13, 14, 14, "Y")
+    put(g, [(13, 12), (14, 12)], "Y")
+    return rows_of(outline(g))
+
+
+def golden_arm():
+    """A flexed golden arm cradling a football."""
+    g = blank()
+    rect(g, 2, 21, 12, 27, "A")                       # upper arm, out to the side
+    ellipse(g, 9, 19.5, 5.5, 3.8, "A")                # flexed bicep bulge
+    ellipse(g, 8, 18.5, 3.2, 1.8, "U")                # bicep shine
+    rect(g, 2, 26, 12, 27, "a")
+    rect(g, 15, 9, 21, 22, "A")                       # forearm, raised
+    rect(g, 19, 9, 21, 22, "a")
+    rect(g, 15, 9, 16, 21, "U")
+    rect(g, 15, 13, 21, 15, "W")                      # sweatband on the wrist
+    rect(g, 15, 14, 21, 14, "R")
+    ellipse(g, 18, 8, 5.5, 4, "A")                    # fist
+    ellipse(g, 21.5, 6, 6.5, 3.6, "F")                # the football in hand
+    ellipse(g, 21.5, 6, 6.5, 3.6, "F")
+    rect(g, 18, 5, 25, 5, "W")                        # laces
+    put(g, [(19, 4), (21, 4), (23, 4)], "W")
+    put(g, [(17, 6), (15, 7)], "a")                   # knuckles
+    put(g, [(4, 14), (6, 11), (27, 15), (25, 18)], "U")   # sparkle
+    return rows_of(outline(g))
+
+
+def hail_mary():
+    """A golden football rising into a halo, light rays spilling out."""
+    g = blank()
+    for x0, y0, x1, y1 in ((15, 1, 16, 5), (4, 8, 8, 10), (23, 8, 27, 10), (6, 24, 9, 27), (22, 24, 25, 27)):
+        rect(g, x0, y0, x1, y1, "U")                  # rays
+    ellipse(g, 15.5, 6, 6, 1.6, "Y")                  # halo
+    ellipse(g, 15.5, 6, 4, 0.7, ".")
+    ellipse(g, 15.5, 17, 10, 6.5, "a")                # golden ball
+    ellipse(g, 15.5, 16.5, 8.5, 5.2, "A")
+    ellipse(g, 12.5, 14.5, 4, 2, "U")
+    rect(g, 11, 17, 20, 17, "W")                      # laces
+    put(g, [(12, 16), (14, 16), (16, 16), (18, 16), (12, 18), (14, 18), (16, 18), (18, 18)], "W")
+    return rows_of(outline(g))
+
+
 SPRITES["items/collectibles/eye_black.png"] = dict(rows=eye_black())
+SPRITES["items/collectibles/championship_ring.png"] = dict(rows=championship_ring())
+SPRITES["items/collectibles/hall_of_fame_jacket.png"] = dict(rows=hall_of_fame_jacket())
+SPRITES["items/collectibles/golden_arm.png"] = dict(rows=golden_arm())
+SPRITES["items/collectibles/hail_mary.png"] = dict(rows=hail_mary())
 SPRITES["items/collectibles/qb_wristband.png"] = dict(rows=qb_wristband())
 SPRITES["items/collectibles/end_zone.png"] = dict(rows=end_zone_icon())
 SPRITES["items/trinkets/turf_burn.png"] = dict(rows=turf_burn())
