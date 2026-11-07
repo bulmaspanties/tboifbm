@@ -16,10 +16,11 @@
 -- scripts/familiars.lua Cheerleader, Water Boy, Tackling Dummy
 -- scripts/monsters.lua  The Linebacker (boss), Mascot and Referee
 -- scripts/quarterback.lua playable character + tainted version
+-- scripts/endzone.lua    End Zone active and its floor paint
 -- scripts/synergies.lua  interactions with base-game items
 
 local mod = RegisterMod("Gridiron", 1)
 
-for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "quarterback", "synergies" }) do
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "quarterback", "endzone", "synergies" }) do
     include("scripts." .. name)(mod)
 end

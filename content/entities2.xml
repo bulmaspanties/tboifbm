@@ -15,6 +15,12 @@
             numGridCollisionPoints="0" shadowSize="12" stageHP="0">
         <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
     </entity>
+    <!-- End Zone floor marking (an effect drawn on the floor; scripts/endzone.lua) -->
+    <entity anm2path="effects/gridiron_end_zone.anm2" baseHP="0" boss="0" champion="0" collisionDamage="0"
+            collisionMass="0" collisionRadius="0" friction="1" id="1000" name="Gridiron End Zone"
+            numGridCollisionPoints="0" shadowSize="0" stageHP="0">
+        <gibs amount="0" blood="0" bone="0" eye="0" gut="0" large="0" />
+    </entity>
     <!-- Enemies + boss: type 643 (unused by vanilla), AI in scripts/monsters.lua -->
     <entity anm2path="bosses/gridiron_linebacker.anm2" baseHP="330" boss="1" champion="0" collisionDamage="1"
             collisionMass="30" collisionRadius="20" friction="1" id="643" variant="0" name="Gridiron Linebacker"

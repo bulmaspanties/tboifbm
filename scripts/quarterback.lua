@@ -16,7 +16,7 @@ return function(mod)
 
     local START = {
         normal  = { items = { Items.HELMET, Items.JERSEY }, pocket = Items.PLAYBOOK },
-        tainted = { items = { Items.CHIN_STRAP, Items.PADS }, pocket = Items.KICKING_TEE },
+        tainted = { items = { Items.HELMET, Items.PADS }, pocket = Items.KICKING_TEE },
     }
 
     function mod:OnGameStartedQuarterback(isContinued)

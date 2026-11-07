@@ -10,13 +10,13 @@ It uses only the vanilla Lua API, so REPENTOGON is **not** required.
 
 | Item | Type | Pools | What it does |
 |---|---|---|---|
-| **Football Helmet** | Passive (Q3) | Treasure | **Tackle:** run in a straight line for ~1s and Isaac starts glowing. Running into enemies then deals 3× damage + 5, knocks them back hard and confuses them. You take no contact damage while tackling. **Facemask:** 50% chance to block enemy shots that hit you from the direction you're facing. |
+| **Football Helmet** | Passive (Q3) | Treasure | **Tackle:** run in a straight line for ~1s and Isaac starts glowing. Running into enemies then deals 3× damage + 5, knocks them back hard, confuses them and **stuns** them (the chin strap is built in). You take no contact damage while tackling. **Facemask:** 50% chance to block enemy shots that hit you from the direction you're facing. |
 | **Shoulder Pads** | Passive (Q2) | Treasure, Shop | 25% chance to **deflect** enemy shots back so they hit enemies. Taking damage sets off a **shockwave** that shoves enemies away and destroys nearby shots. With the Helmet, every tackle also sets off a smaller shockwave. |
 | **Team Jersey** | Passive (Q2) | Treasure, Golden Chest | You get a **jersey number** (1–99) for the run. Every N shots (N = 3–9, set by your number) you throw a spiraling **football**: 2× damage, piercing, spectral. **Pre-snap:** enemies freeze briefly when you enter a room. |
 | **Football Cleats** | Passive (Q2) | Treasure, Shop | +0.2 Speed. Running **10 yards** in an uncleared room earns a **First Down**: +0.5 Damage until you leave the room (max 4 per room). |
 | **Eye Black** | Passive (Q2) | Treasure, Shop | +1 Luck. Tears do up to **+50% damage the farther they travel**. Makes you immune to **Curse of Darkness**. |
 | **Padded Pants** | Passive (Q2) | Treasure, Shop | 30% chance to **shrug off** damage from touching an enemy and **stiff-arm** it away. Extra copies stack (up to 60%). |
-| **Chin Strap** | Passive (Q2) | Treasure, Shop | Tackles deal **+50% damage and stun**. Lets you **tackle without the Helmet** (slower wind-up). |
+| **QB Wristband** | Passive (Q2) | Treasure, Shop | +0.16 Shot speed. **Every football you throw** (Jersey, Gloves, Trick Play, the Quarterback...) **homes in** and deals **+25% damage**. |
 | **Foam Finger** | Passive (Q2) | Treasure, Shop | The toughest enemy in each room is marked **#1**: you deal +50% damage to it, and it drops a penny when it dies. |
 | **Super Bowl Ring** | Passive (Q3) | Treasure, Boss | +1 Luck. Every **boss room** you clear adds a ring: +0.35 Damage for the rest of the run. |
 | **Receiver Gloves** | Passive (Q2) | Treasure | When you're **not shooting**, 35% chance to **catch** an enemy shot instead of getting hit (hold up to 3, shown above your head). Each shot you fire throws one caught ball back as a **football**: 1.5× damage, piercing, spectral. |
@@ -25,12 +25,14 @@ It uses only the vanilla Lua API, so REPENTOGON is **not** required.
 | **Pigskin** | Active, 3 charges | Treasure, Shop | Throw a **fumble** that stays on the ground for 5 seconds. Non-boss enemies **scramble toward it** and get confused. **Recover it** for a **Touchdown**: +1 Damage until you leave the room. |
 | **Playbook** | Active, 2 charges | Treasure | **Call a play** for the room. Each use turns to the next page: **Blitz** (tears up, +0.3 speed) → **Hail Mary** (+range, +shot speed, piercing tears) → **Trick Play** (your next 6 shots are footballs). |
 | **Coach's Whistle** | Active, 4 charges | Treasure, Boss | **Offsides!** Shoves every enemy away from you and slows them for 5 seconds, and wipes out all enemy shots. Bosses take damage instead of being shoved. |
+| **End Zone** | Active, 4 charges | Treasure | **Paints an end zone** on the floor for the room. Standing in it gives **+1.5 Damage**; enemies inside it are **slowed**. A Pigskin **touchdown scored in it counts double**. |
 | **Gatorade Bucket** | Passive (Q2) | Treasure, Shop | Clearing a room **without getting hit** fills the bucket. Every 3 fills (or one no-hit boss room) you get a **Gatorade shower**: heal a full red heart, or half a soul heart if your red hearts are full. |
 | **Concussion Protocol** | Trinket | Trinket pool | Taking damage **confuses every enemy** in the room for 2 seconds. |
+| **Turf Burn** | Trinket | Trinket pool | **Sprinting scorches the turf** behind you: the burning creep damages enemies. Tackled enemies get a big scorch mark. |
 | **Referee Flag** | Trinket | Trinket pool | **Flag on the play:** when an enemy or its shot hits you, that enemy takes 10 + 3× floor-number damage and is slowed. |
 
 ### Set bonus: Suited Up
-Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats, Eye Black, Gloves, Mouthguard, Padded Pants, Chin Strap) to get **Suited Up**: +1 Damage, the Helmet's tackle winds up twice as fast, and you pulse gold.
+Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats, Eye Black, Gloves, Mouthguard, Padded Pants, QB Wristband) to get **Suited Up**: +1 Damage, the Helmet's tackle winds up twice as fast, and you pulse gold.
 
 ### Familiars
 | Item | Quality | Pools | What it does |
@@ -49,9 +51,9 @@ Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats
 
 | Gridiron item | With | Effect |
 |---|---|---|
-| Football Helmet / Chin Strap | Mars | Every dash is a tackle |
-| Football Helmet / Chin Strap | Aries, Taurus | Tackles go live twice as fast |
-| Football Helmet / Chin Strap | Leo, Thunder Thighs, Magic Mushroom, Bucket of Lard | Tackles deal +25% damage and knock enemies 50% farther |
+| Football Helmet | Mars | Every dash is a tackle |
+| Football Helmet | Aries, Taurus | Tackles go live twice as fast |
+| Football Helmet | Leo, Thunder Thighs, Magic Mushroom, Bucket of Lard | Tackles deal +25% damage and knock enemies 50% farther |
 | Receiver Gloves | Magneto, Telekinesis | +20% catch chance |
 | Shoulder Pads | Infamy | +15% deflect chance |
 | Team Jersey / The Quarterback | Brimstone, Technology, Mom's Knife, Epic Fetus, the Forgotten's bone, ... | Still throw a football every few attacks |
@@ -59,6 +61,14 @@ Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats
 | Pigskin | Strange Attractor, Magneto | Pulls enemies twice as hard, from twice as far |
 | Gatorade Bucket | Holy Water, Free Lemonade, Lemon Mishap, Ball of Tar, Juicy Sack | The shower leaves matching creep |
 | Cheerleader / Water Boy / Tackling Dummy | BFFS! | Stronger routines / more hearts / wider pull |
+| Football Cleats | Pony, White Pony, Taurus | First downs need half the yards |
+| Padded Pants | Thunder Thighs, Leo | +15% shrug-off chance |
+| Super Bowl Ring | Money = Power, Greed's Gullet | Rings give double damage |
+| Foam Finger | Marked, Eye of the Occult | +100% damage to the #1 enemy (instead of +50%) |
+| QB Wristband | Spoon Bender, Godhead, Sacred Heart | Footballs deal another +25% |
+| Coin Toss | Tarot Cloth | The coin lands on its edge: you get heads **and** tails |
+| Turf Burn | Football Cleats | Scorch marks last twice as long |
+| Every football | Tear effects (fire, poison, Ipecac, holy light, ice, charm, Dark Matter, Midas, homing) | The football takes on that effect's colour, so you can see the synergy |
 
 These also appear in External Item Descriptions.
 
@@ -66,7 +76,7 @@ These also appear in External Item Descriptions.
 | Version | Health | Starts with | Play style |
 |---|---|---|---|
 | **The Quarterback** | 3 red hearts | Football Helmet, Team Jersey, **Playbook** (pocket active) | Every 3rd shot is a football, and all his footballs fly 25% faster and hit 25% harder. +0.2 shot speed. **Birthright:** every other shot is a football. |
-| **Tainted Quarterback** | 2 red + 1 soul | Chin Strap, Shoulder Pads, **Kicking Tee** (pocket active) | Throws **only footballs**: much slower fire rate, but each one hits hard. **Birthright:** footballs home in on enemies. |
+| **Tainted Quarterback** | 2 red + 1 soul | Football Helmet, Shoulder Pads, **Kicking Tee** (pocket active) | Throws **only footballs**: much slower fire rate, but each one hits hard. **Birthright:** footballs home in on enemies. |
 
 Both appear on the character select screen with their own page, portrait, co-op and death-screen art.
 
@@ -85,7 +95,7 @@ Find these under **Challenges → Custom**:
 |---|---|---|
 | **Fourth and Long** | Mom's Heart | Start Suited Up (Helmet, Pads, Jersey) with the Gatorade Bucket. Red hearts turn into pennies, so Gatorade showers are your only healing. |
 | **Two-Minute Drill** | Mom | Start with the Playbook, Cleats and Eye Black. Each floor runs on a 2:00 game clock; every cleared room adds 10 seconds and recharges the Playbook. In overtime you lose half a heart every 15 seconds. |
-| **Ground Game** | Mom | You can't shoot. Start with the Helmet, Pads, Cleats, Pants, Chin Strap and Kicking Tee. Tackles deal double damage and wind up twice as fast. |
+| **Ground Game** | Mom | You can't shoot. Start with the Helmet, Pads, Cleats, Pants and Kicking Tee. Tackles deal double damage and wind up twice as fast. |
 
 ## Installing
 1. Download `gridiron-vX.Y.Z.zip` from the [latest release](https://github.com/bulmaspanties/tboifbm/releases/latest).
@@ -95,12 +105,22 @@ Find these under **Challenges → Custom**:
 4. To try everything at once, open the debug console (`~`) and type `gridiron give` and walk over the pedestals.
 
 ### Publishing to the Steam Workshop
-1. Install the release zip into your `mods` folder as above (it includes `thumb.png`, the Workshop preview).
-2. Run **ModUploader.exe** from the game's `tools/ModUploader` folder, pick **Gridiron**, and upload.
-   It reads the name, description, tags and version from `metadata.xml`.
-3. `metadata.xml` ships with `<visibility>Private</visibility>`; switch it to `Public` (in the file or on the Workshop page) when you're ready.
-   After the first upload the uploader writes the Workshop `<id>` into `metadata.xml`: copy that back into the repo so later uploads update the same page.
-   If the uploader rejects a tag, delete that `<tag>` line.
+The release zip is already laid out the way the Workshop uploader wants: one `gridiron/` folder with
+`metadata.xml` (name, BBCode description, tags, version, visibility), `thumb.png` (the 512×512 preview) and only
+the files the game loads. No build tools or tests ship in it.
+
+1. Unzip the release into the game's `mods` folder, so you have `mods/gridiron/metadata.xml`.
+   Launch the game once with the mod enabled to check it loads.
+2. Run **ModUploader.exe** from the game's `tools/ModUploader` folder
+   (`steamapps/common/The Binding of Isaac Rebirth/tools/ModUploader`), pick **gridiron** and upload.
+   It fills in the name, description, tags and preview from the folder. Add a change note (copy the newest CHANGELOG entry).
+3. `metadata.xml` ships with `<visibility>Private</visibility>`, so the first upload is only visible to you.
+   Subscribe to it on another profile or check the page, then switch it to **Public** on the Workshop page (or in the file) when you're ready.
+4. After the first upload the uploader writes the Workshop `<id>` into `mods/gridiron/metadata.xml`.
+   **Copy that `<id>` line into the repo's `metadata.xml`**: every later upload then updates the same Workshop page instead of making a new one.
+5. If the uploader rejects a tag, delete that `<tag>` line and upload again.
+
+To update: bump `<version>`, build the zip, unzip it over `mods/gridiron` (keep the `<id>`), and run the uploader again.
 
 ### Making a release
 Bump `<version>` in `metadata.xml` and push to `main`, then run the **Release** workflow from the Actions tab (or push a matching `v*` tag).

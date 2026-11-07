@@ -77,11 +77,14 @@ return function(mod)
 
     local function scoreTouchdown(player)
         local d = pdata(player)
-        if not d.touchdown then
-            d.touchdown = true
+        local doubled = mod.inEndZone(player.Position)   -- scored in the End Zone: counts double
+        local value = doubled and 2 or 1
+        if (d.touchdown == 2 and 2 or d.touchdown and 1 or 0) < value then
+            d.touchdown = value
             mod.refreshCache(player)
         end
-        game:GetHUD():ShowItemText("Touchdown!", "+1 Damage this room")
+        game:GetHUD():ShowItemText(doubled and "Touchdown! In the end zone!" or "Touchdown!",
+            doubled and "+2 Damage this room" or "+1 Damage this room")
         sfx:Play(SoundEffect.SOUND_THUMBSUP)
         mod.popOn(player, "TOUCHDOWN!", mod.Colors.gold, 1.3)
         player:SetColor(Color(1, 1, 1, 1, 0.4, 0.3, 0), 15, 1, true, false)

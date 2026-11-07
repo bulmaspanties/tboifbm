@@ -309,9 +309,57 @@ def anm2(sheet_name, size, anims, pivot):
     return "\n".join(out) + "\n"
 
 
+END_ZONE_W, END_ZONE_H = 80, 40
+
+
+def end_zone_paint():
+    """The End Zone floor marking: translucent blue/green diagonal stripes in a white border.
+    Translucent so the room's own floor shows through the paint."""
+    from PIL import Image
+    img = Image.new("RGBA", (END_ZONE_W, END_ZONE_H), (0, 0, 0, 0))
+    px = img.load()
+    for y in range(END_ZONE_H):
+        for x in range(END_ZONE_W):
+            border = x < 2 or y < 2 or x >= END_ZONE_W - 2 or y >= END_ZONE_H - 2
+            if border:
+                px[x, y] = (245, 245, 238, 220)
+            elif ((x + y) // 6) % 2 == 0:
+                px[x, y] = (40, 74, 170, 120)       # team blue stripe
+            else:
+                px[x, y] = (64, 140, 58, 70)        # turf green
+    return img
+
+
+def end_zone_anm2():
+    return ('''<AnimatedActor>
+\t<Info CreatedBy="Gridiron tools/make_entities.py" CreatedOn="11/07/2026 12:00:00 PM" Version="1" Fps="30"/>
+\t<Content>
+\t\t<Spritesheets><Spritesheet Path="gridiron_end_zone.png" Id="0"/></Spritesheets>
+\t\t<Layers><Layer Name="paint" Id="0" SpritesheetId="0"/></Layers>
+\t\t<Nulls/><Events/>
+\t</Content>
+\t<Animations DefaultAnimation="Idle">
+\t\t<Animation Name="Idle" FrameNum="1" Loop="true">
+\t\t\t<RootAnimation>''' + ROOT_FRAME.format(d=1) + '''</RootAnimation>
+\t\t\t<LayerAnimations>
+\t\t\t\t<LayerAnimation LayerId="0" Visible="true">''' +
+            FRAME.format(px=END_ZONE_W // 2, py=END_ZONE_H // 2, x=0, s=END_ZONE_W, d=1)
+            .replace(f'Height="{END_ZONE_W}"', f'Height="{END_ZONE_H}"') + '''</LayerAnimation>
+\t\t\t</LayerAnimations>
+\t\t\t<NullAnimations/><Triggers/>
+\t\t</Animation>
+\t</Animations>
+</AnimatedActor>
+''')
+
+
 def main():
     from PIL import Image
     from iconstyle import finish
+    effects = GFX / "effects"
+    effects.mkdir(parents=True, exist_ok=True)
+    end_zone_paint().save(effects / "gridiron_end_zone.png")
+    (effects / "gridiron_end_zone.anm2").write_text(end_zone_anm2())
     for rel, spec in ENTITIES.items():
         size = spec.get("size", 32)
         frames = spec["frames"]

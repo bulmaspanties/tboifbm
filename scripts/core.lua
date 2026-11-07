@@ -18,7 +18,8 @@ return function(mod)
         WHISTLE     = Isaac.GetItemIdByName("Coach's Whistle"),
         GATORADE    = Isaac.GetItemIdByName("Gatorade Bucket"),
         PANTS       = Isaac.GetItemIdByName("Padded Pants"),
-        CHIN_STRAP  = Isaac.GetItemIdByName("Chin Strap"),
+        WRISTBAND   = Isaac.GetItemIdByName("QB Wristband"),
+        END_ZONE    = Isaac.GetItemIdByName("End Zone"),
         FOAM_FINGER = Isaac.GetItemIdByName("Foam Finger"),
         RING        = Isaac.GetItemIdByName("Super Bowl Ring"),
         CHEERLEADER = Isaac.GetItemIdByName("Cheerleader"),
@@ -28,6 +29,7 @@ return function(mod)
     mod.Trinkets = {
         FLAG  = Isaac.GetTrinketIdByName("Referee Flag"),
         PROTOCOL = Isaac.GetTrinketIdByName("Concussion Protocol"),
+        TURF_BURN = Isaac.GetTrinketIdByName("Turf Burn"),
     }
     mod.Cards = {
         COIN_TOSS = Isaac.GetCardIdByName("Coin Toss"),
@@ -52,6 +54,7 @@ return function(mod)
         TACKLE_KNOCKBACK      = 14,
         TACKLE_CONFUSE        = 60,
         TACKLE_HIT_COOLDOWN   = 20,    -- frames before the same enemy can be tackled again
+        TACKLE_STUN           = 30,    -- the buckled chin strap: tackled enemies are stunned (bosses: 10)
         FACEMASK_BLOCK_CHANCE = 0.5,   -- (menu)
         FACEMASK_ARC          = 0.6,   -- dot product threshold for "in front of the face"
 
@@ -133,10 +136,21 @@ return function(mod)
         PANTS_MAX_CHANCE      = 0.6,
         PANTS_STIFF_ARM       = 16,    -- knockback on the enemy you shrugged off
 
-        -- Chin Strap
-        CHIN_STRAP_DMG_MULT   = 1.5,
-        CHIN_STRAP_STUN       = 30,
-        CHIN_STRAP_SOLO_WINDUP = 1.5,  -- windup multiplier when tackling without the Helmet
+        -- QB Wristband
+        WRISTBAND_SHOT_SPEED  = 0.16,
+        WRISTBAND_BALL_DMG    = 1.25,  -- every football you throw
+        WRISTBAND_HOMING_DMG  = 1.25,  -- on top, with a homing item
+
+        -- End Zone
+        END_ZONE_HALF_W       = 62,    -- world units from the centre to the sideline
+        END_ZONE_HALF_H       = 30,
+        END_ZONE_DAMAGE       = 1.5,   -- while you stand in it
+        END_ZONE_SLOW         = 0.6,   -- enemies inside it
+
+        -- Turf Burn
+        TURF_BURN_SPEED       = 3.2,   -- velocity that counts as a sprint
+        TURF_BURN_DMG_MULT    = 0.35,  -- creep damage per tick, x player damage
+        TURF_BURN_FRAMES      = 45,    -- how long a scorch mark lasts
 
         -- Foam Finger
         FINGER_BONUS          = 0.5,
@@ -188,6 +202,7 @@ return function(mod)
         INFAMY_DEFLECT_BONUS  = 0.15,  -- Infamy + Shoulder Pads
         BOOM_KICK_RADIUS      = 1.5,   -- explosive items + Kicking Tee
         BFFS_FAMILIAR_BOOST   = 1.5,
+        BIG_PANTS_BONUS       = 0.15,  -- Thunder Thighs / Leo + Padded Pants
         SHOWER_CREEP_SCALE    = 2.5,   -- Gatorade shower creep
         SHOWER_CREEP_FRAMES   = 240,
     }
@@ -222,17 +237,24 @@ return function(mod)
     function mod.fumblePullMult() return 1 end
     function mod.familiarBoost() return 1 end
     function mod.onGatoradeShower() end
+    function mod.yardMult() return 1 end
+    function mod.ringMult() return 1 end
+    function mod.fingerMult() return 1 end
+    function mod.pantsBonus() return 0 end
+    function mod.wristbandMult() return 1 end
+    function mod.turfBurnFrames() return 1 end
+    function mod.inEndZone() return false end
 
     -- Wearable gear counts toward Suited Up; actives and the bucket don't.
     mod.GEAR = {
         mod.Items.HELMET, mod.Items.PADS, mod.Items.JERSEY, mod.Items.CLEATS,
         mod.Items.EYE_BLACK, mod.Items.GLOVES, mod.Items.MOUTHGUARD, mod.Items.PANTS,
-        mod.Items.CHIN_STRAP,
+        mod.Items.WRISTBAND,
     }
 
     mod.ACTIVE_ITEMS = {
         [mod.Items.KICKING_TEE] = true, [mod.Items.PIGSKIN] = true,
-        [mod.Items.PLAYBOOK] = true, [mod.Items.WHISTLE] = true,
+        [mod.Items.PLAYBOOK] = true, [mod.Items.WHISTLE] = true, [mod.Items.END_ZONE] = true,
     }
 
     mod.DIR_VECTORS = {
@@ -323,12 +345,44 @@ return function(mod)
     end
 
     -- Turn a tear into a thrown football (piercing, spectral, drawn as a spiral).
+    -- Footballs pick up the look of your tear effects, so synergies read at a glance.
+    -- First match wins; tint = sprite colour, offset = glow.
+    mod.FOOTBALL_TINTS = {
+        { "TEAR_BURN",             Color(1, 0.75, 0.45, 1, 0.45, 0.15, 0) },     -- fire: glowing orange
+        { "TEAR_POISON",           Color(0.6, 1, 0.5, 1, 0.05, 0.25, 0) },       -- poison / Ipecac: green
+        { "TEAR_EXPLOSIVE",        Color(0.7, 1, 0.45, 1, 0.15, 0.3, 0) },
+        { "TEAR_GLOW",             Color(1, 1, 1, 1, 0.45, 0.4, 0.25) },         -- Godhead: shining
+        { "TEAR_LIGHT_FROM_HEAVEN", Color(1, 0.95, 0.7, 1, 0.35, 0.3, 0.05) },   -- holy: gold
+        { "TEAR_FREEZE",           Color(0.75, 0.9, 1, 1, 0.1, 0.25, 0.45) },    -- ice: frosted blue
+        { "TEAR_ICE",              Color(0.75, 0.9, 1, 1, 0.1, 0.25, 0.45) },
+        { "TEAR_CHARM",            Color(1, 0.7, 0.85, 1, 0.35, 0.05, 0.2) },    -- charm: pink
+        { "TEAR_FEAR",             Color(0.45, 0.4, 0.45, 1, 0, 0, 0) },         -- Dark Matter: black
+        { "TEAR_MIDAS",            Color(1, 0.9, 0.4, 1, 0.45, 0.35, 0) },       -- Midas: solid gold
+        { "TEAR_HOMING",           Color(0.95, 0.75, 1, 1, 0.2, 0.05, 0.3) },    -- homing: purple
+    }
+
+    function mod.footballTint(tear)
+        if not tear.HasTearFlags then return nil end
+        for _, entry in ipairs(mod.FOOTBALL_TINTS) do
+            local flag = TearFlags[entry[1]]
+            if flag and tear:HasTearFlags(flag) then return entry[2] end
+        end
+    end
+
     function mod.makeFootball(tear, dmgMult)
+        local thrower = tear.SpawnerEntity and tear.SpawnerEntity:ToPlayer()
+        if thrower and thrower:HasCollectible(mod.Items.WRISTBAND) then
+            -- QB Wristband: read the defense, every football finds a target
+            dmgMult = dmgMult * mod.Cfg.WRISTBAND_BALL_DMG * mod.wristbandMult(thrower)
+            tear:AddTearFlags(TearFlags.TEAR_HOMING)
+        end
         tear.CollisionDamage = tear.CollisionDamage * dmgMult
         tear.Scale = tear.Scale * mod.Cfg.JERSEY_BALL_SCALE
         tear:AddTearFlags(TearFlags.TEAR_PIERCING | TearFlags.TEAR_SPECTRAL)
         tear.Color = Color(0.55, 0.3, 0.15, 1, 0.1, 0.05, 0) -- tints the splash on impact
-        tear:GetData().GridironFootball = mod.newFootballSprite()
+        local ball = mod.newFootballSprite()
+        ball.Color = mod.footballTint(tear) or Color(1, 1, 1, 1)
+        tear:GetData().GridironFootball = ball
         tear:GetSprite().Color = Color(1, 1, 1, 0)
         sfx:Play(SoundEffect.SOUND_SHELLGAME, 0.6, 0, false, 1.3)
     end

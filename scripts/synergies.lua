@@ -14,7 +14,7 @@ return function(mod)
         return false
     end
 
-    -- Football Helmet / Chin Strap tackles -------------------------------------------
+    -- Football Helmet tackles --------------------------------------------------------
     -- Charging items make a tackle go live sooner; Mars's dash is a tackle on its own.
     -- Big bodies (Leo, Thunder Thighs, Magic Mushroom, Bucket of Lard) hit harder.
     local CHARGERS = { C.COLLECTIBLE_ARIES, C.COLLECTIBLE_TAURUS }
@@ -82,6 +82,37 @@ return function(mod)
         end
     end
 
+    -- Football Cleats: Pony, White Pony and Taurus cover ground: first downs need half the yards.
+    function mod.yardMult(player)
+        return hasAny(player, { C.COLLECTIBLE_PONY, C.COLLECTIBLE_WHITE_PONY, C.COLLECTIBLE_TAURUS }) and 0.5 or 1
+    end
+
+    -- Super Bowl Ring: Money = Power / Greed's Gullet: the hardware is worth twice as much.
+    function mod.ringMult(player)
+        return hasAny(player, { C.COLLECTIBLE_MONEY_EQUALS_POWER, C.COLLECTIBLE_GREEDS_GULLET }) and 2 or 1
+    end
+
+    -- Foam Finger: Marked / Eye of the Occult: the #1 enemy takes double the bonus.
+    function mod.fingerMult(player)
+        return hasAny(player, { C.COLLECTIBLE_MARKED, C.COLLECTIBLE_EYE_OF_THE_OCCULT }) and 2 or 1
+    end
+
+    -- Padded Pants: big legs shrug off more.
+    function mod.pantsBonus(player)
+        return hasAny(player, { C.COLLECTIBLE_THUNDER_THIGHS, C.COLLECTIBLE_LEO }) and Cfg.BIG_PANTS_BONUS or 0
+    end
+
+    -- QB Wristband: with a homing item every football is a dime.
+    function mod.wristbandMult(player)
+        return hasAny(player, { C.COLLECTIBLE_SPOON_BENDER, C.COLLECTIBLE_GODHEAD, C.COLLECTIBLE_SACRED_HEART })
+            and Cfg.WRISTBAND_HOMING_DMG or 1
+    end
+
+    -- Turf Burn: cleats dig in, so the scorch marks last twice as long.
+    function mod.turfBurnFrames(player)
+        return player:HasCollectible(Items.CLEATS) and 2 or 1
+    end
+
     -- Footballs without tears ----------------------------------------------------------
     -- Brimstone, Technology, Mom's Knife, Epic Fetus, the Forgotten's bone... none of them
     -- fire tears, so Team Jersey and the Quarterback would never throw a football. Count
@@ -131,12 +162,24 @@ return function(mod)
         [Items.HELMET] = icon(C.COLLECTIBLE_MARS) .. " Mars: every dash is a tackle#" ..
             icon(C.COLLECTIBLE_ARIES) .. icon(C.COLLECTIBLE_TAURUS) .. " Aries / Taurus: tackles go live twice as fast#" ..
             icon(C.COLLECTIBLE_LEO) .. icon(C.COLLECTIBLE_THUNDER_THIGHS) .. " Size-up items: harder, longer tackles",
-        [Items.CHIN_STRAP] = icon(C.COLLECTIBLE_MARS) .. " Mars: every dash is a tackle",
         [Items.GLOVES] = icon(C.COLLECTIBLE_MAGNETO) .. icon(C.COLLECTIBLE_TELEKINESIS) .. " Magneto / Telekinesis: +20% catch chance",
         [Items.PADS] = icon(C.COLLECTIBLE_INFAMY) .. " Infamy: +15% deflect chance",
-        [Items.JERSEY] = icon(C.COLLECTIBLE_BRIMSTONE) .. " Brimstone, Technology, Mom's Knife, etc.: still throw footballs",
+        [Items.JERSEY] = icon(C.COLLECTIBLE_BRIMSTONE) .. " Brimstone, Technology, Mom's Knife, etc.: still throw footballs#" ..
+            "Footballs take on your tear effects' colours (fire, poison, holy, ice...)",
+        [Items.CLEATS] = icon(C.COLLECTIBLE_PONY) .. icon(C.COLLECTIBLE_WHITE_PONY) .. icon(C.COLLECTIBLE_TAURUS) ..
+            " Pony / White Pony / Taurus: first downs need half the yards",
+        [Items.PANTS] = icon(C.COLLECTIBLE_THUNDER_THIGHS) .. icon(C.COLLECTIBLE_LEO) .. " Thunder Thighs / Leo: +15% shrug-off chance",
+        [Items.RING] = icon(C.COLLECTIBLE_MONEY_EQUALS_POWER) .. icon(C.COLLECTIBLE_GREEDS_GULLET) ..
+            " Money = Power / Greed's Gullet: rings give double damage",
+        [Items.FOAM_FINGER] = icon(C.COLLECTIBLE_MARKED) .. icon(C.COLLECTIBLE_EYE_OF_THE_OCCULT) ..
+            " Marked / Eye of the Occult: +100% damage to the #1 enemy",
+        [Items.WRISTBAND] = icon(C.COLLECTIBLE_SPOON_BENDER) .. icon(C.COLLECTIBLE_GODHEAD) .. icon(C.COLLECTIBLE_SACRED_HEART) ..
+            " Homing items: footballs deal another +25%#" .. icon(Items.JERSEY) .. icon(Items.GLOVES) .. icon(Items.PLAYBOOK) ..
+            " Works on every football: Jersey, Gloves, Trick Play, the Quarterback",
+        [Items.END_ZONE] = icon(Items.PIGSKIN) .. " Pigskin: a touchdown scored in the end zone counts double",
         [Items.KICKING_TEE] = icon(C.COLLECTIBLE_IPECAC) .. icon(C.COLLECTIBLE_DR_FETUS) .. " Explosive items: +50% blast radius",
-        [Items.PIGSKIN] = icon(C.COLLECTIBLE_STRANGE_ATTRACTOR) .. icon(C.COLLECTIBLE_MAGNETO) .. " Magnets: pulls enemies twice as hard and far",
+        [Items.PIGSKIN] = icon(C.COLLECTIBLE_STRANGE_ATTRACTOR) .. icon(C.COLLECTIBLE_MAGNETO) .. " Magnets: pulls enemies twice as hard and far#" ..
+            icon(Items.END_ZONE) .. " End Zone: touchdowns in it count double",
         [Items.GATORADE] = icon(C.COLLECTIBLE_HOLY_WATER) .. icon(C.COLLECTIBLE_FREE_LEMONADE) .. icon(C.COLLECTIBLE_BALL_OF_TAR) ..
             " Holy Water, lemons, Ball of Tar, Juicy Sack: the shower leaves matching creep",
         [Items.CHEERLEADER] = icon(C.COLLECTIBLE_BFFS) .. " BFFS!: stronger routines",

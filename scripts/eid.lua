@@ -15,7 +15,7 @@ return function(mod)
         local secs = string.format("%.2g", Cfg.TACKLE_WINDUP / 30)
         addCollectible(Items.HELMET,
             "Run in a straight line for " .. secs .. "s to start a tackle (Isaac glows)#" ..
-            "Tackling an enemy deals 3x damage +5, knocks it back and confuses it#" ..
+            "Tackling an enemy deals 3x damage +5, knocks it back, confuses and stuns it#" ..
             "No contact damage while tackling#" ..
             "Facemask: " .. pct(Cfg.FACEMASK_BLOCK_CHANCE) .. " chance to block shots that hit you from the direction you're facing")
         addCollectible(Items.PADS,
@@ -62,9 +62,12 @@ return function(mod)
         addCollectible(Items.PANTS,
             pct(Cfg.PANTS_IGNORE_CHANCE) .. " chance to ignore damage from touching an enemy, and stiff-arm it away#" ..
             "Extra copies stack (up to " .. pct(Cfg.PANTS_MAX_CHANCE) .. ")#Counts toward Suited Up")
-        addCollectible(Items.CHIN_STRAP,
-            "Tackles deal +50% damage and stun enemies#" ..
-            "Lets you tackle without the Football Helmet (slower windup)#Counts toward Suited Up")
+        addCollectible(Items.WRISTBAND,
+            "↑ +0.16 Shot speed#" ..
+            "Every football you throw homes in and deals +25% damage#Counts toward Suited Up")
+        addCollectible(Items.END_ZONE,
+            "Paints an end zone under you for the rest of the room#" ..
+            "Standing in it: +" .. Cfg.END_ZONE_DAMAGE .. " Damage#Enemies inside it are slowed")
         addCollectible(Items.FOAM_FINGER,
             "The toughest enemy in each room is marked #1#" ..
             "You deal +50% damage to it#It drops a penny when it dies")
@@ -77,6 +80,8 @@ return function(mod)
             "With Gatorade Bucket: clean rooms fill it twice as fast")
         addCollectible(Items.DUMMY,
             "Orbits you and blocks enemy shots#Pulls nearby enemies toward itself")
+        EID:addTrinket(Trinkets.TURF_BURN,
+            "Sprinting scorches the turf behind you: the burn damages enemies#Tackled enemies get a big scorch mark")
         EID:addTrinket(Trinkets.PROTOCOL,
             "Taking damage confuses every enemy in the room for 2 seconds")
         if mod.Cards.COIN_TOSS and mod.Cards.COIN_TOSS > 0 then

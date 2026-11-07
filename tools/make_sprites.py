@@ -55,6 +55,11 @@ PALETTE = {
     # ice pack blue
     "c": (70, 150, 200, 255),
     "C": (130, 200, 236, 255),
+    # turf greens / dirt
+    "t": (38, 96, 42, 255),
+    "T": (64, 140, 58, 255),
+    "u": (112, 186, 88, 255),
+    "d": (96, 62, 36, 255),
 }
 
 SPRITES = {}
@@ -472,23 +477,6 @@ def referee_flag():
     put(g, [(8, 7)], "N")
     return rows_of(outline(g))
 
-def chin_strap():
-    g = blank()
-    # strap arcing under a chin cup, with snaps at both ends
-    for x in range(4, 28):
-        t = (x - 15.5) / 11.5
-        y = int(round(11 + 9 * (1 - t * t)))
-        rect(g, x, y, x, y + 1, "W")
-        g[y + 1][x] = "w"
-    ellipse(g, 15.5, 21, 6, 4, "W")                  # chin cup
-    ellipse(g, 15.5, 22, 4.5, 2.5, "w")
-    rect(g, 11, 18, 20, 18, "v")
-    for cx in (5, 26):                               # snaps
-        ellipse(g, cx, 11, 2.2, 2.2, "G")
-        put(g, [(cx, 11)], "g")
-    return rows_of(outline(g))
-
-
 def foam_finger():
     g = blank()
     rect(g, 13, 3, 18, 14, "B")                      # pointing finger
@@ -562,8 +550,73 @@ def eye_black():
     return rows_of(outline(g))
 
 
+def qb_wristband():
+    """A quarterback's play-call wristband: blue cuff with a clear window over the play card."""
+    g = blank()
+    rect(g, 5, 10, 26, 23, "B")                       # cuff
+    ellipse(g, 5, 16.5, 2.5, 6.5, "B")                # rounded ends
+    ellipse(g, 26, 16.5, 2.5, 6.5, "B")
+    rect(g, 5, 10, 26, 10, "L")                       # lit top edge
+    rect(g, 5, 23, 26, 23, "b")                       # shaded bottom edge
+    rect(g, 9, 12, 22, 21, "W")                       # play card behind the window
+    for x in (13, 18):
+        rect(g, x, 12, x, 21, "w")                    # card grid
+    rect(g, 9, 16, 22, 16, "w")
+    put(g, [(10, 13), (12, 15), (11, 14), (10, 15), (12, 13)], "R")       # X
+    put(g, [(15, 13), (16, 13), (14, 14), (17, 14), (15, 15), (16, 15)], "L")  # O
+    put(g, [(19, 18), (20, 19), (21, 20), (20, 18), (19, 20)], "R")       # X
+    put(g, [(10, 18), (11, 19), (12, 20)], "b")                           # route arrow
+    put(g, [(14, 19), (15, 18), (16, 19)], "b")
+    put(g, [(22, 12), (21, 13)], "C")                 # glint on the window
+    return rows_of(outline(g))
+
+
+def end_zone_icon():
+    """A patch of painted end-zone turf with an orange pylon in the corner."""
+    g = blank()
+    for y in range(14, 28):                           # turf in perspective (wider at the bottom)
+        inset = (27 - y) // 3
+        rect(g, 3 + inset, y, 28 - inset, y, "T")
+    for k in range(-14, 30, 6):                       # diagonal end-zone stripes
+        for y in range(14, 28):
+            x = k + (y - 14)
+            inset = (27 - y) // 3
+            if 3 + inset <= x <= 28 - inset:
+                g[y][x] = "B"
+                if x + 1 <= 28 - inset:
+                    g[y][x + 1] = "B"
+    for y in range(14, 28):                           # white goal line along the front edge
+        inset = (27 - y) // 3
+        g[y][3 + inset] = "W"
+    rect(g, 3, 27, 28, 27, "W")
+    rect(g, 21, 6, 25, 22, "O")                       # pylon
+    rect(g, 21, 6, 22, 22, "P")
+    rect(g, 24, 6, 25, 22, "o")
+    rect(g, 21, 11, 25, 12, "W")
+    return rows_of(outline(g))
+
+
+def turf_burn():
+    """A torn clump of turf with a scorch mark, still burning."""
+    g = blank()
+    ellipse(g, 15.5, 22, 10, 4.5, "d")               # dirt underside
+    ellipse(g, 15.5, 19, 10, 4.5, "T")               # grass top
+    ellipse(g, 11.5, 17.5, 4, 1.6, "u")              # lit grass
+    ellipse(g, 17.5, 19.5, 5, 2.2, "n")              # the scorch
+    ellipse(g, 17.5, 19.5, 3, 1.2, "N")
+    ellipse(g, 17.5, 13, 3.2, 5, "O")                # flame
+    ellipse(g, 17.5, 14.5, 1.8, 3, "P")
+    ellipse(g, 17.5, 15.5, 0.9, 1.6, "U")
+    put(g, [(17, 7), (18, 7), (17, 8), (18, 8)], "O")   # flame tip
+    ellipse(g, 11.5, 7.5, 2.6, 2, "w")               # smoke puff
+    ellipse(g, 9, 5, 1.6, 1.4, "w")
+    return rows_of(outline(g))
+
+
 SPRITES["items/collectibles/eye_black.png"] = dict(rows=eye_black())
-SPRITES["items/collectibles/chin_strap.png"] = dict(rows=chin_strap())
+SPRITES["items/collectibles/qb_wristband.png"] = dict(rows=qb_wristband())
+SPRITES["items/collectibles/end_zone.png"] = dict(rows=end_zone_icon())
+SPRITES["items/trinkets/turf_burn.png"] = dict(rows=turf_burn())
 SPRITES["items/collectibles/foam_finger.png"] = dict(rows=foam_finger())
 SPRITES["items/collectibles/super_bowl_ring.png"] = dict(rows=super_bowl_ring())
 SPRITES["items/trinkets/concussion_protocol.png"] = dict(rows=concussion_protocol())

@@ -28,6 +28,21 @@ return function(mod)
     end
     mod.padPop = padPop
 
+    -- Turf Burn scorch mark: short-lived red creep that burns enemies.
+    function mod.scorch(player, pos, scale)
+        local variant = EffectVariant.PLAYER_CREEP_RED
+        local creep = Isaac.Spawn(EntityType.ENTITY_EFFECT, variant, 0, pos, Vector.Zero, player)
+        creep.CollisionDamage = player.Damage * Cfg.TURF_BURN_DMG_MULT * player:GetTrinketMultiplier(Trinkets.TURF_BURN)
+        creep.SpriteScale = Vector(scale, scale)
+        creep.Color = Color(1, 0.55, 0.2, 1, 0.3, 0.1, 0)   -- scorched turf, not blood
+        local fx = creep:ToEffect()
+        if fx then
+            fx.Scale = scale
+            fx.Timeout = math.floor(Cfg.TURF_BURN_FRAMES * mod.turfBurnFrames(player))
+        end
+        return creep
+    end
+
     -- Football Helmet: tackle ----------------------------------------------------
     local function updateTackle(player, d)
         local vel = player.Velocity
@@ -46,7 +61,6 @@ return function(mod)
 
         local synWindup, synDamage, synKnock = mod.tackleSynergy(player)
         local windup = Cfg.TACKLE_WINDUP * mod.tackleWindupMult() * synWindup
-        if not player:HasCollectible(Items.HELMET) then windup = windup * Cfg.CHIN_STRAP_SOLO_WINDUP end
         if mod.isSuitedUp(player) then windup = windup / 2 end
         windup = math.floor(windup)
         local wasTackling = d.tackling
@@ -74,15 +88,14 @@ return function(mod)
                 if (ed.GridironTackleCD or 0) <= now then
                     ed.GridironTackleCD = now + Cfg.TACKLE_HIT_COOLDOWN
                     local dmg = (player.Damage * Cfg.TACKLE_DMG_MULT + Cfg.TACKLE_DMG_FLAT) * mod.tackleDamageMult() * synDamage
-                    local strapped = player:HasCollectible(Items.CHIN_STRAP)
-                    if strapped then dmg = dmg * Cfg.CHIN_STRAP_DMG_MULT end
                     e:TakeDamage(dmg, 0, EntityRef(player), 0)
                     local push = d.runDir * (Cfg.TACKLE_KNOCKBACK * synKnock)
                     if e:IsBoss() then push = push * 0.25 end
                     e:AddVelocity(push)
                     e:AddConfusion(EntityRef(player), Cfg.TACKLE_CONFUSE, true)
-                    if strapped then
-                        e:AddFreeze(EntityRef(player), e:IsBoss() and 10 or Cfg.CHIN_STRAP_STUN)
+                    e:AddFreeze(EntityRef(player), e:IsBoss() and 10 or Cfg.TACKLE_STUN)   -- buckled chin strap
+                    if Trinkets.TURF_BURN > 0 and player:HasTrinket(Trinkets.TURF_BURN) then
+                        mod.scorch(player, e.Position, 1.3)
                     end
                     sfx:Play(SoundEffect.SOUND_PUNCH)
                     sfx:Play(SoundEffect.SOUND_MEAT_IMPACTS, 0.6)
@@ -102,7 +115,7 @@ return function(mod)
         local room = game:GetRoom()
         if room:IsClear() or d.firstDowns >= Cfg.MAX_FIRST_DOWNS then return end
         d.yardDist = d.yardDist + player.Velocity:Length()
-        local needed = Cfg.YARD_UNITS * Cfg.FIRST_DOWN_YARDS
+        local needed = Cfg.YARD_UNITS * Cfg.FIRST_DOWN_YARDS * mod.yardMult(player)
         if d.yardDist >= needed then
             d.yardDist = d.yardDist - needed
             d.firstDowns = d.firstDowns + 1
@@ -137,7 +150,7 @@ return function(mod)
             game:GetHUD():ShowItemText("#" .. num, "Every " .. mod.footballInterval(num) .. " shots: go long")
         end
 
-        if player:HasCollectible(Items.HELMET) or player:HasCollectible(Items.CHIN_STRAP) then
+        if player:HasCollectible(Items.HELMET) then
             updateTackle(player, d)
         else
             d.tackling = false
@@ -145,6 +158,20 @@ return function(mod)
 
         if player:HasCollectible(Items.CLEATS) then
             updateCleats(player, d)
+        end
+
+        -- Turf Burn: sprinting scorches the field behind you
+        if Trinkets.TURF_BURN > 0 and player:HasTrinket(Trinkets.TURF_BURN)
+            and player.Velocity:Length() > Cfg.TURF_BURN_SPEED and game:GetFrameCount() % 4 == 0 then
+            mod.scorch(player, player.Position - player.Velocity:Resized(10), 0.55)
+        end
+
+        -- End Zone: the damage bonus follows you in and out of the paint
+        local inZone = mod.inEndZone(player.Position)
+        if inZone ~= (d.inEndZone == true) then
+            d.inEndZone = inZone
+            mod.refreshCache(player)
+            if inZone then mod.popOn(player, "END ZONE!", mod.Colors.gold, 0.9) end
         end
 
         -- Mouthguard: keep your head straight.
@@ -168,7 +195,10 @@ return function(mod)
                 bonus = bonus + d.firstDowns * Cfg.FIRST_DOWN_DAMAGE
             end
             if player:HasCollectible(Items.RING) then
-                bonus = bonus + d.rings * Cfg.RING_DAMAGE
+                bonus = bonus + d.rings * Cfg.RING_DAMAGE * mod.ringMult(player)
+            end
+            if d.inEndZone then
+                bonus = bonus + Cfg.END_ZONE_DAMAGE
             end
             if d.coinHeads then
                 bonus = bonus + Cfg.COIN_HEADS_DAMAGE
@@ -176,8 +206,8 @@ return function(mod)
             if mod.isSuitedUp(player) then
                 bonus = bonus + Cfg.SUITED_UP_DAMAGE
             end
-            if d.touchdown then
-                bonus = bonus + Cfg.TOUCHDOWN_DAMAGE
+            if d.touchdown then   -- 2 = scored in the End Zone: it counts double
+                bonus = bonus + Cfg.TOUCHDOWN_DAMAGE * (d.touchdown == 2 and 2 or 1)
             end
             player.Damage = player.Damage + bonus
         elseif flag == CacheFlag.CACHE_SPEED then
@@ -192,6 +222,7 @@ return function(mod)
             if d.play == "hailmary" then player.TearRange = player.TearRange + Cfg.HAIL_MARY_RANGE end
         elseif flag == CacheFlag.CACHE_SHOTSPEED then
             if d.play == "hailmary" then player.ShotSpeed = player.ShotSpeed + Cfg.HAIL_MARY_SHOT_SPEED end
+            player.ShotSpeed = player.ShotSpeed + player:GetCollectibleNum(Items.WRISTBAND) * Cfg.WRISTBAND_SHOT_SPEED
         elseif flag == CacheFlag.CACHE_TEARFLAG then
             if d.play == "hailmary" then player.TearFlags = player.TearFlags | TearFlags.TEAR_PIERCING end
         end
@@ -207,7 +238,9 @@ return function(mod)
             d.tackling = false
             d.guardUsed = false
             d.hitThisRoom = false
-            if d.firstDowns > 0 or d.yardDist > 0 or d.touchdown or d.coinHeads then
+            local zoned = d.inEndZone
+            d.inEndZone = false
+            if zoned or d.firstDowns > 0 or d.yardDist > 0 or d.touchdown or d.coinHeads then
                 d.firstDowns = 0
                 d.yardDist = 0
                 d.touchdown = false
@@ -441,7 +474,7 @@ return function(mod)
         -- Padded Pants: shrug off some contact hits and stiff-arm the enemy away.
         if contact and player:HasCollectible(Items.PANTS) then
             local chance = math.min(Cfg.PANTS_MAX_CHANCE,
-                Cfg.PANTS_IGNORE_CHANCE * player:GetCollectibleNum(Items.PANTS))
+                Cfg.PANTS_IGNORE_CHANCE * player:GetCollectibleNum(Items.PANTS) + mod.pantsBonus(player))
             if rngFor(player, Items.PANTS):RandomFloat() < chance then
                 player:SetMinDamageCooldown(30)
                 sfx:Play(SoundEffect.SOUND_PUNCH, 0.7)
@@ -518,7 +551,7 @@ return function(mod)
         if mod.isMarked and mod.isMarked(entity) then
             local player = playerFromSource(source)
             if player and player:HasCollectible(Items.FOAM_FINGER) then
-                mult = mult + Cfg.FINGER_BONUS
+                mult = mult + Cfg.FINGER_BONUS * mod.fingerMult(player)
             end
         end
         if mult < 1.05 then return end

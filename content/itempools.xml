@@ -13,7 +13,8 @@
         <Item Name="Coach's Whistle" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Gatorade Bucket" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Padded Pants" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
-        <Item Name="Chin Strap" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="QB Wristband" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="End Zone" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Foam Finger" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Super Bowl Ring" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1" />
         <Item Name="Cheerleader" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
@@ -28,7 +29,7 @@
         <Item Name="Pigskin" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Gatorade Bucket" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Padded Pants" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
-        <Item Name="Chin Strap" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="QB Wristband" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Foam Finger" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Water Boy" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     </Pool>

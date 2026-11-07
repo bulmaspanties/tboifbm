@@ -330,6 +330,7 @@ local function newEntity(t)
     function e:SetColor() end
     function e:HasEntityFlags(f) return self.flags & f ~= 0 end
     function e:ClearEntityFlags(f) self.flags = self.flags & ~f end
+    function e:AddEntityFlags(f) self.flags = self.flags | f end
     function e:Die() self.exists = false end
     function e:Remove() self.exists = false end
     function e:TakeDamage(amount, flags, source, countdown)
@@ -416,6 +417,7 @@ local function newPlayer(ptype)
         local t = newEntity({ Type = EntityType.ENTITY_TEAR, Position = pos, Velocity = vel,
             CollisionDamage = 3.5 * (mult or 1), Scale = 1, SpawnerEntity = self })
         function t:AddTearFlags(f) self.tearFlags = (self.tearFlags or 0) | f end
+        function t:HasTearFlags(f) return (self.tearFlags or 0) & f ~= 0 end
         return t
     end
     p:EvaluateItems()
@@ -518,6 +520,12 @@ Isaac = {
             return pr
         end
         local info = entityByVariant[variant]
+        if info and info.type == type and type == EntityType.ENTITY_EFFECT then
+            local fx = newEntity({ Type = type, Variant = variant, SubType = subtype, Position = pos })
+            fx.sprite:Load(info.anm2)
+            world.spawned[#world.spawned + 1] = fx
+            return fx
+        end
         if info and info.type == type and type ~= EntityType.ENTITY_FAMILIAR then
             local npc = newEnemy(pos, 100, false)
             npc.Type, npc.Variant, npc.SubType = type, variant, subtype
@@ -896,7 +904,9 @@ for _, e in ipairs(world.spawned) do
         dropped = dropped + 1
     end
 end
-check(dropped == 4 + trinketCount, "give command drops actives and trinkets")
+local activeCount = 0
+for _ in pairs(mod.ACTIVE_ITEMS) do activeCount = activeCount + 1 end
+check(dropped == activeCount + trinketCount, "give command drops actives and trinkets")
 local droppedCard, droppedPill = false, false
 for _, e in ipairs(world.spawned) do
     if e.Variant == PickupVariant.PICKUP_TAROTCARD and e.SubType == mod.Cards.COIN_TOSS then droppedCard = true end
@@ -935,15 +945,16 @@ check(mod.GetSaveData().run == nil, "a new run starts clean")
 local b3 = newPlayer()
 players[1] = b3
 newRoom(false)
--- Chin Strap alone lets you tackle (slower), and tackles stun
-b3.items[Items.CHIN_STRAP] = 1
+-- The helmet's buckled chin strap: tackles stun
+b3.items[Items.HELMET] = 1
 b3.Position, b3.Velocity = Vector(0, 0), Vector(5, 0)
-tick(math.floor(Cfg.TACKLE_WINDUP * Cfg.CHIN_STRAP_SOLO_WINDUP) + 2)
+tick(Cfg.TACKLE_WINDUP + 2)
 local strapVictim = newEnemy(b3.Position + Vector(20, 0), 200)
 tick()
-check(strapVictim.damageTaken > 0 and strapVictim.frozen, "chin strap tackles without the helmet and stuns")
+check(strapVictim.damageTaken > 0 and strapVictim.frozen, "helmet tackles stun (chin strap built in)")
 b3.Velocity = Vector(0, 0)
 tick()
+b3.items[Items.HELMET] = nil
 
 -- Foam Finger marks the toughest enemy for bonus damage and a penny
 newRoom(false)
@@ -1190,7 +1201,7 @@ local tqb = newPlayer(PT.QUARTERBACK_B)
 players[1] = tqb
 world.entities = { tqb }
 dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
-check(tqb:HasCollectible(Items.CHIN_STRAP) and tqb.pocket == Items.KICKING_TEE, "tainted starts with chin strap and the tee")
+check(tqb:HasCollectible(Items.HELMET) and tqb.pocket == Items.KICKING_TEE, "tainted starts with the helmet and the tee")
 tqb:EvaluateItems()
 check(tqb.MaxFireDelay > 10, "tainted fires slower")
 local allBalls = true
@@ -1251,6 +1262,80 @@ startChallenge("groundgame")
 check(mod.tackleDamageMult() == 2 and mod.tackleWindupMult() == 0.5, "ground game boosts tackles")
 world.challenge = 0
 check(mod.tackleDamageMult() == 1 and mod.currentChallenge() == nil, "no challenge, no rules")
+
+-- New items (QB Wristband, End Zone, Turf Burn) ---------------------------------------------
+local wp = newPlayer()
+players = { wp }
+world.entities = { wp }
+newRoom(false)
+wp.items[Items.JERSEY] = 1
+local function throwUntilFootball()
+    for _ = 1, 9 do
+        local t = wp:FireTear(wp.Position, Vector(10, 0))
+        dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, t)
+        if t.data.GridironFootball then return t end
+    end
+end
+local plainBall = throwUntilFootball()
+check(not plainBall:HasTearFlags(TearFlags.TEAR_HOMING), "a plain football doesn't home")
+wp.items[Items.WRISTBAND] = 1
+wp:EvaluateItems()
+check(wp.ShotSpeed > 1, "wristband raises shot speed")
+local wristBall = throwUntilFootball()
+check(wristBall.CollisionDamage > plainBall.CollisionDamage and wristBall:HasTearFlags(TearFlags.TEAR_HOMING),
+    "wristband footballs home in and hit harder")
+
+-- footballs show your tear effects
+local fireTear = wp:FireTear(wp.Position, Vector(10, 0))
+fireTear:AddTearFlags(TearFlags.TEAR_BURN)
+mod.makeFootball(fireTear, 1)
+check(fireTear.data.GridironFootball.Color == mod.FOOTBALL_TINTS[1][2], "a fire football glows orange")
+
+-- End Zone: paint on the floor, damage inside, enemies slowed, touchdowns count double
+wp.items[Items.WRISTBAND], wp.items[Items.JERSEY] = nil, nil
+newRoom(false)
+wp:EvaluateItems()
+local zoneBase = wp.Damage
+wp.Position, wp.aim = Vector(Cfg.FUMBLE_RANGE, 0), Vector(1, 0)
+world.spawned = {}
+dispatch(ModCallbacks.MC_USE_ITEM, Items.END_ZONE, Items.END_ZONE, wp.rng, wp)
+local paint
+for _, e in ipairs(world.spawned) do
+    if e.Type == EntityType.ENTITY_EFFECT and e.Variant == mod.EndZoneVariant then paint = e end
+end
+check(paint and paint:HasEntityFlags(EntityFlag.FLAG_RENDER_FLOOR), "end zone paint is drawn on the floor")
+tick()
+wp:EvaluateItems()
+check(wp.Damage > zoneBase, "standing in the end zone raises damage")
+local slowpoke = newEnemy(wp.Position + Vector(30, 10))
+tick()
+check(slowpoke.slowed, "enemies in the end zone are slowed")
+wp.Position = Vector(0, 0)
+tick()
+wp:EvaluateItems()
+check(math.abs(wp.Damage - zoneBase) < 1e-6, "leaving the end zone drops the bonus")
+dispatch(ModCallbacks.MC_USE_ITEM, Items.PIGSKIN, Items.PIGSKIN, wp.rng, wp)
+tick(Cfg.FUMBLE_FLIGHT + Cfg.FUMBLE_PICKUP_GRACE + 2)
+wp.Position = Vector(Cfg.FUMBLE_RANGE, 0)
+tick(2)
+check(mod.pdata(wp).touchdown == 2, "a touchdown in the end zone counts double")
+newRoom(false)
+check(not mod.inEndZone(Vector(Cfg.FUMBLE_RANGE, 0)), "the end zone is gone in the next room")
+
+-- Turf Burn: sprinting scorches the turf; Cleats make it last longer
+wp.trinkets[Trinkets.TURF_BURN] = true
+world.spawned = {}
+wp.Velocity = Vector(Cfg.TURF_BURN_SPEED + 2, 0)
+tick(8)
+local scorch
+for _, e in ipairs(world.spawned) do
+    if e.Variant == EffectVariant.PLAYER_CREEP_RED then scorch = e end
+end
+check(scorch and scorch.CollisionDamage > 0 and scorch.Timeout == Cfg.TURF_BURN_FRAMES, "turf burn leaves burning creep")
+wp.items[Items.CLEATS] = 1
+check(mod.scorch(wp, wp.Position, 1).Timeout == Cfg.TURF_BURN_FRAMES * 2, "cleats make the scorch last twice as long")
+wp.Velocity = Vector(0, 0)
+tick()
 
 -- Base-game synergies ----------------------------------------------------------------------
 local C = CollectibleType
@@ -1340,7 +1425,34 @@ check(attack(20) == 0, "tear builds get no extra footballs (the tear callback ha
 bp.weapon = WeaponType.WEAPON_BRIMSTONE
 check(attack(20) >= 2, "Brimstone still throws a football every few attacks")
 
+-- more synergy hooks
+local hp = newPlayer()
+check(mod.yardMult(hp) == 1 and mod.ringMult(hp) == 1 and mod.fingerMult(hp) == 1 and mod.pantsBonus(hp) == 0
+    and mod.wristbandMult(hp) == 1, "no synergy items, no changes")
+hp.items[C.COLLECTIBLE_PONY] = 1
+hp.items[C.COLLECTIBLE_MONEY_EQUALS_POWER] = 1
+hp.items[C.COLLECTIBLE_MARKED] = 1
+hp.items[C.COLLECTIBLE_THUNDER_THIGHS] = 1
+hp.items[C.COLLECTIBLE_SPOON_BENDER] = 1
+check(mod.yardMult(hp) == 0.5, "Pony halves the yards for a first down")
+check(mod.ringMult(hp) == 2, "Money = Power doubles ring damage")
+check(mod.fingerMult(hp) == 2, "Marked doubles the foam finger bonus")
+check(mod.pantsBonus(hp) > 0, "Thunder Thighs helps the pants")
+check(mod.wristbandMult(hp) > 1, "Spoon Bender boosts wristband footballs")
+
+-- Coin Toss + Tarot Cloth: lands on its edge, you get both sides
+local cp = newPlayer()
+players = { cp }
+world.entities = { cp }
+newRoom(false)
+cp.items[C.COLLECTIBLE_TAROT_CLOTH] = 1
+cp.charged = false
+local edgeEnemy = newEnemy(Vector(60, 0))
+dispatch(ModCallbacks.MC_USE_CARD, mod.Cards.COIN_TOSS, mod.Cards.COIN_TOSS, cp, 0)
+check(mod.pdata(cp).coinHeads and cp.charged and edgeEnemy.slowed, "Tarot Cloth: heads and tails")
+
 check(eidText[Items.HELMET]:find("Mars", 1, true), "EID lists the helmet's synergies")
+check(eidText[Items.WRISTBAND]:find("Homing items", 1, true), "EID lists the wristband's synergies")
 check(eidText[Items.GATORADE]:find("Holy Water", 1, true), "EID lists the bucket's synergies")
 
 -- Settings survive a restart (fresh load reads the stored blob)

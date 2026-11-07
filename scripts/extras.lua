@@ -1,5 +1,5 @@
 -- Batch 3: Foam Finger, Super Bowl Ring, Coin Toss (card), Timeout! (pill).
--- Chin Strap and Concussion Protocol hook into gear.lua directly.
+-- Concussion Protocol and Turf Burn hook into gear.lua directly.
 return function(mod)
     local game, sfx = mod.game, mod.sfx
     local Items, Cards, Pills, Cfg = mod.Items, mod.Cards, mod.Pills, mod.Cfg
@@ -75,21 +75,33 @@ return function(mod)
     mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, mod.OnRoomClearRing)
 
     -- Coin Toss card: heads you receive (damage), tails you defer (recharge) -----
+    local function heads(player)
+        pdata(player).coinHeads = true
+        mod.refreshCache(player)
+    end
+
+    local function tails(player)
+        player:FullCharge(ActiveSlot.SLOT_PRIMARY, true)
+        for _, e in ipairs(Isaac.GetRoomEntities()) do
+            if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) then
+                e:AddSlowing(EntityRef(player), Cfg.COIN_TAILS_SLOW, 0.5, Color(0.8, 0.8, 1, 1))
+            end
+        end
+    end
+
     function mod:OnUseCoinToss(_, player)
-        local heads = player:GetCardRNG(Cards.COIN_TOSS):RandomInt(2) == 0
-        local d = pdata(player)
-        if heads then
-            d.coinHeads = true
-            mod.refreshCache(player)
+        if player:HasCollectible(CollectibleType.COLLECTIBLE_TAROT_CLOTH) then
+            -- Tarot Cloth: the coin lands on its edge, and you get both
+            heads(player)
+            tails(player)
+            game:GetHUD():ShowItemText("It landed on its edge!", "Damage up, active recharged, enemies slowed")
+            mod.popOn(player, "EDGE!", mod.Colors.gold, 1.3)
+        elseif player:GetCardRNG(Cards.COIN_TOSS):RandomInt(2) == 0 then
+            heads(player)
             game:GetHUD():ShowItemText("Heads!", "You receive: damage up for the room")
             mod.popOn(player, "HEADS!", mod.Colors.gold, 1.2)
         else
-            player:FullCharge(ActiveSlot.SLOT_PRIMARY, true)
-            for _, e in ipairs(Isaac.GetRoomEntities()) do
-                if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) then
-                    e:AddSlowing(EntityRef(player), Cfg.COIN_TAILS_SLOW, 0.5, Color(0.8, 0.8, 1, 1))
-                end
-            end
+            tails(player)
             game:GetHUD():ShowItemText("Tails!", "You defer: active recharged, enemies slowed")
             mod.popOn(player, "TAILS!", mod.Colors.grey, 1.2)
         end

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.6.0
+- **Chin Strap is now part of the Football Helmet**: every tackle stuns (bosses briefly). Tainted Quarterback starts with the Helmet instead, and Ground Game drops the strap.
+- New **QB Wristband** (passive, counts toward Suited Up): +0.16 shot speed; every football you throw homes in and deals +25% damage.
+- New **End Zone** (active, 4 charges): paints an end zone on the floor. +1.5 Damage while you stand in it, enemies inside are slowed, and Pigskin touchdowns in it count double.
+- New **Turf Burn** (trinket): sprinting leaves burning scorch marks; tackled enemies get a big one.
+- More synergies: Pony, White Pony and Taurus with Cleats; Thunder Thighs and Leo with Padded Pants; Money = Power and Greed's Gullet with the Super Bowl Ring; Marked and Eye of the Occult with the Foam Finger; homing items with the QB Wristband; Tarot Cloth with Coin Toss; Cleats with Turf Burn.
+- **Footballs show your synergies**: they take on the colour of your tear effects (fire, poison, Ipecac, holy light, ice, charm, Dark Matter, Midas, homing).
+- Workshop: refreshed description and preview, and step-by-step upload/update instructions in the README.
+
 ## 0.5.0
 - **Base-game synergies:** Mars, Aries, Taurus and size-up items with tackles; Magneto and Telekinesis with Receiver Gloves; Infamy with Shoulder Pads; explosive items with the Kicking Tee; magnets with the Pigskin; Holy Water, lemons, Ball of Tar and Juicy Sack with the Gatorade Bucket; BFFS! with the familiars. Team Jersey and the Quarterback now throw footballs with Brimstone, Technology, Mom's Knife and other weapons that don't fire tears. EID lists each item's synergies.
 - **Helmet:** sleeker, modern shell. Longer and lower crown, a visor shelf over the face, a forward-swept jaw guard, a flared back, and a squared brow. The facemask is unchanged.
