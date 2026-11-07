@@ -154,6 +154,7 @@ return function(mod)
                 number("yards per down", "FIRST_DOWN_YARDS", 5, 20, 1, { "cleats: yards", "for a first down" }),
                 number("kick damage", "KICK_DAMAGE", 10, 100, 10, { "kicking tee base", "damage (plus 4x", "your damage)" }),
                 percent("linebacker boss", "LINEBACKER_CHANCE", 5, { "chance he replaces", "an early boss", "(floors 2-6)" }),
+                percent("franchise boss", "FRANCHISE_CHANCE", 5, { "chance he replaces", "a floor 7-8 boss" }),
                 percent("halftime show", "HALFTIME_CHANCE", 2, { "chance a cleared", "room starts a", "halftime show", "(once a floor)" }),
                 percent("football foes", "FOOTBALL_ENEMY_CHANCE", 2, { "chance a vanilla", "enemy is swapped", "for a football", "enemy" }),
                 { str = "", fsize = 2, nosel = true },

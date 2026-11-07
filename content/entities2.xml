@@ -37,6 +37,12 @@
             numGridCollisionPoints="12" shadowSize="12" stageHP="3" shutdoors="true">
         <gibs amount="8" blood="1" bone="0" eye="0" gut="0" large="0" />
     </entity>
+    <!-- The Franchise: final boss for floors 7-8 (scripts/franchise.lua) -->
+    <entity anm2path="bosses/gridiron_franchise.anm2" baseHP="700" boss="1" champion="0" collisionDamage="2"
+            collisionMass="60" collisionRadius="28" friction="1" id="643" variant="11" name="Gridiron Franchise"
+            numGridCollisionPoints="24" shadowSize="44" stageHP="40" shutdoors="true" tags="nodelirium">
+        <gibs amount="30" blood="1" bone="1" eye="1" gut="1" large="1" />
+    </entity>
     <!-- Football enemies (v0.7): AI in scripts/monsters.lua -->
     <entity anm2path="monsters/gridiron_lineman.anm2" baseHP="20" boss="0" champion="1" collisionDamage="1"
             collisionMass="14" collisionRadius="13" friction="1" id="643" variant="3" name="Gridiron Lineman"

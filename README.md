@@ -96,6 +96,7 @@ Both appear on the character select screen with their own page, portrait, co-op 
 | Entity | Where | What it does |
 |---|---|---|
 | **The Linebacker** (boss) | May replace Monstro, Gurdy, Gurdy Jr., Duke of Flies or Dingle on floors 2–6 (25%) | Walks you down, then either **telegraphs a charge** (crouches and flashes) and blitzes across the room, getting **stunned** if he hits a wall, or **spikes a football** that bursts into shots. Below half health he enrages: faster, plus a **pile-up jump** that lands with a ring of shots. |
+| **The Franchise** (final boss) | May replace Loki, Blastocyst, Daddy Long Legs or Mama Gurdy on floors 7–8 (20%) | A bloated giant quarterback with one monstrous throwing arm. **Phase 1** runs a route tree: **slants** (curving balls), the **go route** (a fast bomb and its wake), a **screen pass** (a short fan), a **Hail Mary** (a bursting lob at your feet) and **audibles** that bring in Linemen. **Phase 2, the Stadium** (below half health): he holds the far end of the field while the crowd does **the wave** (a sweeping line of shots with one gap), the **Kiss Cam** locks onto you and explodes, and **goalposts** come crashing down along marked columns. |
 | **Mascot** | Gaper | A costume coming apart at the seams. Waddles toward you and fires big, slow **T-shirt cannon** shots. |
 | **Referee** | Horf | Wide-eyed and unhinged. Keeps his distance, blows his whistle and **throws yellow flags** at you. |
 | **Lineman** | Gaper | Hunched, helmet pulled low. Line up with him and he **digs in, then charges** in a straight line until he hits a wall. |
@@ -153,7 +154,7 @@ If **External Item Descriptions** is installed, every item shows its description
 
 ## Settings menu
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
-- **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
+- **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, Franchise boss chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
 - **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare)
 - **uniform:** pick your team colours: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colours each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts back the red/blue/white uniform. Helmet and Team Jersey **pedestals** show your colours too (except where the item could be hidden: Curse of the Blind and the alt-floor "?" treasure items)
 - **costume fit:** hide the helmet, eye black, jersey/pads or pants/cleats for the character you're playing right now
@@ -167,7 +168,7 @@ Open the debug console with `~`:
 | `gridiron give` | Drops every item as a pedestal on the open floor around you, one every couple of frames. Walk over them: picking an item up is what adds it to your collection and the pause screen's *My Stuff* list |
 | `gridiron give quick` | Gives every passive instantly (they show as "?" in *My Stuff* until you find them for real); drops actives and trinkets |
 | `gridiron boss` / `gridiron enemies` | Spawn the Linebacker, or a Mascot and a Referee, next to you |
-| `gridiron spawn <name>` | Spawn one football enemy: `mascot referee lineman blitzer punter huddle cooler chaingang sacker coach linebacker` |
+| `gridiron spawn <name>` | Spawn one football enemy: `mascot referee lineman blitzer punter huddle cooler chaingang sacker coach linebacker franchise` |
 | `gridiron hide <slot>` / `gridiron show <slot>` | Hide/show a costume piece for your current character (`helmet`, `eyeblack`, `torso`, `legs`) |
 | `gridiron reset` | Reset all settings to defaults |
 

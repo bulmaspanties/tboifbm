@@ -479,6 +479,8 @@ local room = {
     GetType = function() return world.roomType end,
     GetClampedPosition = function(_, pos) return pos end,
     GetCenterPos = function() return Vector(320, 280) end,
+    GetTopLeftPos = function() return Vector(60, 140) end,
+    GetBottomRightPos = function() return Vector(580, 420) end,
     -- a 15x9 room: the outer ring is wall
     GetGridSize = function() return 135 end,
     GetGridPosition = function(_, i) return Vector((i % 15) * 40, (i // 15) * 40) end,
@@ -1347,6 +1349,71 @@ npcTick(co, 240)
 check(#Isaac.FindByType(MT, MV.LINEMAN) > linemen, "short-handed, the coach subs in a lineman")
 dispatch(ModCallbacks.MC_POST_NPC_DEATH, MT, co)
 check(mod.currentCoachPlay() == nil, "fire the coach and the play is off")
+-- The Franchise: route tree, then the stadium
+do
+    local fr = mod.spawnMonster(MV.FRANCHISE, Vector(320, 200))
+    fr.MaxHitPoints, fr.HitPoints = 1000, 1000
+    ff.Position = Vector(320, 380)
+    world.hudText = {}
+    local function framesUntilRelease()
+        local n = 0
+        while fr:GetData().mode == "release" and n < 200 do npcTick(fr); n = n + 1 end
+        repeat npcTick(fr); n = n + 1 until fr:GetData().mode == "release" or n > 400
+        return n
+    end
+    local function newShots(fn)
+        local b = #world.spawned
+        fn()
+        return projectilesSince(b)
+    end
+    local slant = newShots(framesUntilRelease)
+    check(world.hudText[1] == "The Franchise", "the franchise introduces himself")
+    check(#slant == 3 and (slant[1]:HasProjectileFlags(ProjectileFlags.CURVE_LEFT) or slant[1]:HasProjectileFlags(ProjectileFlags.CURVE_RIGHT)),
+        "slants: three curving footballs")
+    check(#newShots(framesUntilRelease) == 5, "go route: the bomb and its wake")
+    check(#newShots(framesUntilRelease) == 7, "screen pass: a fan of seven")
+    local hm = newShots(framesUntilRelease)
+    check(#hm == 1 and hm[1]:HasProjectileFlags(ProjectileFlags.BURST) and hm[1].FallingSpeed < 0, "hail mary: a bursting lob")
+    local linemen = #Isaac.FindByType(MT, MV.LINEMAN)
+    framesUntilRelease()
+    check(#Isaac.FindByType(MT, MV.LINEMAN) == linemen + 2, "audible: two linemen")
+    for _, e in ipairs(Isaac.FindByType(MT, MV.LINEMAN)) do e.exists = false end
+    fr.HitPoints = 400
+    npcTick(fr)
+    check(fr:GetData().phase == 2 and fr:GetData().mode == "retreat", "below half health: the stadium")
+    npcTick(fr, 41)
+    check(fr:GetData().mode == "idle" and fr.sprite.anim == "Rage", "he holds the far end, enraged")
+    local wave = newShots(framesUntilRelease)
+    check(#wave >= 10, "the crowd wave sweeps the field")
+    local xs = {}
+    for _, p in ipairs(wave) do xs[#xs + 1] = p.Position.X end
+    table.sort(xs)
+    local gap = 0
+    for i = 2, #xs do gap = math.max(gap, xs[i] - xs[i - 1]) end
+    check(gap > 60, "with a gap to slip through")
+    local hurt = ff.damageTaken
+    framesUntilRelease()
+    check(fr:GetData().camPos ~= nil, "kiss cam locks on")
+    npcTick(fr, 41)
+    check(ff.damageTaken > hurt, "and blows up where you stood")
+    framesUntilRelease()
+    local posts = newShots(function() npcTick(fr, 31) end)
+    check(#posts >= 4 and posts[1].Height < -100, "goalposts rain down along the marked columns")
+    world.spawned = {}
+    dispatch(ModCallbacks.MC_POST_NPC_DEATH, MT, fr)
+    local fireworks = 0
+    for _, e in ipairs(world.spawned) do if e.Variant == EffectVariant.FIREWORKS then fireworks = fireworks + 1 end end
+    check(fireworks > 0, "beat him: fireworks")
+    fr.exists = false
+    ff.Position = Vector(0, 0)
+    world.roomType, world.stage = RoomType.ROOM_BOSS, 7
+    dispatch(ModCallbacks.MC_POST_NEW_ROOM)
+    local swapF = dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 69, 0, 0, 0, 100)
+    check(swapF and swapF[2] == MV.FRANCHISE, "loki on floor 7 can become the franchise")
+    world.roomType, world.stage = RoomType.ROOM_DEFAULT, nil
+    newRoom(false)
+end
+
 -- Team Captains: gold champions with a twist
 local function captain(variant, pos, seed)
     local n = mod.spawnMonster(variant, pos)

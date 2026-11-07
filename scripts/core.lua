@@ -188,6 +188,9 @@ return function(mod)
 
         -- Boss / enemies
         LINEBACKER_CHANCE     = 0.25,  -- (menu) chance to replace an early boss
+        FRANCHISE_CHANCE      = 0.2,   -- (menu) chance to replace a floor 7-8 boss
+        FRANCHISE_MAX_LINEMEN = 4,     -- audibles stop calling Linemen past this
+        FRANCHISE_CAM_DAMAGE  = 40,    -- Kiss Cam blast
         FOOTBALL_ENEMY_CHANCE = 0.1,   -- (menu) chance a matching vanilla enemy is a football enemy
         COACH_CHANCE_MULT     = 0.5,   -- the Coach (replacing a Fatty) is rarer
         COACH_PLAY_FRAMES     = 150,   -- how long a called play lasts

@@ -22,7 +22,8 @@ for key, col in SKIN:
 PALETTE.setdefault("e", (24, 16, 16, 255))     # eyes
 PALETTE.setdefault("m", (150, 150, 158, 255))  # metal
 # Isaac-style monster flesh (gaper grey-pink), blood, fly bits
-for key, col in {"j": (255, 255, 255, 200), "J": (214, 228, 242, 110),
+for key, col in {"p": (95, 45, 150, 255), "V": (62, 26, 104, 255), "X": (138, 84, 196, 255),
+                 "j": (255, 255, 255, 200), "J": (214, 228, 242, 110),
                  "q": (204, 178, 170, 255), "Q": (160, 128, 122, 255), "h": (112, 76, 72, 255),
                  "i": (132, 10, 16, 255), "l": (206, 222, 236, 255), "M": (66, 58, 62, 255)}.items():
     assert PALETTE.get(key, col) == col, f"palette key {key} already used"
@@ -477,6 +478,95 @@ def coach(frame):
     return rows_of(outline(g))
 
 
+# --- The Franchise (final boss, 80x80): Mega Fatty bulk in a #1 jersey, one monstrous arm --------
+def franchise(pose, frame=0):
+    g = blank(80)
+    bob = frame % 2
+    rage = pose.startswith("rage")
+    squash = 4 if pose == "slam" else 0
+    by = 52 + bob + squash
+    # stubby legs and cleats
+    rect(g, 29, 68, 35, 75, "Q")
+    rect(g, 45, 68, 51, 75, "Q")
+    rect(g, 27, 75, 36, 77, "n")
+    rect(g, 44, 75, 53, 77, "n")
+    # the gut hanging out under the jersey
+    ellipse(g, 40, by + 13, 18, 9, "q")
+    ellipse(g, 43, by + 16, 13, 5, "Q")
+    put(g, [(40, by + 14), (41, by + 14)], "h")                    # navel
+    # bloated body in a stretched purple #1 jersey
+    ellipse(g, 40, by, 24, 18, "p")
+    ellipse(g, 47, by + 5, 16, 11, "V")                             # shade (purple, not ink)
+    ellipse(g, 31, by - 6, 9, 5, "X")                               # lit shoulder
+    rect(g, 17, by + 9, 63, by + 10, "X")                           # hem stripe
+    rect(g, 37, by - 9, 43, by + 5, "W")                            # a big white #1
+    rect(g, 34, by - 9, 37, by - 7, "W")
+    rect(g, 34, by + 4, 46, by + 6, "W")
+    put(g, [(28 + i * 3, by - 13 + (1 if i % 2 else 0)) for i in range(9)], "A")   # gold chain
+    put(g, [(40, by - 9), (40, by - 8)], "U")                       # chain medallion
+    # little left arm
+    ellipse(g, 15, by - 2, 5, 9, "q")
+    ellipse(g, 16, by + 1, 3, 5, "Q")
+    # the monstrous throwing arm, posed
+    arm = {"idle": ((67, by - 4), (68, by + 12), (70, by + 18)),
+           "wind": ((64, by - 16), (64, 22), (65, 15)),
+           "throw": ((62, by - 6), (54, by + 10), None),
+           "audible": ((64, by - 16), (66, 22), (66, 15)),
+           "slam": ((64, by - 18), (54, 18), (52, 12))}
+    key = "idle" if rage and pose == "rage" else pose.replace("rage_", "")
+    shoulder, hand, ball = arm.get(key, arm["idle"])
+    ellipse(g, shoulder[0], shoulder[1], 11, 10, "q")
+    mx, my = (shoulder[0] + hand[0]) / 2, (shoulder[1] + hand[1]) / 2
+    ellipse(g, mx, my, 8, 10, "q")
+    ellipse(g, hand[0], hand[1], 7, 6, "q")
+    ellipse(g, mx + 3, my + 3, 4, 6, "Q")                           # arm shade
+    put(g, [(mx - 3, my - 4), (mx - 2, my - 2), (mx - 3, my), (mx - 1, my + 2), (shoulder[0] - 4, shoulder[1] - 2),
+            (shoulder[0] - 3, shoulder[1])], "i")                   # bulging veins
+    if ball:
+        ellipse(g, ball[0], ball[1], 7, 4.5, "F")                   # the ball
+        ellipse(g, ball[0] - 1, ball[1] - 1, 5, 2.5, "E")
+        rect(g, ball[0] - 3, ball[1], ball[0] + 3, ball[1], "W")
+        put(g, [(ball[0] - 2, ball[1] - 1), (ball[0], ball[1] - 1), (ball[0] + 2, ball[1] - 1)], "W")
+    if key == "throw":
+        for i in range(4):                                          # whoosh lines
+            put(g, [(46 - i * 4, by + 16 + i), (45 - i * 4, by + 16 + i)], "v")
+    if key == "audible":
+        ellipse(g, 12, 24, 4, 7, "q")                               # little arm up too
+    # head sunk into the shoulders
+    hy = 24 + bob + squash
+    ellipse(g, 40, hy, 17, 15, "q")
+    ellipse(g, 43, hy + 7, 13, 6, "Q")
+    for sx in (-1, 1):                                              # giant black eyes
+        ellipse(g, 40 + sx * 7, hy - 1, 4, 5, "e")
+        put(g, [(40 + sx * 7 - 2, hy - 4)], "W")
+        if rage:
+            put(g, [(40 + sx * 7, hy)], "R")                        # red pinpricks
+            put(g, [(40 + sx * 7, hy + 4 + k) for k in range(5)], "i")   # bleeding from the eyes
+    ellipse(g, 40, hy + 9, 10, 4, "e")                              # manic grin
+    for x in range(32, 49, 2):
+        put(g, [(x, hy + 6), (x + 1, hy + 12)], "W")                # teeth
+    put(g, [(36, hy + 13), (36, hy + 14), (35, hy + 15)], "i")      # drool
+    # cracked gold helmet, facemask hanging off one side
+    for y in range(hy - 16, hy - 4):
+        for x in range(21, 60):
+            if ((x - 40) / 18.5) ** 2 + ((y - (hy - 5)) / 12) ** 2 <= 1:
+                g[y][x] = "A"
+    ellipse(g, 46, hy - 9, 10, 5, "a")
+    ellipse(g, 33, hy - 12, 6, 2.5, "U")
+    rect(g, 22, hy - 5, 58, hy - 5, "a")                            # rim
+    put(g, [(43, hy - 16), (44, hy - 15), (43, hy - 14), (45, hy - 13), (44, hy - 12)], "h")   # crack
+    put(g, [(22, hy - 3), (22, hy + 1), (23, hy + 5), (24, hy + 9), (25, hy + 12)], "G")      # dangling bar
+    put(g, [(23, hy - 3), (23, hy + 1), (24, hy + 5), (25, hy + 9), (26, hy + 12)], "m")
+    if rage:                                                        # the helmet split open
+        for y in range(hy - 17, hy - 9):
+            for x in range(36, 46):
+                if ((x - 41) / 5) ** 2 + ((y - (hy - 12)) / 4) ** 2 <= 1:
+                    g[y][x] = "R"
+        ellipse(g, 41, hy - 12, 2.5, 1.5, "i")
+        put(g, [(38, hy - 10), (44, hy - 9), (47, hy - 8)], "i")
+    return rows_of(outline(g))
+
+
 # --- The Linebacker (boss, 64x64) -----------------------------------------------
 def linebacker(pose, frame=0):
     """Rival-team linebacker: silver helmet, black #99 jersey, huge pads."""
@@ -591,6 +681,15 @@ ENTITIES = {
         size=48, pivot=(24, 44),
         frames=[coach(i) for i in range(4)],
         anims={"Idle": ([0, 1], 12, True), "Yell": ([2, 3], 5, True)},
+    ),
+    "bosses/gridiron_franchise": dict(
+        size=80, pivot=(40, 74),
+        frames=[franchise("idle", 0), franchise("idle", 1), franchise("wind"), franchise("throw"),
+                franchise("audible"), franchise("slam"), franchise("rage", 0), franchise("rage", 1),
+                franchise("rage_wind"), franchise("rage_throw")],
+        anims={"Idle": ([0, 1], 10, True), "Wind": ([2], 1, True), "Throw": ([3], 1, True),
+               "Audible": ([4], 1, True), "Slam": ([5], 1, True), "Rage": ([6, 7], 6, True),
+               "RageWind": ([8], 1, True), "RageThrow": ([9], 1, True)},
     ),
     "bosses/gridiron_linebacker": dict(
         size=64,

@@ -16,6 +16,7 @@
 -- scripts/familiars.lua Cheerleader, Water Boy, Tackling Dummy
 -- scripts/monsters.lua  The Linebacker (boss), Mascot and Referee, enemy spawn swaps
 -- scripts/foes.lua      Lineman, Blitzer, Punter, Huddle, Cooler, Chain Gang, Sacker, the Coach
+-- scripts/franchise.lua  The Franchise, two-phase final boss for floors 7-8
 -- scripts/quarterback.lua playable character + tainted version
 -- scripts/endzone.lua    End Zone active and its floor paint
 -- scripts/halftime.lua   Halftime show room event
@@ -24,6 +25,6 @@
 
 local mod = RegisterMod("Gridiron", 1)
 
-for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "quarterback", "endzone", "legends", "halftime", "synergies" }) do
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "franchise", "quarterback", "endzone", "legends", "halftime", "synergies" }) do
     include("scripts." .. name)(mod)
 end

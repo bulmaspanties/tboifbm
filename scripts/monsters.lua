@@ -17,6 +17,7 @@ return function(mod)
         CHAIN_GANG = Isaac.GetEntityVariantByName("Gridiron Chain Gang"),
         SACKER     = Isaac.GetEntityVariantByName("Gridiron Sacker"),
         COACH      = Isaac.GetEntityVariantByName("Gridiron Coach"),
+        FRANCHISE  = Isaac.GetEntityVariantByName("Gridiron Franchise"),
     }
     mod.MonsterType, mod.MonsterVariants = TYPE, V
 
@@ -282,6 +283,10 @@ return function(mod)
     }
     mod.FoeSwaps = SWAPS
 
+    -- Late single-entity bosses The Franchise can take the place of (floors 7-8):
+    -- Loki, Blastocyst, Daddy Long Legs, Mama Gurdy.
+    local REPLACEABLE_FINAL = { [69] = true, [74] = true, [101] = true, [266] = true }
+
     local bossSwappedThisRoom = false
 
     local function currentRoomType()
@@ -294,6 +299,11 @@ return function(mod)
         local stage = game:GetLevel():GetStage()
         local roll = (seed % 1000) / 1000
         if currentRoomType() == RoomType.ROOM_BOSS then
+            if REPLACEABLE_FINAL[type] and variant == 0 and (stage == 7 or stage == 8)
+                and not bossSwappedThisRoom and roll < Cfg.FRANCHISE_CHANCE then
+                bossSwappedThisRoom = true
+                return { TYPE, V.FRANCHISE, 0 }
+            end
             if REPLACEABLE_BOSSES[type] and variant == 0 and stage >= 2 and stage <= 6
                 and not bossSwappedThisRoom and roll < Cfg.LINEBACKER_CHANCE then
                 bossSwappedThisRoom = true
