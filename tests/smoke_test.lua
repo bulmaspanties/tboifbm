@@ -144,6 +144,7 @@ CollectibleType = enum({ COLLECTIBLE_BIRTHRIGHT = 619 })
 WeaponType = enum()
 HeartSubType = { HEART_FULL = 1, HEART_HALF = 2, HEART_SOUL = 3, HEART_DOUBLEPACK = 5, HEART_SCARED = 9 }
 Direction = { LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3 }
+PlayerType = { PLAYER_ISAAC = 0, PLAYER_MAGDALENE = 1, PLAYER_EVE = 5, PLAYER_AZAZEL = 7, PLAYER_THELOST = 10 }
 EntityGridCollisionClass = enum()
 EntityCollisionClass = { ENTCOLL_NONE = 0, ENTCOLL_PLAYERONLY = 1, ENTCOLL_PLAYEROBJECTS = 2, ENTCOLL_ENEMIES = 3, ENTCOLL_ALL = 4 }
 ProjectileVariant = { PROJECTILE_NORMAL = 0 }
@@ -1631,6 +1632,25 @@ check(not soundsPlayed[mod.Sounds.CHEER] and soundsPlayed[mod.Sounds.CLACK], "cr
 findButton("visuals", "crowd sounds").store(1)
 mod.playSound("CHEER")
 check(soundsPlayed[mod.Sounds.CHEER], "crowd on cheers")
+
+-- Character fit: roomy helmet for big hair, no pants on legless characters
+local mag = newPlayer(PlayerType.PLAYER_MAGDALENE)
+players = { mag }
+world.entities = { mag }
+newRoom(false)
+mag.items[Items.HELMET], mag.items[Items.PANTS] = 1, 1
+tick()
+check(costumeOn(mag, "helmet_roomy") and not costumeOn(mag, "helmet"), "magdalene gets the roomy helmet")
+local lost = newPlayer(PlayerType.PLAYER_THELOST)
+players = { lost }
+world.entities = { lost }
+lost.items[Items.HELMET], lost.items[Items.PANTS] = 1, 1
+tick()
+check(costumeOn(lost, "helmet") and not costumeOn(lost, "legs_pants"), "the lost wears a helmet but no pants")
+for _, color in ipairs(mod.UNIFORM_COLORS.helmet) do
+    local name = "helmet_roomy" .. (color == mod.UNIFORM_COLORS.helmet[1] and "" or "_" .. color)
+    check(costumePaths["gfx/characters/gridiron_" .. name .. ".anm2"], "roomy helmet exists in " .. color)
+end
 
 -- Settings survive a restart (fresh load reads the stored blob)
 findButton("gameplay", "kick damage").store(70)

@@ -162,7 +162,11 @@ Open the debug console with `~`:
 ## Costumes
 Your character wears what you pick up: the helmet (with facemask) and eye black on the head, jersey and/or shoulder pads on the torso, and pants and/or cleats on the legs.
 All costumes are managed in Lua, so they can be turned off, hidden per character, and are re-applied after anything that resets costumes.
-They're drawn on Isaac's body shape. If a piece looks wrong on another character, hide it from **costume fit** in the menu (or `gridiron hide <slot>`), and send a screenshot so it can get a proper fix.
+They're drawn on Isaac's body shape, with fixes per character, sized from each character's sprite:
+- **Big hair** (Magdalene, Eve, Samson, Bethany, Lilith, Lazarus, Eden and their tainted versions, plus Tainted Judas and Tainted Cain) gets a **roomy helmet**, 2px bigger all round. The biggest curls and pigtails still peek out the sides, like hair under a real helmet.
+- **No legs** (The Lost, The Soul, Azazel and their tainted versions): no pants or cleats.
+
+If a piece still looks wrong on a character, hide it from **costume fit** in the menu (or `gridiron hide <slot>`).
 
 ## Layout
 ```

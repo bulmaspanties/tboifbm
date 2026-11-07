@@ -13,6 +13,17 @@
     <costume anm2path="characters/gridiron_helmet_silver.anm2" type="none" priority="99" />
     <costume anm2path="characters/gridiron_helmet_white.anm2" type="none" priority="99" />
     <costume anm2path="characters/gridiron_helmet_pink.anm2" type="none" priority="99" />
+    <costume anm2path="characters/gridiron_helmet_roomy.anm2" type="none" priority="99" />
+    <costume anm2path="characters/gridiron_helmet_roomy_blue.anm2" type="none" priority="99" />
+    <costume anm2path="characters/gridiron_helmet_roomy_navy.anm2" type="none" priority="99" />
+    <costume anm2path="characters/gridiron_helmet_roomy_green.anm2" type="none" priority="99" />
+    <costume anm2path="characters/gridiron_helmet_roomy_orange.anm2" type="none" priority="99" />
+    <costume anm2path="characters/gridiron_helmet_roomy_purple.anm2" type="none" priority="99" />
+    <costume anm2path="characters/gridiron_helmet_roomy_gold.anm2" type="none" priority="99" />
+    <costume anm2path="characters/gridiron_helmet_roomy_black.anm2" type="none" priority="99" />
+    <costume anm2path="characters/gridiron_helmet_roomy_silver.anm2" type="none" priority="99" />
+    <costume anm2path="characters/gridiron_helmet_roomy_white.anm2" type="none" priority="99" />
+    <costume anm2path="characters/gridiron_helmet_roomy_pink.anm2" type="none" priority="99" />
     <costume anm2path="characters/gridiron_eyeblack.anm2" type="none" />
     <costume anm2path="characters/gridiron_torso_pads.anm2" type="none" />
     <costume anm2path="characters/gridiron_torso_jersey.anm2" type="none" />

@@ -22,8 +22,10 @@ return function(mod)
         return color == mod.UNIFORM_COLORS[kind][1] and "" or "_" .. color
     end
     for _, color in ipairs(mod.UNIFORM_COLORS.helmet) do
-        local key = "helmet" .. colorSuffix("helmet", color)
-        Costumes.helmet[key] = nullCostume(key)
+        for _, size in ipairs({ "", "_roomy" }) do
+            local key = "helmet" .. size .. colorSuffix("helmet", color)
+            Costumes.helmet[key] = nullCostume(key)
+        end
     end
     for _, color in ipairs(mod.UNIFORM_COLORS.jersey) do
         local sfx = colorSuffix("jersey", color)
@@ -40,7 +42,23 @@ return function(mod)
 
     -- Per-character hides: CharacterCostumeRules[PlayerType] = { helmet = false, ... }.
     -- Built-in rules go here; players can add their own with the `gridiron hide` command.
+    -- Characters with no legs to put pants on (ghosts, and Azazel's bat body) skip the legs.
+    local P = PlayerType
     mod.CharacterCostumeRules = {}
+    for _, name in ipairs({ "PLAYER_THELOST", "PLAYER_THELOST_B", "PLAYER_THESOUL", "PLAYER_THESOUL_B",
+        "PLAYER_AZAZEL", "PLAYER_AZAZEL_B" }) do
+        if P[name] then mod.CharacterCostumeRules[P[name]] = { legs = false } end
+    end
+
+    -- Big hair (or a big head) gets the roomy helmet, a shell 2px bigger all round.
+    -- Sized from the character sprites: anyone wider than Isaac's 28px head.
+    mod.ROOMY_HELMET = {}
+    for _, name in ipairs({ "PLAYER_MAGDALENE", "PLAYER_MAGDALENE_B", "PLAYER_EVE", "PLAYER_EVE_B",
+        "PLAYER_SAMSON", "PLAYER_SAMSON_B", "PLAYER_BETHANY", "PLAYER_BETHANY_B", "PLAYER_LILITH",
+        "PLAYER_LILITH_B", "PLAYER_LAZARUS", "PLAYER_LAZARUS2", "PLAYER_LAZARUS_B", "PLAYER_LAZARUS2_B",
+        "PLAYER_EDEN", "PLAYER_EDEN_B", "PLAYER_JUDAS_B", "PLAYER_CAIN_B" }) do
+        if P[name] then mod.ROOMY_HELMET[P[name]] = true end
+    end
 
     local function slotAllowed(player, slot)
         if not mod.Settings.costumes then return false end
@@ -55,7 +73,8 @@ return function(mod)
     local function desiredCostumes(player)
         local want = { helmet = "none", eyeblack = "none", torso = "none", legs = "none" }
         local S = mod.Settings
-        local helmetKey = "helmet" .. colorSuffix("helmet", S.helmetColor)
+        local roomy = mod.ROOMY_HELMET[player:GetPlayerType()] and "_roomy" or ""
+        local helmetKey = "helmet" .. roomy .. colorSuffix("helmet", S.helmetColor)
         local jerseySfx = colorSuffix("jersey", S.jerseyColor)
         local pantsSfx = colorSuffix("pants", S.pantsColor)
         if player:HasCollectible(Items.HELMET) then want.helmet = helmetKey end
