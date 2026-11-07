@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.0
+- **8 new football enemies**: Lineman (digs in and charges), Blitzer (a fly that circles and dives), Punter (lobs spiked footballs), Huddle (four of them; hit one and they all break and rush you), Gatorade Cooler (bursts into slowing creep), Chain Gang (two refs on a chain that hurts), Sacker (tunnels and bursts up under you) and **The Coach** miniboss (calls Blitz, Prevent D and Pep Talk plays for the other enemies, and subs in Linemen). Each replaces the vanilla enemy it fights like.
+- Monster art now follows Isaac's rules: giant black eyes with a glint, dark coloured interior lines instead of black, and something gross on everyone (blood, drool, torn seams, a hanging googly eye). The Mascot and Referee got the same treatment.
+- **Pink** uniform colour for the helmet, jersey and pants.
+- New `gridiron spawn <name>` console command.
+
 ## 0.6.1
 - **Uniform colours:** a new *uniform* page in the settings menu lets you pick the helmet, jersey and pants colours (10 each). The jersey trim and stripes match each colour. Saved between runs, and reset with *team defaults*.
 

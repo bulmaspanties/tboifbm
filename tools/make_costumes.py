@@ -65,10 +65,11 @@ TEAM_COLORS = {
     "black":  ([(22, 22, 28), (40, 40, 48), (64, 64, 76), (150, 150, 165)], (240, 200, 50)),
     "silver": ([(120, 124, 134), (170, 174, 184), (205, 208, 216), (245, 246, 250)], (26, 38, 84)),
     "white":  ([(170, 170, 165), (215, 215, 210), (242, 242, 238), (255, 255, 255)], (176, 28, 38)),
+    "pink":   ([(176, 62, 112), (226, 104, 158), (246, 154, 194), (255, 214, 232)], (246, 246, 242)),
 }
-HELMET_COLORS = ["red", "blue", "navy", "green", "orange", "purple", "gold", "black", "silver", "white"]
-JERSEY_COLORS = ["blue", "red", "navy", "green", "orange", "purple", "gold", "black", "silver", "white"]
-PANTS_COLORS = ["white", "silver", "gold", "black", "navy", "red", "blue", "green", "orange", "purple"]
+HELMET_COLORS = ["red", "blue", "navy", "green", "orange", "purple", "gold", "black", "silver", "white", "pink"]
+JERSEY_COLORS = ["blue", "red", "navy", "green", "orange", "purple", "gold", "black", "silver", "white", "pink"]
+PANTS_COLORS = ["white", "silver", "gold", "black", "navy", "red", "blue", "green", "orange", "purple", "pink"]
 
 
 def rgba(c):

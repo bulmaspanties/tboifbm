@@ -1,4 +1,4 @@
--- Enemies and boss: Mascot, Referee, and The Linebacker.
+-- Enemies and boss: Mascot, Referee, and The Linebacker (more football enemies live in foes.lua).
 -- They enter the game by replacing some room-layout spawns as rooms load.
 return function(mod)
     local game, sfx = mod.game, mod.sfx
@@ -9,6 +9,14 @@ return function(mod)
         LINEBACKER = Isaac.GetEntityVariantByName("Gridiron Linebacker"),
         MASCOT     = Isaac.GetEntityVariantByName("Gridiron Mascot"),
         REFEREE    = Isaac.GetEntityVariantByName("Gridiron Referee"),
+        LINEMAN    = Isaac.GetEntityVariantByName("Gridiron Lineman"),
+        BLITZER    = Isaac.GetEntityVariantByName("Gridiron Blitzer"),
+        PUNTER     = Isaac.GetEntityVariantByName("Gridiron Punter"),
+        HUDDLE     = Isaac.GetEntityVariantByName("Gridiron Huddle"),
+        COOLER     = Isaac.GetEntityVariantByName("Gridiron Gatorade Cooler"),
+        CHAIN_GANG = Isaac.GetEntityVariantByName("Gridiron Chain Gang"),
+        SACKER     = Isaac.GetEntityVariantByName("Gridiron Sacker"),
+        COACH      = Isaac.GetEntityVariantByName("Gridiron Coach"),
     }
     mod.MonsterType, mod.MonsterVariants = TYPE, V
 
@@ -38,6 +46,7 @@ return function(mod)
     local function face(npc, sprite, x)
         sprite.FlipX = x < npc.Position.X
     end
+    mod.monsterShoot, mod.monsterRing, mod.monsterToward, mod.monsterFace = shoot, ring, toward, face
 
     -- Mascot: waddles at you, fires a big slow t-shirt --------------------------------
     local function updateMascot(npc, d, target, s)
@@ -211,6 +220,8 @@ return function(mod)
             updateMascot(npc, d, target, s)
         elseif npc.Variant == V.REFEREE then
             updateReferee(npc, d, target, s)
+        elseif mod.FoeUpdaters and mod.FoeUpdaters[npc.Variant] then
+            mod.FoeUpdaters[npc.Variant](npc, d, target, s)
         end
     end
     mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.OnNpcUpdateGridiron, TYPE)
@@ -244,8 +255,19 @@ return function(mod)
     -- Spawning: swap some layout spawns as rooms load ----------------------------------
     -- Single-entity early bosses the Linebacker can take the place of.
     local REPLACEABLE_BOSSES = { [20] = true, [36] = true, [67] = true, [99] = true, [261] = true }
-    -- Basic enemies that can become a Mascot or Referee (Gaper, Horf, Clotty).
-    local REPLACEABLE_ENEMIES = { [10] = true, [12] = true, [15] = true }
+    -- Vanilla enemies that can become a football enemy that fights the same way.
+    -- type -> list of variants (picked by the spawn seed).
+    local SWAPS = {
+        [10]  = { V.MASCOT, V.LINEMAN, V.HUDDLE },   -- Gaper: walkers and chargers
+        [12]  = { V.REFEREE, V.PUNTER },             -- Horf: shooters that stay back
+        [15]  = { V.COOLER },                        -- Clotty: a leaky blob
+        [14]  = { V.BLITZER },                       -- Pooter: flyer
+        [18]  = { V.BLITZER },                       -- Attack Fly
+        [29]  = { V.SACKER },                        -- Hopper: pops up near you
+        [24]  = { V.CHAIN_GANG },                    -- Globin: a tough pair
+        [208] = { V.COACH },                         -- Fatty: the Coach (miniboss)
+    }
+    mod.FoeSwaps = SWAPS
 
     local bossSwappedThisRoom = false
 
@@ -264,8 +286,12 @@ return function(mod)
                 bossSwappedThisRoom = true
                 return { TYPE, V.LINEBACKER, 0 }
             end
-        elseif REPLACEABLE_ENEMIES[type] and stage <= 8 and roll < Cfg.FOOTBALL_ENEMY_CHANCE then
-            return { TYPE, (seed // 1000) % 2 == 0 and V.MASCOT or V.REFEREE, 0 }
+        elseif SWAPS[type] and variant == 0 and stage <= 8 then
+            local chance = Cfg.FOOTBALL_ENEMY_CHANCE * (type == 208 and Cfg.COACH_CHANCE_MULT or 1)
+            if roll < chance then
+                local list = SWAPS[type]
+                return { TYPE, list[(seed // 1000) % #list + 1], 0 }
+            end
         end
     end
     mod:AddCallback(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, mod.OnPreRoomEntitySpawn)

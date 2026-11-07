@@ -534,13 +534,13 @@ return function(mod)
         return spawner and spawner:ToPlayer()
     end
 
-    -- Damage bonuses on enemies, combined so the hit is re-applied only once:
-    -- Eye Black (long-range tears) and Foam Finger (the marked #1 enemy).
+    -- Damage modifiers on enemies, combined so the hit is re-applied only once:
+    -- Eye Black (long-range tears), Foam Finger (the marked #1 enemy), the Coach's prevent defense.
     function mod:OnEnemyDamage(entity, amount, flags, source, countdown)
         if reapplyingEnemy then return end
         if not entity:IsVulnerableEnemy() or not source or not source.Entity then return end
 
-        local mult = 1
+        local mult = mod.enemyDamageTakenMult(entity)   -- the Coach's prevent defense
         if source.Type == EntityType.ENTITY_TEAR then
             local origin = source.Entity:GetData().GridironOrigin
             if origin then
@@ -554,7 +554,7 @@ return function(mod)
                 mult = mult + Cfg.FINGER_BONUS * mod.fingerMult(player)
             end
         end
-        if mult < 1.05 then return end
+        if math.abs(mult - 1) < 0.05 then return end
 
         reapplyingEnemy = true
         entity:TakeDamage(amount * mult, flags, source, countdown)

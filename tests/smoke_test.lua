@@ -144,6 +144,7 @@ CollectibleType = enum({ COLLECTIBLE_BIRTHRIGHT = 619 })
 WeaponType = enum()
 HeartSubType = { HEART_FULL = 1, HEART_HALF = 2, HEART_SOUL = 3, HEART_DOUBLEPACK = 5, HEART_SCARED = 9 }
 Direction = { LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3 }
+EntityGridCollisionClass = enum()
 EntityCollisionClass = { ENTCOLL_NONE = 0, ENTCOLL_PLAYERONLY = 1, ENTCOLL_PLAYEROBJECTS = 2, ENTCOLL_ENEMIES = 3, ENTCOLL_ALL = 4 }
 ProjectileVariant = { PROJECTILE_NORMAL = 0 }
 EntityFamiliar = { GetOrbitDistance = function(layer) return Vector(30 + layer * 10, 30 + layer * 10) end }
@@ -1161,12 +1162,145 @@ dispatch(ModCallbacks.MC_POST_NEW_ROOM)
 check(dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 20, 0, 0, 0, 100) == nil, "no linebacker past floor 6")
 world.roomType, world.stage = RoomType.ROOM_DEFAULT, 2
 local foe = dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 10, 0, 0, 0, 1050)    -- roll 0.05
-check(foe and foe[1] == MT and (foe[2] == MV.MASCOT or foe[2] == MV.REFEREE), "gapers can become football foes")
+local function inList(list, v) for _, x in ipairs(list) do if x == v then return true end end return false end
+check(foe and foe[1] == MT and inList(mod.FoeSwaps[10], foe[2]), "gapers can become football foes")
+for vanilla, list in pairs(mod.FoeSwaps) do
+    for _, v in ipairs(list) do check(v and v >= 0 and entityByVariant[v], "swap target registered for type " .. vanilla) end
+end
+local fly = dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 18, 0, 0, 0, 1050)
+check(fly and fly[2] == MV.BLITZER, "attack flies can become blitzers")
+check(dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 208, 0, 0, 0, 1070) == nil, "the coach is rarer than the rest")
+local coachSwap = dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 208, 0, 0, 0, 1030)
+check(coachSwap and coachSwap[2] == MV.COACH, "a fatty can become the coach")
 check(dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 13, 0, 0, 0, 1050) == nil, "other enemies are left alone")
 Cfg.FOOTBALL_ENEMY_CHANCE = 0
 check(dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 10, 0, 0, 0, 1050) == nil, "the setting can turn foes off")
 Cfg.FOOTBALL_ENEMY_CHANCE = mod.Defaults.FOOTBALL_ENEMY_CHANCE
 world.stage = nil
+
+-- Football foes ----------------------------------------------------------------------------
+do
+local ff = newPlayer()
+players = { ff }
+world.entities = { ff }
+newRoom(false)
+ff.Position = Vector(0, 0)
+local realRandom2 = math.random
+math.random = function(a) if a then return 1 end return 0.5 end
+check(dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "spawn sacker"):find("spawned"), "spawn command")
+check(world.spawned[#world.spawned].Variant == MV.SACKER, "spawn command makes the right foe")
+check(dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "spawn nobody"):find("spawn what"), "spawn command lists names")
+world.spawned[#world.spawned].exists = false
+
+-- Lineman: line up with him and he digs in, then charges in a straight line
+local ln = mod.spawnMonster(MV.LINEMAN, Vector(200, 5))
+npcTick(ln, 31)
+check(ln:GetData().mode == "dig" and ln.sprite.anim == "Dig", "lineman digs in when you line up")
+npcTick(ln, 19)
+check(ln:GetData().mode == "charge" and ln.Velocity:Length() == 9 and ln.Velocity.X < 0, "then charges straight at you")
+ln.exists = false
+
+-- Blitzer: circles, flashes, dives
+local bz = mod.spawnMonster(MV.BLITZER, Vector(100, 0))
+npcTick(bz)
+check(bz:GetData().mode == "orbit" and bz.GridCollisionClass == EntityGridCollisionClass.GRIDCOLL_WALLS, "blitzer flies in circles")
+npcTick(bz, 71 + 13)
+check(bz:GetData().mode == "dive" and math.abs(bz.Velocity:Length() - 11) < 1e-6, "then dives")
+bz.exists = false
+
+-- Punter: boots a bursting football over the rocks
+local pn = mod.spawnMonster(MV.PUNTER, Vector(220, 0))
+before = #world.spawned
+npcTick(pn, 42 + 11)
+local punts = projectilesSince(before)
+check(#punts == 1 and punts[1]:GetData().GridironFootball and punts[1]:HasProjectileFlags(ProjectileFlags.BURST)
+    and punts[1].FallingSpeed < 0, "punter lobs a spiked football")
+pn.exists = false
+
+-- Huddle: four in a ring; hit one and they all break
+local hl = mod.spawnMonster(MV.HUDDLE, Vector(150, 0))
+npcTick(hl)
+local members = Isaac.FindByType(MT, MV.HUDDLE)
+check(#members == 4, "a huddle is four players")
+for _, m in ipairs(members) do if m ~= hl then npcTick(m) end end
+check(hl.sprite.anim == "Walk", "the huddle walks together")
+members[3]:TakeDamage(1, 0, EntityRef(ff), 0)
+npcTick(hl)
+check(hl.sprite.anim == "Run", "hit one and the whole huddle breaks")
+for _, m in ipairs(members) do m.exists = false end
+
+-- Gatorade Cooler: leaks, then bursts into a big slowing puddle and a ring of shots
+local cl = mod.spawnMonster(MV.COOLER, Vector(120, 0))
+world.spawned = {}
+npcTick(cl, 46)
+local leak = false
+for _, e in ipairs(world.spawned) do if e.Variant == EffectVariant.CREEP_WHITE then leak = true end end
+check(leak, "the cooler leaks")
+world.spawned = {}
+dispatch(ModCallbacks.MC_POST_NPC_DEATH, MT, cl)
+local puddle, shots = nil, 0
+for _, e in ipairs(world.spawned) do
+    if e.Variant == EffectVariant.CREEP_WHITE then puddle = e end
+    if e.isProjectile then shots = shots + 1 end
+end
+check(puddle and puddle.Timeout == 300 and shots == 6, "the cooler bursts into a puddle and a ring of shots")
+cl.exists = false
+
+-- Chain Gang: two refs on a chain that hurts to touch
+local cg = mod.spawnMonster(MV.CHAIN_GANG, Vector(100, -60))
+npcTick(cg)
+local partner = cg:GetData().partner
+check(partner and partner.Variant == MV.CHAIN_GANG and partner.SubType == 1, "the chain gang comes in pairs")
+partner.Position = Vector(100, 60)
+cg.Position = Vector(100, -60)
+ff.Position = Vector(100, 0)
+local hurtBefore = ff.damageTaken
+dispatch(ModCallbacks.MC_NPC_UPDATE, MT, cg)
+check(ff.damageTaken > hurtBefore, "the chain hurts")
+dispatch(ModCallbacks.MC_POST_NPC_RENDER, MT, cg, Vector(0, 0))
+partner.exists = false
+npcTick(cg)
+check(cg:GetData().unchained, "lose your partner and you're unchained")
+cg.exists = false
+ff.Position = Vector(0, 0)
+
+-- Sacker: tunnels (untouchable), rises under you, swipes
+local sk = mod.spawnMonster(MV.SACKER, Vector(60, 0))
+npcTick(sk)
+check(sk.EntityCollisionClass == EntityCollisionClass.ENTCOLL_NONE and sk.sprite.anim == "Mound", "sacker tunnels")
+npcTick(sk, 30)
+check(sk:GetData().mode == "rise", "and comes up under you")
+npcTick(sk, 17)
+check(sk:GetData().mode == "up" and sk.EntityCollisionClass == EntityCollisionClass.ENTCOLL_ALL, "now he can be hit")
+before = #world.spawned
+npcTick(sk, 26)
+check(#projectilesSince(before) == 4, "and swipes")
+sk.exists = false
+
+-- The Coach: calls plays for the others, subs in a lineman when he's short
+local co = mod.spawnMonster(MV.COACH, Vector(300, 0))
+local mate = newEnemy(Vector(250, 0), 10)
+mate.MaxHitPoints, mate.HitPoints = 10, 4
+npcTick(co, 61)
+check(mod.currentCoachPlay() == "blitz", "the coach calls a blitz")
+mate.Velocity = Vector(2, 0)
+dispatch(ModCallbacks.MC_POST_UPDATE)
+check(mate.Velocity.X > 2, "a blitz speeds up the team")
+npcTick(co, 24 + 151)
+check(mod.currentCoachPlay() == "prevent", "then prevent defense")
+local hpBeforePrevent = mate.damageTaken
+mate:TakeDamage(4, 0, EntityRef(ff:FireTear(ff.Position, Vector(1, 0))), 0)
+check(math.abs(mate.damageTaken - hpBeforePrevent - 2) < 1e-6, "prevent defense halves the damage")
+npcTick(co, 24 + 151)
+check(mod.currentCoachPlay() == "pep" and mate.HitPoints > 2, "a pep talk heals the team")
+local linemen = #Isaac.FindByType(MT, MV.LINEMAN)
+mate.exists = false
+npcTick(co, 240)
+check(#Isaac.FindByType(MT, MV.LINEMAN) > linemen, "short-handed, the coach subs in a lineman")
+dispatch(ModCallbacks.MC_POST_NPC_DEATH, MT, co)
+check(mod.currentCoachPlay() == nil, "fire the coach and the play is off")
+math.random = realRandom2
+end
 
 -- The Quarterback ----------------------------------------------------------------------------
 local PT = mod.PlayerTypes

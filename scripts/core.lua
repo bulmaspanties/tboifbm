@@ -179,7 +179,10 @@ return function(mod)
 
         -- Boss / enemies
         LINEBACKER_CHANCE     = 0.25,  -- (menu) chance to replace an early boss
-        FOOTBALL_ENEMY_CHANCE = 0.08,  -- (menu) chance a basic enemy is a Mascot/Referee
+        FOOTBALL_ENEMY_CHANCE = 0.1,   -- (menu) chance a matching vanilla enemy is a football enemy
+        COACH_CHANCE_MULT     = 0.5,   -- the Coach (replacing a Fatty) is rarer
+        COACH_PLAY_FRAMES     = 150,   -- how long a called play lasts
+        COACH_BLITZ_SPEED     = 1.12,
 
         -- The Quarterback
         QB_EVERY_NTH          = 3,     -- every Nth shot is a football (2 with Birthright)
@@ -226,9 +229,9 @@ return function(mod)
 
     -- Must match the lists in tools/make_costumes.py (first entry = default, un-suffixed files).
     mod.UNIFORM_COLORS = {
-        helmet = { "red", "blue", "navy", "green", "orange", "purple", "gold", "black", "silver", "white" },
-        jersey = { "blue", "red", "navy", "green", "orange", "purple", "gold", "black", "silver", "white" },
-        pants  = { "white", "silver", "gold", "black", "navy", "red", "blue", "green", "orange", "purple" },
+        helmet = { "red", "blue", "navy", "green", "orange", "purple", "gold", "black", "silver", "white", "pink" },
+        jersey = { "blue", "red", "navy", "green", "orange", "purple", "gold", "black", "silver", "white", "pink" },
+        pants  = { "white", "silver", "gold", "black", "navy", "red", "blue", "green", "orange", "purple", "pink" },
     }
 
     mod.FOOTBALL_ANM2 = "gfx/gridiron_football_tear.anm2"
@@ -256,6 +259,7 @@ return function(mod)
     function mod.wristbandMult() return 1 end
     function mod.turfBurnFrames() return 1 end
     function mod.inEndZone() return false end
+    function mod.enemyDamageTakenMult() return 1 end
 
     -- Wearable gear counts toward Suited Up; actives and the bucket don't.
     mod.GEAR = {

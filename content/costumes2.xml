@@ -12,6 +12,7 @@
     <costume anm2path="characters/gridiron_helmet_black.anm2" type="none" priority="99" />
     <costume anm2path="characters/gridiron_helmet_silver.anm2" type="none" priority="99" />
     <costume anm2path="characters/gridiron_helmet_white.anm2" type="none" priority="99" />
+    <costume anm2path="characters/gridiron_helmet_pink.anm2" type="none" priority="99" />
     <costume anm2path="characters/gridiron_eyeblack.anm2" type="none" />
     <costume anm2path="characters/gridiron_torso_pads.anm2" type="none" />
     <costume anm2path="characters/gridiron_torso_jersey.anm2" type="none" />
@@ -34,6 +35,8 @@
     <costume anm2path="characters/gridiron_torso_jerseypads_silver.anm2" type="none" />
     <costume anm2path="characters/gridiron_torso_jersey_white.anm2" type="none" />
     <costume anm2path="characters/gridiron_torso_jerseypads_white.anm2" type="none" />
+    <costume anm2path="characters/gridiron_torso_jersey_pink.anm2" type="none" />
+    <costume anm2path="characters/gridiron_torso_jerseypads_pink.anm2" type="none" />
     <costume anm2path="characters/gridiron_legs_cleats.anm2" type="none" />
     <costume anm2path="characters/gridiron_legs_pants.anm2" type="none" />
     <costume anm2path="characters/gridiron_legs_pantscleats.anm2" type="none" />
@@ -55,4 +58,6 @@
     <costume anm2path="characters/gridiron_legs_pantscleats_orange.anm2" type="none" />
     <costume anm2path="characters/gridiron_legs_pants_purple.anm2" type="none" />
     <costume anm2path="characters/gridiron_legs_pantscleats_purple.anm2" type="none" />
+    <costume anm2path="characters/gridiron_legs_pants_pink.anm2" type="none" />
+    <costume anm2path="characters/gridiron_legs_pantscleats_pink.anm2" type="none" />
 </costumes>

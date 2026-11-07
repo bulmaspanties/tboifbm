@@ -84,10 +84,19 @@ Both appear on the character select screen with their own page, portrait, co-op 
 | Entity | Where | What it does |
 |---|---|---|
 | **The Linebacker** (boss) | May replace Monstro, Gurdy, Gurdy Jr., Duke of Flies or Dingle on floors 2–6 (25%) | Walks you down, then either **telegraphs a charge** (crouches and flashes) and blitzes across the room, getting **stunned** if he hits a wall, or **spikes a football** that bursts into shots. Below half health he enrages: faster, plus a **pile-up jump** that lands with a ring of shots. |
-| **Mascot** | Sometimes replaces a Gaper, Horf or Clotty (8%) | Waddles toward you and fires big, slow **T-shirt cannon** shots. |
-| **Referee** | Sometimes replaces a Gaper, Horf or Clotty (8%) | Keeps his distance, blows his whistle and **throws yellow flags** at you. |
+| **Mascot** | Gaper | A costume coming apart at the seams. Waddles toward you and fires big, slow **T-shirt cannon** shots. |
+| **Referee** | Horf | Wide-eyed and unhinged. Keeps his distance, blows his whistle and **throws yellow flags** at you. |
+| **Lineman** | Gaper | Hunched, helmet pulled low. Line up with him and he **digs in, then charges** in a straight line until he hits a wall. |
+| **Blitzer** | Attack Fly, Pooter | A fly in a stretched leather skullcap. **Circles you**, flashes, then **dives** straight at you. Flies over rocks. |
+| **Punter** | Horf | A screaming gaper ragdoll that stays back and **punts spiked footballs** over obstacles; they burst into shots where they land. |
+| **Huddle** | Gaper | Four small linemen in a tight ring that shuffles toward you. **Hit one and they yell BREAK!** and all rush you. |
+| **Gatorade Cooler** | Clotty | A saggy tub with an eye under the lid. Leaks as it walks and **bursts into a big pool of slowing orange creep** and a ring of shots. |
+| **Chain Gang** | Globin | Two zombie refs **chained together**. They flank you from both sides and **the chain hurts**. Kill one and the other comes unchained and speeds up. |
+| **Sacker** | Hopper | **Tunnels underground** (can't be hit) toward you, bursts up right underneath you, then swipes shots in four directions before digging back in. |
+| **The Coach** (miniboss) | Fatty (rarer) | Hangs back and **calls plays** for everyone else: **Blitz** (the team speeds up), **Prevent D** (they take half damage), **Pep Talk** (they heal). Short-handed, he **subs in a Lineman**. |
 
-Both chances can be changed (or set to 0) in the menu. When the Linebacker replaces a boss, the intro screen still shows the original boss.
+Each football enemy replaces the vanilla enemy listed, on floors 1–8, at the "football foes" chance (10% by default; the Coach half that).
+Both chances can be changed (or set to 0) in the menu. Use `gridiron spawn <name>` to summon any one of them. When the Linebacker replaces a boss, the intro screen still shows the original boss.
 
 ## Challenges
 Find these under **Challenges → Custom**:
@@ -132,7 +141,7 @@ If **External Item Descriptions** is installed, every item shows its description
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
 - **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, Linebacker boss chance, football-enemy chance, reset to defaults
 - **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!)
-- **uniform:** pick your team colours: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, ten colours each (red, blue, navy, green, orange, purple, gold, black, silver, white); **team defaults** puts back the red/blue/white uniform
+- **uniform:** pick your team colours: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colours each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts back the red/blue/white uniform
 - **costume fit:** hide the helmet, eye black, jersey/pads or pants/cleats for the character you're playing right now
 
 Settings are saved and kept between runs. Your run state (caught balls, bucket, jersey, current play…) also survives **save & continue**.
@@ -144,6 +153,7 @@ Open the debug console with `~`:
 | `gridiron give` | Drops every item as a pedestal. Walk over them: picking an item up is what adds it to your collection and the pause screen's *My Stuff* list |
 | `gridiron give quick` | Gives every passive instantly (they show as "?" in *My Stuff* until you find them for real); drops actives and trinkets |
 | `gridiron boss` / `gridiron enemies` | Spawn the Linebacker, or a Mascot and a Referee, next to you |
+| `gridiron spawn <name>` | Spawn one football enemy: `mascot referee lineman blitzer punter huddle cooler chaingang sacker coach linebacker` |
 | `gridiron hide <slot>` / `gridiron show <slot>` | Hide/show a costume piece for your current character (`helmet`, `eyeblack`, `torso`, `legs`) |
 | `gridiron reset` | Reset all settings to defaults |
 

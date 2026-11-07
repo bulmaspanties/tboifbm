@@ -37,4 +37,45 @@
             numGridCollisionPoints="12" shadowSize="12" stageHP="3" shutdoors="true">
         <gibs amount="8" blood="1" bone="0" eye="0" gut="0" large="0" />
     </entity>
+    <!-- Football enemies (v0.7): AI in scripts/monsters.lua -->
+    <entity anm2path="monsters/gridiron_lineman.anm2" baseHP="20" boss="0" champion="1" collisionDamage="1"
+            collisionMass="14" collisionRadius="13" friction="1" id="643" variant="3" name="Gridiron Lineman"
+            numGridCollisionPoints="12" shadowSize="16" stageHP="4" shutdoors="true">
+        <gibs amount="10" blood="1" bone="0" eye="0" gut="1" large="0" />
+    </entity>
+    <entity anm2path="monsters/gridiron_blitzer.anm2" baseHP="7" boss="0" champion="1" collisionDamage="1"
+            collisionMass="3" collisionRadius="9" friction="1" id="643" variant="4" name="Gridiron Blitzer"
+            numGridCollisionPoints="12" shadowSize="10" stageHP="1.5" shutdoors="true">
+        <gibs amount="4" blood="1" bone="0" eye="0" gut="1" large="0" />
+    </entity>
+    <entity anm2path="monsters/gridiron_punter.anm2" baseHP="16" boss="0" champion="1" collisionDamage="1"
+            collisionMass="30" collisionRadius="11" friction="1" id="643" variant="5" name="Gridiron Punter"
+            numGridCollisionPoints="12" shadowSize="14" stageHP="3" shutdoors="true">
+        <gibs amount="8" blood="1" bone="0" eye="0" gut="1" large="0" />
+    </entity>
+    <entity anm2path="monsters/gridiron_huddle.anm2" baseHP="6" boss="0" champion="1" collisionDamage="1"
+            collisionMass="4" collisionRadius="9" friction="1" id="643" variant="6" name="Gridiron Huddle"
+            numGridCollisionPoints="12" shadowSize="11" stageHP="1.5" shutdoors="true">
+        <gibs amount="5" blood="1" bone="0" eye="0" gut="1" large="0" />
+    </entity>
+    <entity anm2path="monsters/gridiron_cooler.anm2" baseHP="25" boss="0" champion="1" collisionDamage="1"
+            collisionMass="16" collisionRadius="12" friction="1" id="643" variant="7" name="Gridiron Gatorade Cooler"
+            numGridCollisionPoints="12" shadowSize="15" stageHP="4" shutdoors="true">
+        <gibs amount="8" blood="1" bone="0" eye="0" gut="1" large="0" />
+    </entity>
+    <entity anm2path="monsters/gridiron_chain_gang.anm2" baseHP="14" boss="0" champion="1" collisionDamage="1"
+            collisionMass="8" collisionRadius="10" friction="1" id="643" variant="8" name="Gridiron Chain Gang"
+            numGridCollisionPoints="12" shadowSize="13" stageHP="3" shutdoors="true">
+        <gibs amount="7" blood="1" bone="0" eye="0" gut="1" large="0" />
+    </entity>
+    <entity anm2path="monsters/gridiron_sacker.anm2" baseHP="18" boss="0" champion="1" collisionDamage="1"
+            collisionMass="10" collisionRadius="11" friction="1" id="643" variant="9" name="Gridiron Sacker"
+            numGridCollisionPoints="12" shadowSize="14" stageHP="3" shutdoors="true">
+        <gibs amount="8" blood="1" bone="0" eye="0" gut="1" large="0" />
+    </entity>
+    <entity anm2path="monsters/gridiron_coach.anm2" baseHP="90" boss="0" champion="0" collisionDamage="1"
+            collisionMass="40" collisionRadius="18" friction="1" id="643" variant="10" name="Gridiron Coach"
+            numGridCollisionPoints="12" shadowSize="26" stageHP="12" shutdoors="true" tags="nodelirium">
+        <gibs amount="16" blood="1" bone="0" eye="0" gut="1" large="0" />
+    </entity>
 </entities>

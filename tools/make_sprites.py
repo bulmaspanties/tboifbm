@@ -377,6 +377,7 @@ def blank(size=32):
 
 
 def rect(g, x0, y0, x1, y1, ch):
+    x0, y0, x1, y1 = round(x0), round(y0), round(x1), round(y1)
     for y in range(y0, y1 + 1):
         for x in range(x0, x1 + 1):
             g[y][x] = ch
@@ -391,7 +392,7 @@ def ellipse(g, cx, cy, rx, ry, ch):
 
 def put(g, points, ch):
     for x, y in points:
-        g[y][x] = ch
+        g[round(y)][round(x)] = ch
 
 
 def outline(g, ch="K"):
