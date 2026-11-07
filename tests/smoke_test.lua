@@ -304,6 +304,16 @@ local function dispatch(cb, filter, ...)
     return result
 end
 
+-- the game's RNG object: a small deterministic LCG
+function RNG()
+    local r = { seed = 1 }
+    function r:SetSeed(seed) self.seed = seed end
+    function r:Next() self.seed = (self.seed * 1103515245 + 12345) % 2147483648; return self.seed end
+    function r:RandomFloat() return self:Next() / 2147483648 end
+    function r:RandomInt(max) return self:Next() % max end
+    return r
+end
+
 local function newRng(value)
     return { value = value or 0.0,
         RandomFloat = function(self) return self.value end,
@@ -486,6 +496,7 @@ local room = {
     GetClampedPosition = function(_, pos) return pos end,
     GetCenterPos = function() return Vector(320, 280) end,
     GetBossID = function() return world.bossID or 0 end,
+    GetDecorationSeed = function() return world.decorSeed or 12345 end,
     GetTopLeftPos = function() return Vector(60, 140) end,
     GetBottomRightPos = function() return Vector(580, 420) end,
     -- a 15x9 room: the outer ring is wall
@@ -618,6 +629,7 @@ local Items, Trinkets, Cfg = mod.Items, mod.Trinkets, mod.Cfg
 -- (it gets its own scenario near the end).
 Cfg.ALLPRO_ITEMS = 999
 Cfg.HALFTIME_CHANCE = 0   -- the mock rng rolls low; halftime gets its own scenario
+mod.Settings.decor = "off"  -- decor gets its own scenario too
 
 for key, id in pairs(Items) do check(id > 0, "item name not found in items.xml: " .. key) end
 for key, id in pairs(Trinkets) do check(id > 0, "trinket name not found in items.xml: " .. key) end
@@ -1960,6 +1972,68 @@ do
     tick()
     check(mod.pdata(ap).allPro, "All-Pro is permanent, like a vanilla transformation")
     Cfg.ALLPRO_ITEMS = 999
+end
+
+-- Field decor ----------------------------------------------------------------------------------
+do
+    local dp = newPlayer()
+    players = { dp }
+    world.entities = { dp }
+    mod.Settings.decor = "full"
+    local function propsIn(seed, roomType)
+        world.decorSeed = seed
+        world.spawned = {}
+        newRoom(false, roomType)
+        local list = {}
+        for _, e in ipairs(world.spawned) do
+            if e.Type == EntityType.ENTITY_EFFECT and e.Variant == mod.DecorVariant then list[#list + 1] = e end
+        end
+        return list
+    end
+    local seed, props = nil, {}
+    for sd = 1, 200 do
+        props = propsIn(sd)
+        if #props >= 3 then seed = sd break end
+    end
+    check(seed ~= nil, "some rooms get football props")
+    local floorOK, wallOK = true, true
+    for _, e in ipairs(props) do
+        local name = e.data.GridironDecor
+        if ({ Yardline = 1, Hash = 1, Logo = 1, Cups = 1, Stain = 1, Tape = 1, Clipboard = 1, Mouthguard = 1, Blood = 1 })[name] then
+            floorOK = floorOK and e:HasEntityFlags(EntityFlag.FLAG_RENDER_FLOOR)
+        end
+        check(e.sprite.anims[name] ~= nil, "decor animation exists: " .. tostring(name))
+        if name ~= "Banner" and name ~= "Goalpost" and name ~= "Bench" and name ~= "Yardline" and name ~= "Hash" then
+            wallOK = wallOK and e.Position.X > 60 and e.Position.X < 580 and e.Position.Y > 140 and e.Position.Y < 420
+        end
+    end
+    check(floorOK, "paint, cups and stains lie flat on the floor")
+    check(wallOK, "props stay off the walls")
+    local again = propsIn(seed)
+    local same = #again == #props
+    for i = 1, math.min(#again, #props) do
+        same = same and again[i].data.GridironDecor == props[i].data.GridironDecor and again[i].Position.X == props[i].Position.X
+    end
+    check(same, "a room looks the same every time you come back")
+    local empty = 0
+    for sd = 1, 200 do if #propsIn(sd) == 0 then empty = empty + 1 end end
+    check(empty > 100, "most rooms stay plain")
+    mod.Settings.decor = "off"
+    check(#propsIn(seed) == 0, "decor can be turned off")
+    mod.Settings.decor = "full"
+    world.decorSeed = seed
+    world.spawned = {}
+    world.entities = { dp }
+    world.roomType = RoomType.ROOM_BOSS
+    mod.spawnMonster(MV.LINEBACKER, Vector(320, 200))
+    world.spawned = {}
+    dispatch(ModCallbacks.MC_POST_NEW_ROOM)
+    local banners = 0
+    for _, e in ipairs(world.spawned) do if e.data.GridironDecor == "Banner" then banners = banners + 1 end end
+    check(banners >= 2, "the linebacker's room gets stadium banners")
+    world.roomType = RoomType.ROOM_DEFAULT
+    mod.Settings.decor = "off"
+    newRoom(false)
 end
 
 -- Halftime show --------------------------------------------------------------------------------

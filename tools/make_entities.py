@@ -774,6 +774,225 @@ def anm2(sheet_name, size, anims, pivot):
     return "\n".join(out) + "\n"
 
 
+# --- Field decor (scripts/decor.lua): grungy props that never block anything ------------------
+def grid(w, h):
+    return [["."] * w for _ in range(h)]
+
+
+def rect_rows(g):
+    return ["".join(r) for r in g]
+
+
+DECOR_FADE = {"y": (238, 238, 228, 110), "Y_": (238, 238, 228, 70)}
+
+
+def decor_props():
+    """name -> (rows, floor?, pivot) for every prop. Floor props lie flat (rendered under
+    everything); upright ones stand on their pivot."""
+    import random
+    rnd = random.Random(31)
+    props = {}
+
+    # painted field: faded, scuffed white paint (the translucent keys are added below)
+    g = grid(3, 150)
+    for y in range(150):
+        if rnd.random() > 0.12:                           # scuffed gaps
+            for x in range(3):
+                g[y][x] = "1" if rnd.random() > 0.25 else "2"
+    props["Yardline"] = (rect_rows(g), True, (1, 75))
+    g = grid(10, 3)
+    for x in (0, 1, 8, 9):
+        for y in range(3):
+            g[y][x] = "1"
+    props["Hash"] = (rect_rows(g), True, (5, 1))
+    g = grid(56, 36)
+    ellipse(g, 27.5, 17.5, 27, 17, "3")                    # scrubbed team logo
+    ellipse(g, 27.5, 17.5, 22, 13, ".")
+    ellipse(g, 27.5, 17.5, 14, 8, "3")                     # a football in the middle
+    rect(g, 18, 17, 37, 17, "1")
+    for x in range(20, 37, 3):
+        g[16][x] = "1"
+        g[18][x] = "1"
+    for y in range(36):
+        for x in range(56):
+            if g[y][x] != "." and rnd.random() < 0.3:
+                g[y][x] = "."                              # half scrubbed away
+    props["Logo"] = (rect_rows(g), True, (28, 18))
+
+    # sideline junk
+    g = grid(18, 10)
+    ellipse(g, 9, 6, 8, 3.5, "4")                          # gatorade stain under the cups
+    rect(g, 2, 3, 5, 6, "W")                               # crushed cups
+    rect(g, 2, 3, 5, 3, "w")
+    rect(g, 10, 5, 15, 7, "W")
+    rect(g, 10, 5, 10, 7, "O")
+    put(g, [(7, 4), (8, 5)], "O")
+    props["Cups"] = (rect_rows(outline_soft(g)), True, (9, 5))
+    g = grid(26, 12)
+    ellipse(g, 13, 6, 12, 5, "4")
+    ellipse(g, 9, 5, 5, 2, "5")
+    props["Stain"] = (rect_rows(g), True, (13, 6))
+    g = grid(30, 20)
+    ellipse(g, 20, 15, 10, 4, "4")                         # what spilled out
+    rect(g, 3, 6, 18, 16, "O")                             # cooler on its side
+    rect(g, 3, 6, 18, 7, "P")
+    rect(g, 3, 15, 18, 16, "o")
+    ellipse(g, 19, 11, 2, 5, "W")                          # open end, lid gone
+    ellipse(g, 19, 11, 1, 3.5, "o")
+    rect(g, 6, 9, 14, 11, "W")                             # label
+    put(g, [(8, 10), (10, 10), (12, 10)], "O")
+    rect(g, 7, 4, 8, 5, "v")                               # handle
+    props["Cooler"] = (rect_rows(outline(g)), False, (12, 17))
+    g = grid(26, 18)
+    ellipse(g, 9, 11, 8, 6, "v")                           # mesh ball bag
+    for x in range(2, 17, 2):
+        for y in range(6, 17):
+            if g[y][x] == "v":
+                g[y][x] = "N"
+    for cx, cy in ((19, 13), (22, 9), (14, 15)):           # balls spilling out
+        ellipse(g, cx, cy, 3.5, 2.2, "F")
+        put(g, [(cx, cy - 1)], "W")
+    props["BallBag"] = (rect_rows(outline(g)), False, (12, 15))
+    g = grid(12, 16)
+    for y in range(3, 14):                                 # a pylon, kicked over and bent
+        x0 = 2 + (y - 3) // 3
+        for x in range(x0, x0 + 4):
+            g[y][x] = "O"
+    put(g, [(4, 7), (5, 7), (6, 8), (7, 8)], "W")
+    rect(g, 3, 13, 9, 14, "o")
+    props["Pylon"] = (rect_rows(outline(g)), False, (6, 13))
+    g = grid(20, 14)
+    ellipse(g, 9, 7, 8, 6, "m")                            # a dented rival helmet, face down
+    ellipse(g, 7, 5, 4, 2, "W")
+    put(g, [(10, 3), (11, 4), (10, 5), (12, 6)], "n")      # dent and crack
+    rect(g, 15, 6, 18, 10, "G")                            # facemask poking out
+    put(g, [(16, 8), (17, 8)], "n")
+    props["Helmet"] = (rect_rows(outline(g)), False, (10, 11))
+    g = grid(12, 7)
+    ellipse(g, 3, 3, 2.5, 2, "W")
+    ellipse(g, 8, 4, 2, 1.6, "w")
+    props["Tape"] = (rect_rows(outline_soft(g)), True, (6, 3))
+    g = grid(14, 16)
+    rect(g, 1, 1, 12, 14, "d")                             # muddy clipboard
+    rect(g, 3, 3, 10, 13, "W")
+    put(g, [(4, 5), (6, 7), (8, 9), (5, 11), (9, 5)], "R")
+    put(g, [(7, 5), (4, 9)], "B")
+    put(g, [(9, 12), (10, 11)], "d")
+    props["Clipboard"] = (rect_rows(outline(g)), True, (7, 8))
+    g = grid(12, 7)
+    ellipse(g, 5.5, 3, 5, 2.4, "W")                        # chewed, bloody mouthguard
+    ellipse(g, 5.5, 3.5, 3, 1.2, ".")
+    put(g, [(2, 2), (8, 4)], "i")
+    props["Mouthguard"] = (rect_rows(outline(g)), True, (6, 3))
+    g = grid(20, 12)
+    ellipse(g, 10, 6, 9, 4, "i")                           # someone got tackled here
+    ellipse(g, 8, 5, 4, 2, "R")
+    put(g, [(18, 3), (2, 9), (17, 10)], "i")
+    props["Blood"] = (rect_rows(g), True, (10, 6))
+
+    # set pieces
+    g = grid(30, 66)
+    rect(g, 13, 26, 16, 64, "Y")                           # goalpost upright with padding
+    rect(g, 13, 26, 13, 64, "U")
+    rect(g, 16, 26, 16, 64, "y")
+    rect(g, 2, 24, 27, 27, "Y")                            # crossbar stub
+    rect(g, 2, 24, 27, 24, "U")
+    rect(g, 3, 0, 5, 24, "Y")                              # uprights
+    rect(g, 24, 0, 26, 24, "Y")
+    rect(g, 3, 0, 3, 24, "U")
+    rect(g, 24, 0, 24, 24, "U")
+    rect(g, 11, 50, 18, 64, "B")                           # base pad
+    rect(g, 11, 50, 12, 64, "L")
+    put(g, [(14, 55), (15, 58), (16, 61)], "b")
+    rect(g, 3, 6, 5, 7, "R")                               # a torn flag
+    props["Goalpost"] = (rect_rows(outline(g)), False, (14, 64))
+    g = grid(50, 18)
+    rect(g, 1, 4, 48, 8, "f")                              # bench
+    rect(g, 1, 4, 48, 4, "E")
+    rect(g, 3, 9, 5, 16, "n")
+    rect(g, 44, 9, 46, 16, "n")
+    rect(g, 18, 1, 27, 8, "W")                             # towel draped over it
+    rect(g, 18, 8, 22, 12, "W")
+    put(g, [(19, 2), (23, 3), (21, 10)], "w")
+    ellipse(g, 36, 3, 4, 2, "O")                           # a lone cup
+    props["Bench"] = (rect_rows(outline(g)), False, (25, 16))
+    g = grid(40, 26)
+    rect(g, 2, 20, 37, 23, "m")                            # sled runners
+    rect(g, 4, 18, 35, 19, "n")
+    rect(g, 6, 4, 15, 18, "R")                             # two pads
+    rect(g, 24, 4, 33, 18, "R")
+    rect(g, 6, 4, 7, 18, "H")
+    rect(g, 24, 4, 25, 18, "H")
+    rect(g, 6, 10, 15, 11, "W")
+    rect(g, 24, 10, 33, 11, "W")
+    put(g, [(12, 6), (13, 7), (30, 14), (31, 15)], "r")    # worn spots
+    props["Sled"] = (rect_rows(outline(g)), False, (20, 23))
+    g = grid(50, 18)
+    rect(g, 0, 2, 49, 15, "B")                             # stadium banner, torn at a corner
+    rect(g, 0, 2, 49, 3, "Y")
+    rect(g, 0, 14, 49, 15, "Y")
+    for i, x in enumerate(range(8, 42, 9)):                # "GO!" blocks
+        rect(g, x, 6, x + 5, 11, "W")
+    put(g, [(49, 15), (48, 15), (49, 14)], ".")
+    rect(g, 2, 0, 3, 2, "n")
+    rect(g, 46, 0, 47, 2, "n")
+    props["Banner"] = (rect_rows(outline(g)), False, (25, 17))
+    return props
+
+
+def outline_soft(g):
+    """Outline only the opaque (non-stain) parts, so puddles stay soft-edged."""
+    h, w = len(g), len(g[0])
+    soft = {"4", "5", "1", "2", "3"}
+    edge = [(x, y) for y in range(h) for x in range(w) if g[y][x] == "."
+            and any(0 <= x + dx < w and 0 <= y + dy < h and g[y + dy][x + dx] not in {".", "K"} | soft
+                    for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))]
+    put(g, edge, "K")
+    return g
+
+
+def decor_sheet():
+    """Pack every prop into one strip and write a matching anm2 (one animation per prop)."""
+    from PIL import Image
+    extra = {"1": (236, 236, 226, 115), "2": (236, 236, 226, 60), "3": (236, 236, 226, 70),
+             "4": (238, 122, 32, 95), "5": (255, 176, 86, 70)}
+    pal = dict(PALETTE, **extra)
+    props = decor_props()
+    widths = [len(rows[0]) for rows, _, _ in props.values()]
+    height = max(len(rows) for rows, _, _ in props.values())
+    sheet = Image.new("RGBA", (sum(widths) + 2 * len(widths), height), (0, 0, 0, 0))
+    frames, x = [], 0
+    for name, (rows, floor, pivot) in props.items():
+        w, h = len(rows[0]), len(rows)
+        for yy, row in enumerate(rows):
+            for xx, ch in enumerate(row):
+                sheet.putpixel((x + xx, yy), pal[ch])
+        frames.append((name, x, w, h, pivot))
+        x += w + 2
+    anims = []
+    for name, fx, w, h, (pxv, pyv) in frames:
+        frame_xml = (FRAME.format(px=pxv, py=pyv, x=fx, s=w, d=1)
+                     .replace(f'Height="{w}"', f'Height="{h}"', 1))
+        anims.append(f'''\t\t<Animation Name="{name}" FrameNum="1" Loop="true">
+\t\t\t<RootAnimation>{ROOT_FRAME.format(d=1)}</RootAnimation>
+\t\t\t<LayerAnimations><LayerAnimation LayerId="0" Visible="true">{frame_xml}</LayerAnimation></LayerAnimations>
+\t\t\t<NullAnimations/><Triggers/>
+\t\t</Animation>''')
+    anm2 = ('''<AnimatedActor>
+\t<Info CreatedBy="Gridiron tools/make_entities.py" CreatedOn="11/08/2026 12:00:00 PM" Version="1" Fps="30"/>
+\t<Content>
+\t\t<Spritesheets><Spritesheet Path="gridiron_decor.png" Id="0"/></Spritesheets>
+\t\t<Layers><Layer Name="prop" Id="0" SpritesheetId="0"/></Layers>
+\t\t<Nulls/><Events/>
+\t</Content>
+\t<Animations DefaultAnimation="Cups">
+''' + "\n".join(anims) + '''
+\t</Animations>
+</AnimatedActor>
+''')
+    return sheet, anm2
+
+
 END_ZONE_W, END_ZONE_H = 80, 40
 
 
@@ -824,6 +1043,9 @@ def main():
     effects = GFX / "effects"
     effects.mkdir(parents=True, exist_ok=True)
     end_zone_paint().save(effects / "gridiron_end_zone.png")
+    decor, decor_anm2 = decor_sheet()
+    decor.save(effects / "gridiron_decor.png")
+    (effects / "gridiron_decor.anm2").write_text(decor_anm2)
     (effects / "gridiron_end_zone.anm2").write_text(end_zone_anm2())
     for rel, spec in ENTITIES.items():
         size = spec.get("size", 32)

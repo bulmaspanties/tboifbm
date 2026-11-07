@@ -216,6 +216,10 @@ return function(mod)
         HAIL_MARY_DMG_MULT    = 8,     -- x player damage, plus a flat 30
         HAIL_MARY_BURST       = 10,
 
+        -- Field decor
+        DECOR_CHANCE_LIGHT    = 0.15,  -- share of normal rooms with football props
+        DECOR_CHANCE_FULL     = 0.35,
+
         -- Halftime show
         HALFTIME_CHANCE       = 0.06,  -- (menu) per cleared normal room, once per floor
 
@@ -265,6 +269,8 @@ return function(mod)
         hud = true,            -- small text readouts under the player
         popups = true,         -- floating callouts ("TACKLE!", "IT'S GOOD!")
         crowd = true,          -- crowd cheers/boos, horn and fanfare
+        decor = "full",        -- football props in rooms: "off", "light" or "full"
+        drugTests = true,      -- referees and the coach go after juiced players
         helmetColor = "red",   -- uniform colours (menu: uniform); each is a pre-made costume
         jerseyColor = "blue",
         pantsColor = "white",
