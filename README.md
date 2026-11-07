@@ -88,12 +88,15 @@ These also appear in External Item Descriptions.
 | Version | Health | Starts with | Play style |
 |---|---|---|---|
 | **The Quarterback** | 3 red hearts | Football Helmet, Team Jersey, **Playbook** (pocket active) | Every 3rd shot is a football, and all his footballs fly 25% faster and hit 25% harder. +0.2 shot speed. **Birthright:** every other shot is a football. |
-| **Tainted Quarterback** | 2 red + 1 soul | Football Helmet, Shoulder Pads, **Kicking Tee** (pocket active) | Throws **only footballs**: much slower fire rate, but each one hits hard. **Birthright:** footballs home in on enemies. |
+| **Tainted Quarterback** | 2 red + 1 soul | Football Helmet, Shoulder Pads, **Kicking Tee** (pocket active) | **One Ball:** he throws a single heavy football (3x damage, piercing) that **boomerangs back**, and he can't throw again until it's back in his hands. **Birthright:** two balls in the air at once. |
 
 | **The Kicker** | 2 red + 1 soul | Football Cleats, **Kicking Tee** (pocket active), a white headband | Quick (+0.15 speed) with long range, but 10% less damage. **Special Teams:** every field goal refunds 2 Tee charges and puts points on the board (+0.3 damage for the floor, up to 5). **Birthright:** every kick is good, and the blast is 50% bigger. |
 | **Tainted Kicker** | 2 red + 1 soul | Padded Pants, **Pigskin** (pocket active), a filthy torn headband | **Shanks:** his tears are slow, heavy lobs that clear rocks (+1 damage, slower fire rate), and every 4th one blows up like a mini field goal (it never hurts him). **Birthright:** every other shank explodes. |
 
 All four appear on the character select screen with their own page, portrait, co-op and death-screen art.
+
+### Completion notes
+Every Gridiron character tracks the vanilla marks: **Mom's Heart, Isaac, Satan, ???, The Lamb, Boss Rush, Hush, Mega Satan, Delirium, Mother, The Beast, Ultra Greed and Ultra Greedier**, each as normal or hard. You get a callout when you earn one, and each character has a **completion notes** page in the settings menu. The game doesn't let mods draw marks on the character-select paper, so they live in the menu. They're bragging rights: nothing is locked behind them.
 
 ## Boss & enemies
 | Entity | Where | What it does |
@@ -160,6 +163,7 @@ Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or 
 - **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, Franchise boss chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
 - **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare)
 - **uniform:** pick your team colours: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colours each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts back the red/blue/white uniform. Helmet and Team Jersey **pedestals** show your colours too (except where the item could be hidden: Curse of the Blind and the alt-floor "?" treasure items)
+- **completion notes:** the marks each Gridiron character has earned
 - **costume fit:** hide the helmet, eye black, jersey/pads or pants/cleats for the character you're playing right now
 
 Settings are saved and kept between runs. Your run state (caught balls, bucket, jersey, current play…) also survives **save & continue**.

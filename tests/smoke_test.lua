@@ -142,12 +142,13 @@ PickupVariant = enum()
 CoinSubType = enum()
 DamageFlag = enum()
 RenderMode = enum()
-RoomType = { ROOM_DEFAULT = 1, ROOM_BOSS = 5 }
+RoomType = { ROOM_DEFAULT = 1, ROOM_BOSS = 5, ROOM_BOSSRUSH = 17 }
 CollectibleType = enum({ COLLECTIBLE_BIRTHRIGHT = 619 })
 WeaponType = enum()
 HeartSubType = { HEART_FULL = 1, HEART_HALF = 2, HEART_SOUL = 3, HEART_DOUBLEPACK = 5, HEART_SCARED = 9 }
 Direction = { LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3 }
 PlayerType = { PLAYER_ISAAC = 0, PLAYER_MAGDALENE = 1, PLAYER_EVE = 5, PLAYER_AZAZEL = 7, PLAYER_THELOST = 10 }
+Difficulty = { DIFFICULTY_NORMAL = 0, DIFFICULTY_HARD = 1, DIFFICULTY_GREED = 2, DIFFICULTY_GREEDIER = 3 }
 StageType = { STAGETYPE_ORIGINAL = 0, STAGETYPE_REPENTANCE = 4, STAGETYPE_REPENTANCE_B = 5 }
 EntityGridCollisionClass = enum()
 GridCollisionClass = { COLLISION_NONE = 0, COLLISION_WALL = 1 }
@@ -155,7 +156,7 @@ EntityCollisionClass = { ENTCOLL_NONE = 0, ENTCOLL_PLAYERONLY = 1, ENTCOLL_PLAYE
 ProjectileVariant = { PROJECTILE_NORMAL = 0 }
 EntityFamiliar = { GetOrbitDistance = function(layer) return Vector(30 + layer * 10, 30 + layer * 10) end }
 EntityType = { ENTITY_FAMILIAR = 3, ENTITY_PLAYER = 1, ENTITY_TEAR = 2, ENTITY_PROJECTILE = 9, ENTITY_PICKUP = 5,
-    ENTITY_EFFECT = 1000, ENTITY_GAPER = 10 }
+    ENTITY_EFFECT = 1000, ENTITY_GAPER = 10, ENTITY_BEAST = 951, ENTITY_ULTRA_GREED = 406 }
 REPENTANCE = true
 ActiveSlot = { SLOT_PRIMARY = 0, SLOT_SECONDARY = 1, SLOT_POCKET = 2 }
 function GetPtrHash(e) return e.__id end
@@ -484,6 +485,7 @@ local room = {
     GetType = function() return world.roomType end,
     GetClampedPosition = function(_, pos) return pos end,
     GetCenterPos = function() return Vector(320, 280) end,
+    GetBossID = function() return world.bossID or 0 end,
     GetTopLeftPos = function() return Vector(60, 140) end,
     GetBottomRightPos = function() return Vector(580, 420) end,
     -- a 15x9 room: the outer ring is wall
@@ -1496,14 +1498,24 @@ world.entities = { tqb }
 dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
 check(tqb:HasCollectible(Items.HELMET) and tqb.pocket == Items.KICKING_TEE, "tainted starts with the helmet and the tee")
 tqb:EvaluateItems()
-check(tqb.MaxFireDelay > 10, "tainted fires slower")
-local allBalls = true
-for i = 1, 4 do
-    local t = tqb:FireTear(tqb.Position, Vector(10, 0))
-    dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, t)
-    allBalls = allBalls and t.data.GridironFootball ~= nil
-end
-check(allBalls, "tainted throws only footballs")
+-- One Ball: a heavy boomerang football, and no second throw until it's back
+local ball1 = tqb:FireTear(tqb.Position, Vector(10, 0))
+dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, ball1)
+check(ball1.exists and ball1.data.GridironFootball and ball1:HasTearFlags(TearFlags.TEAR_BOOMERANG)
+    and ball1.CollisionDamage > 3.5 * 2, "tainted throws one heavy boomerang ball")
+local ball2 = tqb:FireTear(tqb.Position, Vector(10, 0))
+dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, ball2)
+check(not ball2.exists, "no second throw while the ball is out")
+ball1.exists = false
+local ball3 = tqb:FireTear(tqb.Position, Vector(10, 0))
+dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, ball3)
+check(ball3.exists and ball3.data.GridironOneBall, "once it's back, he can throw again")
+tqb.items[CollectibleType.COLLECTIBLE_BIRTHRIGHT] = 1
+local ball4 = tqb:FireTear(tqb.Position, Vector(10, 0))
+dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, ball4)
+check(ball4.exists, "birthright: two balls in the air")
+tqb.items[CollectibleType.COLLECTIBLE_BIRTHRIGHT] = nil
+ball3.exists, ball4.exists = false, false
 local isaac = newPlayer(0)
 players[1] = isaac
 world.entities = { isaac }
@@ -1555,6 +1567,42 @@ do
     local hurtBefore = tk.damageTaken
     dispatch(ModCallbacks.MC_POST_ENTITY_REMOVE, EntityType.ENTITY_TEAR, live)
     check(victim.damageTaken > 0 and tk.damageTaken == hurtBefore, "a live shank blows up enemies, not him")
+end
+
+-- Completion notes -------------------------------------------------------------------------
+do
+    local cq = newPlayer(PT.QUARTERBACK)
+    local isaac = newPlayer(0)
+    players = { cq, isaac }
+    world.entities = { cq, isaac }
+    world.bossID = 8                                   -- Mom's Heart
+    newRoom(false, RoomType.ROOM_BOSS)
+    world.hudText = {}
+    dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, cq.rng, Vector(0, 0))
+    local m = mod.getMarks()
+    check(m.qb and m.qb.heart == "normal", "beating mom's heart as the qb earns a note")
+    check(world.hudText[#world.hudText] == "Completion note!", "and announces it")
+    local count = 0
+    for _ in pairs(m) do count = count + 1 end
+    check(count == 1, "only gridiron characters get notes")
+    mod.game.Difficulty = Difficulty.DIFFICULTY_HARD
+    dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, cq.rng, Vector(0, 0))
+    check(m.qb.heart == "hard", "hard mode upgrades the note")
+    mod.game.Difficulty = nil
+    dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, cq.rng, Vector(0, 0))
+    check(m.qb.heart == "hard", "and normal never downgrades it")
+    dispatch(ModCallbacks.MC_POST_NPC_DEATH, nil, newEntity({ Type = EntityType.ENTITY_BEAST, Variant = 0 }))
+    check(m.qb.beast == "normal", "the beast counts")
+    world.bossID = nil
+    newRoom(false, RoomType.ROOM_BOSSRUSH)
+    dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, cq.rng, Vector(0, 0))
+    check(m.qb.bossrush == "normal", "boss rush counts")
+    local page = mod.MenuDirectory.marks_qb
+    check(page and page.buttons[1].str == "3/" .. #mod.MARKS .. " notes", "the menu page shows the notes")
+    check(findButton("marks", "quarterback").dest == "marks_qb", "reachable from the menu")
+    mod.GetSaveData().marks = {}
+    players = { cq }
+    newRoom(false)
 end
 
 -- Challenges ---------------------------------------------------------------------------

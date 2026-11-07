@@ -17,6 +17,7 @@ Suit up! Football gear with its own mechanics: no reskins, no stat-only items.
 [*][b]Pick your team colours[/b]: helmet, jersey and pants, 11 colours each (yes, pink too), from the settings menu
 [*][b]Two new bosses and 10 football enemies[/b]: The Linebacker, The Franchise (a two-phase final boss), the Coach miniboss, plus Mascot, Referee, Lineman, Blitzer, Punter, Huddle, Gatorade Cooler, Chain Gang and Sacker
 [*][b]Two new characters[/b]: The Quarterback and The Kicker, plus both tainted versions
+[*][b]All-Pro transformation[/b], [b]Team Captain[/b] champions, a [b]Halftime show[/b] event and [b]completion notes[/b]
 [*][b]3 challenges[/b]: Fourth and Long, Two-Minute Drill, Ground Game
 [*][b]Settings[/b] in the Dead Sea Scrolls menu (press C), External Item Descriptions support, save &amp; continue support
 [/list]
@@ -38,7 +39,7 @@ Debug console: [b]gridiron give[/b] drops all the gear as pedestals, [b]gridiron
 
 Requires Repentance+. REPENTOGON is not required.
 Source and bug reports: github.com/bulmaspanties/tboifbm</description>
-    <version>0.8.0</version>
+    <version>0.9.0</version>
     <visibility>Private</visibility>
     <tag id="Items"/>
     <tag id="Characters"/>

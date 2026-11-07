@@ -45,6 +45,6 @@ return function(mod)
 
     if EID and EID.addBirthright then
         if QB >= 0 then EID:addBirthright(QB, "Every other shot is a football") end
-        if QB_B >= 0 then EID:addBirthright(QB_B, "Footballs home in on enemies") end
+        if QB_B >= 0 then EID:addBirthright(QB_B, "Two balls in the air at once") end
     end
 end

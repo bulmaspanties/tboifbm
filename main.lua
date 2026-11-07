@@ -23,9 +23,10 @@
 -- scripts/halftime.lua   Halftime show room event
 -- scripts/legends.lua    Q4 items: Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary
 -- scripts/synergies.lua  interactions with base-game items
+-- scripts/completion.lua completion notes for the Gridiron characters
 
 local mod = RegisterMod("Gridiron", 1)
 
-for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "franchise", "quarterback", "kicker", "endzone", "legends", "halftime", "synergies" }) do
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "franchise", "quarterback", "kicker", "endzone", "legends", "halftime", "synergies", "completion" }) do
     include("scripts." .. name)(mod)
 end

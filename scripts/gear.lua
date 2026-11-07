@@ -341,6 +341,25 @@ return function(mod)
         if not player then return end
         local d = pdata(player)
 
+        -- Tainted Quarterback: One Ball. He throws a single heavy ball that boomerangs back,
+        -- and can't throw again until it's back in his hands (two balls with Birthright).
+        local qb = mod.quarterbackKind(player)
+        local birthright = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
+        if qb == "tainted" then
+            local inAir, me = 0, GetPtrHash(player)
+            for _, e in ipairs(Isaac.FindByType(EntityType.ENTITY_TEAR)) do
+                if e:Exists() and e:GetData().GridironOneBall and e.SpawnerEntity
+                    and GetPtrHash(e.SpawnerEntity) == me then
+                    inAir = inAir + 1
+                end
+            end
+            if inAir >= (birthright and 2 or 1) then
+                tear:Remove()
+                return
+            end
+            tear:GetData().GridironOneBall = true
+        end
+
         if player:HasCollectible(Items.EYE_BLACK) then
             tear:GetData().GridironOrigin = tear.Position
         end
@@ -356,8 +375,6 @@ return function(mod)
             d.trickShots = d.trickShots - 1
             football = true
         end
-        local qb = mod.quarterbackKind(player)
-        local birthright = player:HasCollectible(CollectibleType.COLLECTIBLE_BIRTHRIGHT)
         if qb == "normal" then
             d.qbShots = (d.qbShots or 0) + 1
             if d.qbShots % (birthright and 2 or Cfg.QB_EVERY_NTH) == 0 then football = true end
@@ -377,7 +394,7 @@ return function(mod)
             if qb then   -- a quarterback's arm
                 tear.Velocity = tear.Velocity * Cfg.QB_ARM_SPEED
                 tear.CollisionDamage = tear.CollisionDamage * Cfg.QB_ARM_DAMAGE
-                if qb == "tainted" and birthright then tear:AddTearFlags(TearFlags.TEAR_HOMING) end
+                if qb == "tainted" then tear:AddTearFlags(TearFlags.TEAR_BOOMERANG) end   -- One Ball
             end
         end
 

@@ -6,7 +6,7 @@
             birthright="Franchise player: every other shot is a football" />
     <player name="Quarterback" skin="character_quarterback_b.png" skinColor="-1" hp="4" armor="2" bombs="1"
             nameimage="playername_quarterback_b.png" portrait="playerportrait_quarterback_b.png"
-            bSkinParent="Quarterback" birthright="Gunslinger: footballs home in on enemies" />
+            bSkinParent="Quarterback" birthright="Two-minute offense: two balls in the air at once" />
     <!-- The Kicker (scripts/kicker.lua): same menu files, animations named "Kicker" -->
     <player name="Kicker" skin="character_kicker.png" skinColor="-1" hp="4" armor="2" bombs="1" coins="5"
             nameimage="playername_kicker.png" portrait="playerportrait_kicker.png"

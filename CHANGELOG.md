@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.9.0
+- **The Franchise**: a two-phase final boss for floors 7-8. Phase 1 runs a route tree (slants, the go route, screen pass, Hail Mary, audibles); phase 2, the Stadium, brings the crowd wave, the Kiss Cam and falling goalposts.
+- **The Kicker** and **Tainted Kicker**: Special Teams field goals that refund Tee charges and put points on the board; Tainted shanks heavy lobbed tears, every 4th one explodes.
+- **Tainted Quarterback reworked: One Ball.** A single heavy boomerang football; no throwing again until it's back. Birthright: two balls.
+- **Completion notes** for all four Gridiron characters (every vanilla mark, normal or hard), with callouts and menu pages.
+- **Team Captains**: 15% of football enemies are gold champions with 50% more health and a twist each.
+- **All-Pro transformation**: any 3 Gridiron items: +0.5 damage, every 4th shot a homing golden spiral, gold war paint.
+- **Halftime show**: a rare room-clear event: pick a new Gridiron item or a soul heart.
+- **Character fit**: horned characters get a helmet with reinforced horn holes so the horns come up through it.
+- **Uniform colours** now also recolour Helmet and Team Jersey pedestals.
+
 ## 0.8.0
 - **Fix: `gridiron give` could crash the game.** It placed ~30 pickups in one frame with the game's free-spot search, which could lock up once the floor filled. It now picks open floor tiles itself and drops one pickup every couple of frames.
 - **4 Q4 items:** Championship Ring (x1.25 damage, a trophy item from every floor's boss), Hall of Fame Jacket (counts as 3 gear pieces: instantly Suited Up with a double bonus and 4x faster tackles), Golden Arm (every shot is a golden football), Hail Mary (6-charge active: a giant golden football that lands in a beam of holy light and a ring of footballs).

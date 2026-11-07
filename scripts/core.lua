@@ -203,8 +203,8 @@ return function(mod)
         QB_ARM_SPEED          = 1.25,  -- his footballs fly faster...
         QB_ARM_DAMAGE         = 1.25,  -- ...and hit harder
         QB_SHOT_SPEED         = 0.2,
-        TQB_FIRE_DELAY_MULT   = 1.8,   -- Tainted: every shot is a football, but slower
-        TQB_BALL_DMG_MULT     = 1.5,
+        TQB_FIRE_DELAY_MULT   = 1.0,   -- Tainted: One Ball (the wait is getting it back)
+        TQB_BALL_DMG_MULT     = 3.0,
         TQB_DAMAGE            = 0.5,
 
         -- Q4 items (scripts/legends.lua)

@@ -132,6 +132,7 @@ return function(mod)
                 { str = "visuals", dest = "visuals" },
                 { str = "uniform", dest = "uniform" },
                 { str = "costume fit", dest = "character" },
+                { str = "completion notes", dest = "marks" },
                 { str = "menu settings", dest = "menusettings" },
                 dssmod.changelogsButton,
             },
@@ -209,6 +210,19 @@ return function(mod)
                 charToggle("eye black", "eyeblack"),
                 charToggle("jersey/pads", "torso"),
                 charToggle("pants/cleats", "legs"),
+            },
+        },
+        marks = {
+            title = "completion notes",
+            buttons = {
+                { str = "quarterback", dest = "marks_qb" },
+                { str = "tainted qb", dest = "marks_qb_b" },
+                { str = "kicker", dest = "marks_kicker" },
+                { str = "tainted kicker", dest = "marks_kicker_b" },
+                { str = "", fsize = 1, nosel = true },
+                { str = "just for bragging", fsize = 1, nosel = true },
+                { str = "rights: they don't", fsize = 1, nosel = true },
+                { str = "unlock anything", fsize = 1, nosel = true },
             },
         },
         menusettings = {
