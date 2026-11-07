@@ -604,6 +604,9 @@ end
 -- Load the mod ------------------------------------------------------------------------
 dofile("main.lua")
 local Items, Trinkets, Cfg = mod.Items, mod.Trinkets, mod.Cfg
+-- The older scenarios check exact stats with 3+ items held; keep All-Pro out of them
+-- (it gets its own scenario near the end).
+Cfg.ALLPRO_ITEMS = 999
 
 for key, id in pairs(Items) do check(id > 0, "item name not found in items.xml: " .. key) end
 for key, id in pairs(Trinkets) do check(id > 0, "trinket name not found in items.xml: " .. key) end
@@ -1756,6 +1759,38 @@ end
 for _, color in ipairs(mod.UNIFORM_COLORS.helmet) do
     local name = "helmet_roomy" .. (color == mod.UNIFORM_COLORS.helmet[1] and "" or "_" .. color)
     check(costumePaths["gfx/characters/gridiron_" .. name .. ".anm2"], "roomy helmet exists in " .. color)
+end
+
+-- All-Pro transformation -----------------------------------------------------------------------
+do
+    Cfg.ALLPRO_ITEMS = mod.Defaults.ALLPRO_ITEMS
+    local ap = newPlayer()
+    players = { ap }
+    world.entities = { ap }
+    newRoom(false)
+    ap:EvaluateItems()
+    local base = ap.Damage
+    ap.items[Items.PIGSKIN], ap.items[Items.CHEERLEADER] = 1, 1
+    tick()
+    check(not mod.pdata(ap).allPro, "two gridiron items aren't enough")
+    ap.items[Items.FOAM_FINGER] = 1
+    world.hudText = {}
+    tick()
+    check(mod.pdata(ap).allPro and world.hudText[#world.hudText] == "All-Pro!", "three gridiron items: All-Pro!")
+    ap:EvaluateItems()
+    check(ap.Damage > base, "All-Pro adds damage")
+    check(costumeOn(ap, "allpro"), "All-Pro shows gold war paint")
+    local spirals = 0
+    for _ = 1, Cfg.ALLPRO_EVERY * 2 do
+        local t = ap:FireTear(ap.Position, Vector(10, 0))
+        dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, t)
+        if t.data.GridironFootball and t:HasTearFlags(TearFlags.TEAR_HOMING) then spirals = spirals + 1 end
+    end
+    check(spirals == 2, "every " .. Cfg.ALLPRO_EVERY .. "th shot is a homing golden spiral")
+    ap.items[Items.PIGSKIN], ap.items[Items.CHEERLEADER], ap.items[Items.FOAM_FINGER] = nil, nil, nil
+    tick()
+    check(mod.pdata(ap).allPro, "All-Pro is permanent, like a vanilla transformation")
+    Cfg.ALLPRO_ITEMS = 999
 end
 
 -- Q4 items -----------------------------------------------------------------------------------

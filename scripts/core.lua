@@ -213,6 +213,11 @@ return function(mod)
         HAIL_MARY_DMG_MULT    = 8,     -- x player damage, plus a flat 30
         HAIL_MARY_BURST       = 10,
 
+        -- All-Pro transformation: any 3 Gridiron items
+        ALLPRO_ITEMS          = 3,
+        ALLPRO_EVERY          = 4,     -- every Nth shot is a golden spiral
+        ALLPRO_DAMAGE         = 0.5,
+
         -- Set bonus
         SUITED_UP_PIECES      = 3,
         SUITED_UP_DAMAGE      = 1.0,
@@ -331,6 +336,15 @@ return function(mod)
         end
         if mod.Items.HOF_JACKET > 0 and player:HasCollectible(mod.Items.HOF_JACKET) then
             n = n + mod.Cfg.HOF_JACKET_PIECES   -- the Hall of Fame Jacket: suited up on its own
+        end
+        return n
+    end
+
+    -- How many different Gridiron collectibles the player holds (for All-Pro).
+    function mod.gridironItemCount(player)
+        local n = 0
+        for _, id in pairs(mod.Items) do
+            if id > 0 and player:HasCollectible(id) then n = n + 1 end
         end
         return n
     end

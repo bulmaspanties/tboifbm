@@ -147,6 +147,18 @@ return function(mod)
             mod.refreshCache(player)
         end
 
+        -- All-Pro transformation: any 3 Gridiron items, for good (like a vanilla transformation)
+        if not d.allPro and mod.gridironItemCount(player) >= Cfg.ALLPRO_ITEMS then
+            d.allPro = true
+            game:GetHUD():ShowItemText("All-Pro!", "Every " .. Cfg.ALLPRO_EVERY .. "th throw is a golden spiral")
+            sfx:Play(SoundEffect.SOUND_POWERUP_SPEWER)
+            mod.playSound("FANFARE", 0.9)
+            mod.playSound("CHEER", 0.8)
+            mod.popOn(player, "ALL-PRO!", mod.Colors.gold, 1.4)
+            player:SetColor(Color(1, 1, 1, 1, 0.5, 0.4, 0), 30, 1, true, false)
+            mod.refreshCache(player)
+        end
+
         -- Announce the jersey number the first time it's picked up.
         if player:HasCollectible(Items.JERSEY) and not d.jerseyShown then
             d.jerseyShown = true
@@ -209,6 +221,9 @@ return function(mod)
             end
             if mod.isSuitedUp(player) then
                 bonus = bonus + Cfg.SUITED_UP_DAMAGE * (player:HasCollectible(Items.HOF_JACKET) and 2 or 1)
+            end
+            if d.allPro then
+                bonus = bonus + Cfg.ALLPRO_DAMAGE
             end
             if d.touchdown then   -- 2 = scored in the End Zone: it counts double
                 bonus = bonus + Cfg.TOUCHDOWN_DAMAGE * (d.touchdown == 2 and 2 or 1)
@@ -349,8 +364,16 @@ return function(mod)
         elseif qb == "tainted" then
             football = true
         end
+        local spiral = false
+        if d.allPro then                                   -- All-Pro: a golden spiral every few throws
+            d.allProShots = (d.allProShots or 0) + 1
+            spiral = d.allProShots % Cfg.ALLPRO_EVERY == 0
+            football = football or spiral
+        end
         if football then
+            if spiral then tear:AddTearFlags(TearFlags.TEAR_HOMING) end
             mod.makeFootball(tear, qb == "tainted" and Cfg.TQB_BALL_DMG_MULT or Cfg.JERSEY_BALL_DMG_MULT)
+            if spiral then tear:GetData().GridironFootball.Color = Color(1, 0.9, 0.45, 1, 0.45, 0.35, 0) end
             if qb then   -- a quarterback's arm
                 tear.Velocity = tear.Velocity * Cfg.QB_ARM_SPEED
                 tear.CollisionDamage = tear.CollisionDamage * Cfg.QB_ARM_DAMAGE

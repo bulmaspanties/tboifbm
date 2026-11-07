@@ -58,7 +58,7 @@ return function(mod)
     local PERSISTED = {
         "caught", "shots", "jerseyShown", "playIndex", "bucket",
         "firstDowns", "yardDist", "touchdown", "guardUsed", "hitThisRoom",
-        "play", "trickShots", "rings", "coinHeads", "qbShots",
+        "play", "trickShots", "rings", "coinHeads", "qbShots", "allPro", "allProShots",
     }
 
     local function snapshotRun()

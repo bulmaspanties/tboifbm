@@ -14,7 +14,7 @@ return function(mod)
     -- colour, "jersey_red" etc. are the others (see tools/make_costumes.py).
     local Costumes = {
         helmet = {},
-        eyeblack = { eyeblack = nullCostume("eyeblack") },
+        eyeblack = { eyeblack = nullCostume("eyeblack"), allpro = nullCostume("allpro") },
         torso = { pads = nullCostume("torso_pads") },
         legs = { cleats = nullCostume("legs_cleats") },
     }
@@ -86,7 +86,11 @@ return function(mod)
         local jerseySfx = colorSuffix("jersey", S.jerseyColor)
         local pantsSfx = colorSuffix("pants", S.pantsColor)
         if player:HasCollectible(Items.HELMET) then want.helmet = helmetKey end
-        if player:HasCollectible(Items.EYE_BLACK) then want.eyeblack = "eyeblack" end
+        if pdata(player).allPro then
+            want.eyeblack = "allpro"                       -- All-Pro: gold war paint
+        elseif player:HasCollectible(Items.EYE_BLACK) then
+            want.eyeblack = "eyeblack"
+        end
 
         local jersey, pads = player:HasCollectible(Items.JERSEY), player:HasCollectible(Items.PADS)
         want.torso = (jersey and pads and "jerseypads" .. jerseySfx) or (jersey and "jersey" .. jerseySfx)

@@ -425,6 +425,28 @@ def paint_eye_black(src, view):
     return out
 
 
+ALLPRO_GOLD = (236, 186, 58, 255)
+ALLPRO_SHINE = (255, 240, 170, 255)
+
+
+def paint_allpro(src, view):
+    """All-Pro transformation: the eye black turns to gold war paint, with a glint at the corner."""
+    out = paint_eye_black(src, view)
+    o = out.load()
+    for y in range(CELL):
+        for x in range(CELL):
+            p = o[x, y]
+            if p[3]:
+                o[x, y] = ALLPRO_SHINE if p == EYE_BLACK_SHINE else ALLPRO_GOLD
+    if view == "down":
+        for x, y in ((5, 19), (26, 19), (4, 18), (27, 18)):    # sparkle off the outer corners
+            o[x, y] = ALLPRO_SHINE
+    elif view == "right":
+        o[21, 18] = ALLPRO_SHINE
+        o[22, 17] = ALLPRO_SHINE
+    return out
+
+
 # --- body costumes -----------------------------------------------------------
 def body_frame_info(cell):
     s = cell.load()
@@ -565,6 +587,7 @@ def main(template_root):
                    f"costumes/{name}.png", layer, "body0")
 
     head_sheet("gridiron_eyeblack", paint_eye_black, "head1")
+    head_sheet("gridiron_allpro", paint_allpro, "head1")
     for color in HELMET_COLORS:
         use_helmet_color(color)
         head_sheet("gridiron_helmet" + suffix(color, HELMET_COLORS[0]), paint_helmet, "head5")
@@ -593,7 +616,7 @@ def main(template_root):
              '         (each uniform colour is its own costume). Pieces sharing a body layer come combined. -->']
     names = ["helmet" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS]
     names += ["helmet_roomy" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS]
-    names += ["helmet_horns" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS] + ["eyeblack", "torso_pads"]
+    names += ["helmet_horns" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS] + ["eyeblack", "allpro", "torso_pads"]
     names += [n + suffix(c, JERSEY_COLORS[0]) for c in JERSEY_COLORS for n in ("torso_jersey", "torso_jerseypads")]
     names += ["legs_cleats"] + [n + suffix(c, PANTS_COLORS[0]) for c in PANTS_COLORS
                                 for n in ("legs_pants", "legs_pantscleats")]

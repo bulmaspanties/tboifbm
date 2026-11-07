@@ -40,6 +40,9 @@ Every item also appears in the matching **Greed mode** pools, and every passive 
 ### Set bonus: Suited Up
 Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats, Eye Black, Gloves, Mouthguard, Padded Pants, QB Wristband) to get **Suited Up**: +1 Damage, the Helmet's tackle winds up twice as fast, and you pulse gold.
 
+### Transformation: All-Pro
+Hold **any 3 Gridiron items** (passives, actives, familiars, Q4s: anything from this mod) to become **All-Pro**, for the rest of the run like a vanilla transformation: **+0.5 Damage**, **every 4th shot is a homing golden spiral**, and your eye black turns to **gold war paint** (it shows through the facemask).
+
 ### Familiars
 | Item | Quality | Pools | What it does |
 |---|---|---|---|

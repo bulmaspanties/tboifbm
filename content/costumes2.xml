@@ -36,6 +36,7 @@
     <costume anm2path="characters/gridiron_helmet_horns_white.anm2" type="none" priority="99" />
     <costume anm2path="characters/gridiron_helmet_horns_pink.anm2" type="none" priority="99" />
     <costume anm2path="characters/gridiron_eyeblack.anm2" type="none" />
+    <costume anm2path="characters/gridiron_allpro.anm2" type="none" />
     <costume anm2path="characters/gridiron_torso_pads.anm2" type="none" />
     <costume anm2path="characters/gridiron_torso_jersey.anm2" type="none" />
     <costume anm2path="characters/gridiron_torso_jerseypads.anm2" type="none" />
