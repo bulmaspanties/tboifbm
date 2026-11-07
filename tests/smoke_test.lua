@@ -1107,6 +1107,9 @@ local realRandom = math.random
 math.random = function(a) if a then return 1 end return 0.5 end   -- 0.5 -> charge
 npcTick(lb, 30 + 40)
 check(lb:GetData().mode == "windup" and lb.sprite.anim == "Windup", "linebacker winds up a charge")
+local introduced = false
+for _, t in ipairs(world.hudText) do if t == "The Linebacker" then introduced = true end end
+check(introduced, "the linebacker introduces himself (no modded VS screen without StageAPI)")
 npcTick(lb, 26)
 check(lb:GetData().mode == "charge" and lb.Velocity:Length() > 10, "then charges")
 lb.hitWall = true

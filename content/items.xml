@@ -1,20 +1,20 @@
 <items gfxroot="gfx/items/" version="1">
-    <passive id="1" name="Football Helmet" description="Lower your head" gfx="football_helmet.png" quality="3" tags="offensive" />
-    <passive id="2" name="Shoulder Pads" description="Take the hit, give it back" gfx="shoulder_pads.png" quality="2" />
-    <passive id="3" name="Team Jersey" description="Wear the number" gfx="team_jersey.png" quality="2" tags="offensive" />
-    <passive id="4" name="Football Cleats" description="Move the chains" gfx="football_cleats.png" quality="2" cache="speed damage" />
-    <passive id="5" name="Eye Black" description="See the whole field" gfx="eye_black.png" quality="2" cache="luck" />
-    <passive id="6" name="Receiver Gloves" description="Sticky fingers" gfx="receiver_gloves.png" quality="2" tags="offensive" />
-    <passive id="7" name="Mouthguard" description="Bite down" gfx="mouthguard.png" quality="2" />
+    <passive id="1" name="Football Helmet" description="Lower your head" gfx="football_helmet.png" quality="3" tags="summonable offensive" />
+    <passive id="2" name="Shoulder Pads" description="Take the hit, give it back" gfx="shoulder_pads.png" quality="2" tags="summonable" />
+    <passive id="3" name="Team Jersey" description="Wear the number" gfx="team_jersey.png" quality="2" tags="summonable offensive" />
+    <passive id="4" name="Football Cleats" description="Move the chains" gfx="football_cleats.png" quality="2" cache="speed damage" tags="summonable" />
+    <passive id="5" name="Eye Black" description="See the whole field" gfx="eye_black.png" quality="2" cache="luck" tags="summonable" />
+    <passive id="6" name="Receiver Gloves" description="Sticky fingers" gfx="receiver_gloves.png" quality="2" tags="summonable offensive" />
+    <passive id="7" name="Mouthguard" description="Bite down" gfx="mouthguard.png" quality="1" tags="summonable" />
     <active id="8" name="Kicking Tee" description="It's up... it's good!" gfx="kicking_tee.png" quality="2" maxcharges="4" tags="offensive" />
     <active id="9" name="Pigskin" description="Fumble!" gfx="pigskin.png" quality="2" maxcharges="3" />
-    <active id="10" name="Playbook" description="Call the play" gfx="playbook.png" quality="2" maxcharges="2" />
+    <active id="10" name="Playbook" description="Call the play" gfx="playbook.png" quality="2" maxcharges="2" tags="book" />
     <active id="11" name="Coach's Whistle" description="Offsides!" gfx="coachs_whistle.png" quality="2" maxcharges="4" />
-    <passive id="12" name="Gatorade Bucket" description="Stay hydrated" gfx="gatorade_bucket.png" quality="2" />
-    <passive id="13" name="Padded Pants" description="Thigh pads included" gfx="padded_pants.png" quality="2" />
-    <passive id="14" name="QB Wristband" description="Read the defense" gfx="qb_wristband.png" quality="2" cache="shotspeed" tags="offensive" />
-    <passive id="15" name="Foam Finger" description="We're number one!" gfx="foam_finger.png" quality="2" tags="offensive" />
-    <passive id="16" name="Super Bowl Ring" description="Hardware" gfx="super_bowl_ring.png" quality="3" cache="damage luck" />
+    <passive id="12" name="Gatorade Bucket" description="Stay hydrated" gfx="gatorade_bucket.png" quality="2" tags="summonable" />
+    <passive id="13" name="Padded Pants" description="Thigh pads included" gfx="padded_pants.png" quality="2" tags="summonable" />
+    <passive id="14" name="QB Wristband" description="Read the defense" gfx="qb_wristband.png" quality="2" cache="shotspeed" tags="summonable offensive" />
+    <passive id="15" name="Foam Finger" description="We're number one!" gfx="foam_finger.png" quality="2" tags="summonable offensive" />
+    <passive id="16" name="Super Bowl Ring" description="Hardware" gfx="super_bowl_ring.png" quality="3" cache="damage luck" tags="summonable" />
     <familiar id="17" name="Cheerleader" description="Give me a G!" gfx="cheerleader.png" quality="2" cache="familiars" />
     <familiar id="18" name="Water Boy" description="Stay hydrated" gfx="water_boy.png" quality="1" cache="familiars" />
     <familiar id="19" name="Tackling Dummy" description="Hit it, not me" gfx="tackling_dummy.png" quality="2" cache="familiars" />

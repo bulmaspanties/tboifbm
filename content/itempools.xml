@@ -33,10 +33,61 @@
         <Item Name="Foam Finger" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Water Boy" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     </Pool>
+    <Pool Name="boss">
+        <Item Name="Coach's Whistle" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Super Bowl Ring" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    </Pool>
+    <Pool Name="library">
+        <Item Name="Playbook" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    </Pool>
     <Pool Name="goldenChest">
         <Item Name="Team Jersey" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1" />
+        <Item Name="Super Bowl Ring" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1" />
     </Pool>
-    <Pool Name="boss">
+    <Pool Name="beggar">
+        <Item Name="Gatorade Bucket" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Water Boy" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    </Pool>
+    <Pool Name="craneGame">
+        <Item Name="Coach's Whistle" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Foam Finger" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    </Pool>
+    <!-- Greed mode uses its own pools -->
+    <Pool Name="greedTreasure">
+        <Item Name="Football Helmet" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Shoulder Pads" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Team Jersey" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Football Cleats" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Eye Black" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Receiver Gloves" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Mouthguard" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Kicking Tee" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Pigskin" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Playbook" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Coach's Whistle" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Gatorade Bucket" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Padded Pants" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="QB Wristband" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="End Zone" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Foam Finger" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Super Bowl Ring" Weight="0.5" DecreaseBy="0.5" RemoveOn="0.1" />
+        <Item Name="Cheerleader" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Water Boy" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Tackling Dummy" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    </Pool>
+    <Pool Name="greedShop">
+        <Item Name="Shoulder Pads" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Football Cleats" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Eye Black" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Mouthguard" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Pigskin" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Gatorade Bucket" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Padded Pants" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="QB Wristband" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Foam Finger" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+        <Item Name="Water Boy" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
+    </Pool>
+    <Pool Name="greedBoss">
         <Item Name="Coach's Whistle" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
         <Item Name="Super Bowl Ring" Weight="1" DecreaseBy="1" RemoveOn="0.1" />
     </Pool>

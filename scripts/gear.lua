@@ -162,7 +162,7 @@ return function(mod)
 
         -- Turf Burn: sprinting scorches the field behind you
         if Trinkets.TURF_BURN > 0 and player:HasTrinket(Trinkets.TURF_BURN)
-            and player.Velocity:Length() > Cfg.TURF_BURN_SPEED and game:GetFrameCount() % 4 == 0 then
+            and player.Velocity:Length() > Cfg.TURF_BURN_SPEED and game:GetFrameCount() % 6 == 0 then
             mod.scorch(player, player.Position - player.Velocity:Resized(10), 0.55)
         end
 

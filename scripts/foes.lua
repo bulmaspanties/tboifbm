@@ -370,7 +370,9 @@ return function(mod)
             return
         end
         if coachPlay.id == "blitz" then
-            for _, e in ipairs(teammates(nil)) do e.Velocity = e.Velocity * Cfg.COACH_BLITZ_SPEED end
+            for _, e in ipairs(teammates(nil)) do
+                if e.Velocity:Length() < 8 then e.Velocity = e.Velocity * Cfg.COACH_BLITZ_SPEED end   -- capped: no snowballing
+            end
         end
     end
     mod:AddCallback(ModCallbacks.MC_POST_UPDATE, mod.OnUpdateCoachPlay)

@@ -10,7 +10,7 @@ It uses only the vanilla Lua API, so REPENTOGON is **not** required.
 
 | Item | Type | Pools | What it does |
 |---|---|---|---|
-| **Football Helmet** | Passive (Q3) | Treasure | **Tackle:** run in a straight line for ~1s and Isaac starts glowing. Running into enemies then deals 3× damage + 5, knocks them back hard, confuses them and **stuns** them (the chin strap is built in). You take no contact damage while tackling. **Facemask:** 50% chance to block enemy shots that hit you from the direction you're facing. |
+| **Football Helmet** | Passive (Q3) | Treasure | **Tackle:** run in a straight line for ~1s and Isaac starts glowing. Running into enemies then deals 3× damage + 5, knocks them back hard, confuses them and **stuns** them (the chin strap is built in). You take no contact damage while tackling. **Facemask:** 40% chance to block enemy shots that hit you from the direction you're facing. |
 | **Shoulder Pads** | Passive (Q2) | Treasure, Shop | 25% chance to **deflect** enemy shots back so they hit enemies. Taking damage sets off a **shockwave** that shoves enemies away and destroys nearby shots. With the Helmet, every tackle also sets off a smaller shockwave. |
 | **Team Jersey** | Passive (Q2) | Treasure, Golden Chest | You get a **jersey number** (1–99) for the run. Every N shots (N = 3–9, set by your number) you throw a spiraling **football**: 2× damage, piercing, spectral. **Pre-snap:** enemies freeze briefly when you enter a room. |
 | **Football Cleats** | Passive (Q2) | Treasure, Shop | +0.2 Speed. Running **10 yards** in an uncleared room earns a **First Down**: +0.5 Damage until you leave the room (max 4 per room). |
@@ -18,18 +18,20 @@ It uses only the vanilla Lua API, so REPENTOGON is **not** required.
 | **Padded Pants** | Passive (Q2) | Treasure, Shop | 30% chance to **shrug off** damage from touching an enemy and **stiff-arm** it away. Extra copies stack (up to 60%). |
 | **QB Wristband** | Passive (Q2) | Treasure, Shop | +0.16 Shot speed. **Every football you throw** (Jersey, Gloves, Trick Play, the Quarterback...) **homes in** and deals **+25% damage**. |
 | **Foam Finger** | Passive (Q2) | Treasure, Shop | The toughest enemy in each room is marked **#1**: you deal +50% damage to it, and it drops a penny when it dies. |
-| **Super Bowl Ring** | Passive (Q3) | Treasure, Boss | +1 Luck. Every **boss room** you clear adds a ring: +0.35 Damage for the rest of the run. |
+| **Super Bowl Ring** | Passive (Q3) | Treasure, Boss, Golden Chest | +1 Luck. Every **boss room** you clear adds a ring: +0.35 Damage for the rest of the run. |
 | **Receiver Gloves** | Passive (Q2) | Treasure | When you're **not shooting**, 35% chance to **catch** an enemy shot instead of getting hit (hold up to 3, shown above your head). Each shot you fire throws one caught ball back as a **football**: 1.5× damage, piercing, spectral. |
-| **Mouthguard** | Passive (Q2) | Treasure, Shop | The **first hit each room** that deals a full heart or more deals **half a heart less**. Makes you immune to **fear** and **confusion**. |
+| **Mouthguard** | Passive (Q1) | Treasure, Shop | The **first hit each room** that deals a full heart or more deals **half a heart less**. Makes you immune to **fear** and **confusion**. |
 | **Kicking Tee** | Active, 4 charges | Treasure | **Punt** a football in the direction you're aiming. It sails over rocks and pits and **explodes on landing** for 40 + 4× your damage, without hurting you. If the blast kills an enemy, that's a **field goal: 3 pennies**. |
 | **Pigskin** | Active, 3 charges | Treasure, Shop | Throw a **fumble** that stays on the ground for 5 seconds. Non-boss enemies **scramble toward it** and get confused. **Recover it** for a **Touchdown**: +1 Damage until you leave the room. |
-| **Playbook** | Active, 2 charges | Treasure | **Call a play** for the room. Each use turns to the next page: **Blitz** (tears up, +0.3 speed) → **Hail Mary** (+range, +shot speed, piercing tears) → **Trick Play** (your next 6 shots are footballs). |
-| **Coach's Whistle** | Active, 4 charges | Treasure, Boss | **Offsides!** Shoves every enemy away from you and slows them for 5 seconds, and wipes out all enemy shots. Bosses take damage instead of being shoved. |
+| **Playbook** | Active, 2 charges | Treasure, Library (counts toward Book Worm) | **Call a play** for the room. Each use turns to the next page: **Blitz** (tears up, +0.3 speed) → **Hail Mary** (+range, +shot speed, piercing tears) → **Trick Play** (your next 6 shots are footballs). |
+| **Coach's Whistle** | Active, 4 charges | Treasure, Boss, Crane Game | **Offsides!** Shoves every enemy away from you and slows them for 5 seconds, and wipes out all enemy shots. Bosses take damage instead of being shoved. |
 | **End Zone** | Active, 4 charges | Treasure | **Paints an end zone** on the floor for the room. Standing in it gives **+1.5 Damage**; enemies inside it are **slowed**. A Pigskin **touchdown scored in it counts double**. |
-| **Gatorade Bucket** | Passive (Q2) | Treasure, Shop | Clearing a room **without getting hit** fills the bucket. Every 3 fills (or one no-hit boss room) you get a **Gatorade shower**: heal a full red heart, or half a soul heart if your red hearts are full. |
+| **Gatorade Bucket** | Passive (Q2) | Treasure, Shop, Beggar | Clearing a room **without getting hit** fills the bucket. Every 3 fills (or one no-hit boss room) you get a **Gatorade shower**: heal a full red heart, or half a soul heart if your red hearts are full. |
 | **Concussion Protocol** | Trinket | Trinket pool | Taking damage **confuses every enemy** in the room for 2 seconds. |
 | **Turf Burn** | Trinket | Trinket pool | **Sprinting scorches the turf** behind you: the burning creep damages enemies. Tackled enemies get a big scorch mark. |
 | **Referee Flag** | Trinket | Trinket pool | **Flag on the play:** when an enemy or its shot hits you, that enemy takes 10 + 3× floor-number damage and is slowed. |
+
+Every item also appears in the matching **Greed mode** pools, and every passive works with **Lemegeton**.
 
 ### Set bonus: Suited Up
 Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats, Eye Black, Gloves, Mouthguard, Padded Pants, QB Wristband) to get **Suited Up**: +1 Damage, the Helmet's tackle winds up twice as fast, and you pulse gold.

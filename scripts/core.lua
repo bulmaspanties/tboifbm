@@ -55,7 +55,7 @@ return function(mod)
         TACKLE_CONFUSE        = 60,
         TACKLE_HIT_COOLDOWN   = 20,    -- frames before the same enemy can be tackled again
         TACKLE_STUN           = 30,    -- the buckled chin strap: tackled enemies are stunned (bosses: 10)
-        FACEMASK_BLOCK_CHANCE = 0.5,   -- (menu)
+        FACEMASK_BLOCK_CHANCE = 0.4,   -- (menu)
         FACEMASK_ARC          = 0.6,   -- dot product threshold for "in front of the face"
 
         -- Shoulder Pads
@@ -149,7 +149,7 @@ return function(mod)
 
         -- Turf Burn
         TURF_BURN_SPEED       = 3.2,   -- velocity that counts as a sprint
-        TURF_BURN_DMG_MULT    = 0.35,  -- creep damage per tick, x player damage
+        TURF_BURN_DMG_MULT    = 0.2,   -- creep damage per tick, x player damage
         TURF_BURN_FRAMES      = 45,    -- how long a scorch mark lasts
 
         -- Foam Finger

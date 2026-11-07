@@ -129,6 +129,9 @@ return function(mod)
         if not d.mode then
             d.mode, d.timer = "intro", 30
             s:Play("Idle", true)
+            -- The VS screen can't show a modded boss without StageAPI, so he introduces himself.
+            game:GetHUD():ShowItemText("The Linebacker", "The rival team's finest")
+            mod.popOn(npc, "#99", mod.Colors.red, 1.4)
         end
         d.timer = d.timer - 1
 
