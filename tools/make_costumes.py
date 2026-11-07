@@ -425,6 +425,50 @@ def paint_eye_black(src, view):
     return out
 
 
+HEADBAND = [(200, 200, 194, 255), (244, 244, 238, 255)]        # shade, lit
+HEADBAND_STRIPE = (190, 32, 42, 255)
+HEADBAND_B = [(52, 48, 52, 255), (84, 78, 84, 255)]             # Tainted Kicker: filthy black
+HEADBAND_B_STAIN = (130, 12, 18, 255)
+
+
+def paint_headband(src, view, tainted=False):
+    """The Kicker's sweatband: a band across the forehead (knot and tails at the back)."""
+    out = Image.new("RGBA", (CELL, CELL), CLEAR)
+    o = out.load()
+    mask, rows = silhouette(src)
+    band = HEADBAND_B if tainted else HEADBAND
+    top = 8 if view != "up" else 9
+    for y in (top, top + 1, top + 2):
+        if y not in rows:
+            continue
+        lo, hi = rows[y]
+        for x in range(lo, hi + 1):
+            if (x, y) in mask:
+                o[x, y] = band[1] if y == top else band[0]
+    for (x, y) in outline_mask({(x, y) for y in (top, top + 1, top + 2) if y in rows
+                                for x in range(rows[y][0], rows[y][1] + 1)}, CELL, CELL):
+        if (x, y) in mask or y in (top - 1, top + 3):
+            if (x, y) in mask:
+                o[x, y] = OUTLINE if y in (top - 1, top + 3) else o[x, y]
+    if not tainted:
+        lo, hi = rows[top + 1]
+        for x in range(lo + 1, hi):
+            if (x, top + 1) in mask:
+                o[x, top + 1] = HEADBAND_STRIPE                   # team stripe
+    else:
+        for x, y in ((12, top), (13, top + 1), (19, top + 2), (20, top + 1)):
+            o[x, y] = HEADBAND_B_STAIN                           # blood-soaked
+        o[17, top + 2] = CLEAR                                   # torn
+    if view == "up":                                             # knot and tails
+        for x, y in ((15, top + 3), (16, top + 3), (15, top + 4), (17, top + 5), (14, top + 6), (18, top + 7)):
+            o[x, y] = band[0]
+    return out
+
+
+def paint_headband_b(src, view):
+    return paint_headband(src, view, tainted=True)
+
+
 ALLPRO_GOLD = (236, 186, 58, 255)
 ALLPRO_SHINE = (255, 240, 170, 255)
 
@@ -588,6 +632,8 @@ def main(template_root):
 
     head_sheet("gridiron_eyeblack", paint_eye_black, "head1")
     head_sheet("gridiron_allpro", paint_allpro, "head1")
+    head_sheet("gridiron_kicker_headband", paint_headband, "head2")
+    head_sheet("gridiron_kicker_headband_b", paint_headband_b, "head2")
     for color in HELMET_COLORS:
         use_helmet_color(color)
         head_sheet("gridiron_helmet" + suffix(color, HELMET_COLORS[0]), paint_helmet, "head5")
@@ -616,7 +662,7 @@ def main(template_root):
              '         (each uniform colour is its own costume). Pieces sharing a body layer come combined. -->']
     names = ["helmet" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS]
     names += ["helmet_roomy" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS]
-    names += ["helmet_horns" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS] + ["eyeblack", "allpro", "torso_pads"]
+    names += ["helmet_horns" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS] + ["eyeblack", "allpro", "kicker_headband", "kicker_headband_b", "torso_pads"]
     names += [n + suffix(c, JERSEY_COLORS[0]) for c in JERSEY_COLORS for n in ("torso_jersey", "torso_jerseypads")]
     names += ["legs_cleats"] + [n + suffix(c, PANTS_COLORS[0]) for c in PANTS_COLORS
                                 for n in ("legs_pants", "legs_pantscleats")]

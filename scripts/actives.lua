@@ -44,19 +44,21 @@ return function(mod)
 
         -- It's good if the explosion is going to finish something off.
         local good = false
-        for _, e in ipairs(Isaac.FindInRadius(ball.pos, Cfg.KICK_RADIUS * mod.kickRadiusMult(player), EntityPartition.ENEMY)) do
+        for _, e in ipairs(Isaac.FindInRadius(ball.pos, Cfg.KICK_RADIUS * mod.kickRadiusMult(player) * mod.kickerRadiusMult(player), EntityPartition.ENEMY)) do
             if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) and e.HitPoints <= dmg then
                 good = true
             end
         end
+        if mod.kickAlwaysGood(player) then good = true end   -- the Kicker's Birthright
 
         mod.kickExploding = true
         mod.kickBlastFrame = game:GetFrameCount()
         game:BombExplosionEffects(ball.pos, dmg, TearFlags.TEAR_NORMAL, Color.Default, player,
-            Cfg.KICK_RADIUS_MULT * mod.kickRadiusMult(player), true, false, DamageFlag.DAMAGE_EXPLOSION)
+            Cfg.KICK_RADIUS_MULT * mod.kickRadiusMult(player) * mod.kickerRadiusMult(player), true, false, DamageFlag.DAMAGE_EXPLOSION)
         mod.kickExploding = false
 
         if good then
+            mod.onFieldGoal(player)
             local rng = mod.rngFor(player, Items.KICKING_TEE)
             for _ = 1, Cfg.FIELD_GOAL_COINS do
                 local vel = Vector.FromAngle(rng:RandomInt(360)) * (2 + rng:RandomFloat() * 2)

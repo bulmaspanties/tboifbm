@@ -1,5 +1,5 @@
 <players nameimageroot="gfx/ui/boss/" portraitroot="gfx/ui/stage/" root="gfx/characters/costumes/">
-    <!-- Starting gear is given from scripts/quarterback.lua (mod items can't be listed here).
+    <!-- Starting gear is given from Lua (mod items can't be listed here).
          The menu art lives in content/gfx/*.anm2, with animations named "Quarterback". -->
     <player name="Quarterback" skin="character_quarterback.png" skinColor="-1" hp="6" bombs="1" coins="3"
             nameimage="playername_quarterback.png" portrait="playerportrait_quarterback.png"
@@ -7,4 +7,11 @@
     <player name="Quarterback" skin="character_quarterback_b.png" skinColor="-1" hp="4" armor="2" bombs="1"
             nameimage="playername_quarterback_b.png" portrait="playerportrait_quarterback_b.png"
             bSkinParent="Quarterback" birthright="Gunslinger: footballs home in on enemies" />
+    <!-- The Kicker (scripts/kicker.lua): same menu files, animations named "Kicker" -->
+    <player name="Kicker" skin="character_kicker.png" skinColor="-1" hp="4" armor="2" bombs="1" coins="5"
+            nameimage="playername_kicker.png" portrait="playerportrait_kicker.png"
+            birthright="Automatic: every kick is good, and the blast is bigger" />
+    <player name="Kicker" skin="character_kicker_b.png" skinColor="-1" hp="4" armor="2" bombs="2"
+            nameimage="playername_kicker_b.png" portrait="playerportrait_kicker_b.png"
+            bSkinParent="Kicker" birthright="Fair catch: every other shank explodes" />
 </players>

@@ -377,7 +377,12 @@ local function newPlayer(ptype)
         self.items[id] = (self.items[id] or 0) + 1
         if mod and mod.ACTIVE_ITEMS[id] then self.active = id end
     end
-    function p:GetActiveItem() return self.active or 0 end
+    function p:GetActiveItem(slot)
+        if slot == ActiveSlot.SLOT_POCKET then return self.pocket or 0 end
+        return self.active or 0
+    end
+    function p:GetActiveCharge(slot) return (self.charges or {})[slot or 0] or 0 end
+    function p:SetActiveCharge(n, slot) self.charges = self.charges or {}; self.charges[slot or 0] = n end
     function p:GetCardRNG() return self.rng end
     function p:SetPocketActiveItem(id) self.pocket = id end
     function p:AddCard(id) self.card = id end
@@ -1504,6 +1509,53 @@ players[1] = isaac
 world.entities = { isaac }
 dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
 check(not isaac:HasCollectible(Items.HELMET), "other characters get nothing")
+
+-- The Kicker -------------------------------------------------------------------------------
+do
+    check(PT.KICKER and PT.KICKER > 0 and PT.KICKER_B and PT.KICKER_B > 0, "kicker player types registered")
+    local kk = newPlayer(PT.KICKER)
+    players = { kk }
+    world.entities = { kk }
+    dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
+    check(kk:HasCollectible(Items.CLEATS) and kk.pocket == Items.KICKING_TEE, "the kicker starts with cleats and the tee")
+    check(kk.nullCostumes[costumePaths["gfx/characters/gridiron_kicker_headband.anm2"]], "and his headband")
+    kk:EvaluateItems()
+    check(kk.MoveSpeed > 1 + Cfg.CLEATS_SPEED and kk.TearRange > 260, "he's quick with long range")
+    local dmg0 = kk.Damage
+    kk.charges = { [ActiveSlot.SLOT_POCKET] = 0 }
+    mod.onFieldGoal(kk)
+    kk:EvaluateItems()
+    check(kk:GetActiveCharge(ActiveSlot.SLOT_POCKET) == Cfg.KICKER_REFUND, "a field goal refunds tee charges")
+    check(kk.Damage > dmg0, "and puts points on the board")
+    dispatch(ModCallbacks.MC_POST_NEW_LEVEL)
+    kk:EvaluateItems()
+    check(math.abs(kk.Damage - dmg0) < 1e-6, "the points reset next floor")
+    check(not mod.kickAlwaysGood(kk), "no birthright, kicks can miss")
+    kk.items[CollectibleType.COLLECTIBLE_BIRTHRIGHT] = 1
+    check(mod.kickAlwaysGood(kk) and mod.kickerRadiusMult(kk) > 1, "birthright: every kick is good, bigger blast")
+
+    local tk = newPlayer(PT.KICKER_B)
+    players = { tk }
+    world.entities = { tk }
+    dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
+    check(tk:HasCollectible(Items.PANTS) and tk.pocket == Items.PIGSKIN, "tainted kicker starts with pants and the pigskin")
+    tk:EvaluateItems()
+    check(tk.MaxFireDelay > 10, "tainted kicker fires slower")
+    local booms = 0
+    for _ = 1, Cfg.TKICK_EVERY * 2 do
+        local t = tk:FireTear(tk.Position, Vector(10, 0))
+        dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, t)
+        check(t.FallingSpeed and t.FallingSpeed < 0, "shanks are lobbed")
+        if t.data.GridironShankBoom then booms = booms + 1 end
+    end
+    check(booms == 2, "every " .. Cfg.TKICK_EVERY .. "th shank is live")
+    local victim = newEnemy(Vector(40, 0), 100)
+    local live = tk:FireTear(Vector(40, 0), Vector(1, 0))
+    live.data.GridironShankBoom = true
+    local hurtBefore = tk.damageTaken
+    dispatch(ModCallbacks.MC_POST_ENTITY_REMOVE, EntityType.ENTITY_TEAR, live)
+    check(victim.damageTaken > 0 and tk.damageTaken == hurtBefore, "a live shank blows up enemies, not him")
+end
 
 -- Challenges ---------------------------------------------------------------------------
 for key, c in pairs(mod.CHALLENGES) do check(c.id and c.id > 0, "challenge in challenges.xml: " .. key) end

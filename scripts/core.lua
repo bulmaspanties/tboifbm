@@ -224,6 +224,19 @@ return function(mod)
         ALLPRO_EVERY          = 4,     -- every Nth shot is a golden spiral
         ALLPRO_DAMAGE         = 0.5,
 
+        -- The Kicker
+        KICKER_SPEED          = 0.15,
+        KICKER_RANGE          = 60,
+        KICKER_DAMAGE_MULT    = 0.9,
+        KICKER_REFUND         = 2,     -- Tee charges back on a field goal
+        KICKER_FG_DAMAGE      = 0.3,   -- per field goal this floor
+        KICKER_FG_MAX         = 5,
+        KICKER_BR_RADIUS      = 1.5,
+        TKICK_FIRE_DELAY_MULT = 1.4,
+        TKICK_DAMAGE          = 1.0,
+        TKICK_EVERY           = 4,     -- every Nth shank explodes (2 with Birthright)
+        TKICK_BLAST_MULT      = 2.5,   -- x player damage
+
         -- Set bonus
         SUITED_UP_PIECES      = 3,
         SUITED_UP_DAMAGE      = 1.0,
@@ -292,6 +305,9 @@ return function(mod)
     function mod.turfBurnFrames() return 1 end
     function mod.inEndZone() return false end
     function mod.enemyDamageTakenMult() return 1 end
+    function mod.kickAlwaysGood() return false end
+    function mod.kickerRadiusMult() return 1 end
+    function mod.onFieldGoal() end
 
     -- Wearable gear counts toward Suited Up; actives and the bucket don't.
     mod.GEAR = {

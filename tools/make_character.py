@@ -1,4 +1,4 @@
-"""Build The Quarterback's sprites and menu art.
+"""Build The Quarterback's and The Kicker's sprites and menu art.
 
 Inputs (not vendored, both public):
   * the CC0 character template: https://github.com/manaphoenix/IsaacTemplates (template_character)
@@ -78,8 +78,9 @@ def recolor_skin(img, mapping):
     return out
 
 
-def figure(costume_templates, tainted=False):
-    """Front-facing Quarterback: Isaac's rig wearing the helmet, eye black and jersey."""
+def figure(costume_templates, tainted=False, kind="qb"):
+    """Front-facing figure on Isaac's rig: the Quarterback in helmet, eye black and jersey;
+    the Kicker in his headband and cleats (pants too when tainted)."""
     t = Path(costume_templates) / "compact/normal"
     head = Image.open(t / "compact_head.png").convert("RGBA").crop((0, 0, 32, 32))
     body = Image.open(t / "compact_body.png").convert("RGBA").crop((0, 64, 32, 96))
@@ -92,11 +93,15 @@ def figure(costume_templates, tainted=False):
         img.alpha_composite(part)
 
     b = body.copy()
-    layer(b, "gridiron_legs_pantscleats" if tainted else "gridiron_legs_cleats", (0, 64, 32, 96))
-    layer(b, "gridiron_torso_jerseypads", (0, 64, 32, 96))
     h = head.copy()
-    layer(h, "gridiron_eyeblack", (0, 0, 32, 32))
-    layer(h, "gridiron_helmet", (0, 0, 32, 32))
+    if kind == "kicker":
+        layer(b, "gridiron_legs_pantscleats" if tainted else "gridiron_legs_cleats", (0, 64, 32, 96))
+        layer(h, "gridiron_kicker_headband_b" if tainted else "gridiron_kicker_headband", (0, 0, 32, 32))
+    else:
+        layer(b, "gridiron_legs_pantscleats" if tainted else "gridiron_legs_cleats", (0, 64, 32, 96))
+        layer(b, "gridiron_torso_jerseypads", (0, 64, 32, 96))
+        layer(h, "gridiron_eyeblack", (0, 0, 32, 32))
+        layer(h, "gridiron_helmet", (0, 0, 32, 32))
     fig.alpha_composite(b, (4, 10))
     fig.alpha_composite(h, (4, 0))
     return fig
@@ -141,22 +146,24 @@ def play_diagram(page, x0, y0, ink):
     d.line((x0 + 30, y0 - 4, x0 + 26, y0 - 3), fill=ink)
 
 
-def build_menu(template_png, out_png, title_ink, fig, name_box, portrait_box):
-    page = Image.open(template_png).convert("RGBA")
-    # replace "WHO AM I?" with the name: paint over the old title with paper colour
+def draw_page(template_page, name, tag, title_ink, fig, sheet, page_at, name_box, portrait_box):
+    """One character-select page: the template page with our title and play diagram (the
+    middle stays blank for the character wheel), plus the name tag and wheel portrait."""
+    page = template_page.copy()
     paper = page.getpixel((240, 130))
     clear(page, (150, 24, 332, 64), paper)
-    title = text_image(NAME.upper(), 22, title_ink)
-    paste_center(page, title, (128, 24, 352, 60))
-    # the middle of the page stays blank: the game draws the character wheel there
+    paste_center(page, text_image(name.upper(), 22, title_ink), (128, 24, 352, 60))
     play_diagram(page, 150, 222, title_ink)
-    # the little name tag and the wheel portrait
-    clear(page, name_box)
-    paste_center(page, text_image("QB", 20, title_ink), name_box)
-    clear(page, portrait_box)
+    clear(sheet, (page_at[0], page_at[1], page_at[0] + PAGE[0] - 1, page_at[1] + PAGE[1] - 1))
+    sheet.alpha_composite(page, page_at)
+    clear(sheet, name_box)
+    paste_center(sheet, text_image(tag, 20, title_ink), name_box)
+    clear(sheet, portrait_box)
     x0, y0, x1, y1 = portrait_box
-    page.alpha_composite(fig, (x0 + (x1 - x0 - fig.width) // 2, y1 - fig.height + 1))
-    page.save(out_png)
+    sheet.alpha_composite(fig, (x0 + (x1 - x0 - fig.width) // 2, y1 - fig.height + 1))
+
+
+PAGE = (480, 270)
 
 
 def rename_anm2(src, dst, sheet_renames=None):
@@ -165,6 +172,28 @@ def rename_anm2(src, dst, sheet_renames=None):
     for old, new in (sheet_renames or {}).items():
         text = text.replace(f'Path="{old}"', f'Path="{new}"')
     Path(dst).write_text(text)
+
+
+def add_animation(path, name, crop_moves):
+    """Append a copy of the Quarterback animation under another name, with some crops moved
+    (each modded character is one animation in these menu files)."""
+    text = Path(path).read_text()
+    start = text.index(f'<Animation Name="{NAME}"')
+    end = text.index("</Animation>", start) + len("</Animation>")
+    anim = text[start:end].replace(f'Name="{NAME}"', f'Name="{name}"', 1)
+    for (x, y, w, h), (nx, ny) in crop_moves:
+        old = f'XCrop="{x}" YCrop="{y}" Width="{w}" Height="{h}"'
+        assert old in anim, f"{path}: no crop {old}"
+        anim = anim.replace(old, f'XCrop="{nx}" YCrop="{ny}" Width="{w}" Height="{h}"')
+    Path(path).write_text(text[:end] + "\n    " + anim + text[end:])
+
+
+# Where the Kicker's menu art lives (free space on the Quarterback's sheets).
+KICKER = {
+    "page": (0, 560), "page_alt": (0, 548),
+    "name": (200, 300), "portrait": (300, 300), "name_alt": (200, 300), "portrait_alt": (300, 300),
+    "coop": (0, 40), "death": (450, 180), "death_alt": (443, 210),
+}
 
 
 def box(x, y, w, h):
@@ -185,38 +214,66 @@ def main(template_dir, costume_templates):
     fig = figure(costume_templates)
     fig_b = figure(costume_templates, tainted=True)
 
+    kick = figure(costume_templates, kind="kicker")
+    kick_b = figure(costume_templates, tainted=True, kind="kicker")
+    recolor_skin(sheet, SKIN_NORMAL).save(COSTUMES / "character_kicker.png")
+    recolor_skin(sheet, SKIN_TAINTED).save(COSTUMES / "character_kicker_b.png")
+
     # character select pages (sheet names match what the anm2 files reference)
-    build_menu(T / "content/gfx/charactermenu.png", CONTENT / "CharacterMenu.png", INK, fig,
-               box(16, 913, 57, 31), box(8, 940, 38, 57))
-    build_menu(T / "content/gfx/charactermenualt.png", CONTENT / "CharacterMenuAlt.png", INK_TAINTED, fig_b,
-               box(136, 817, 74, 29), box(10, 924, 45, 65))
+    K = KICKER
+    for tpl, out, ink, f, kf, nb, pb, page_at, knb, kpb in (
+            ("charactermenu.png", "CharacterMenu.png", INK, fig, kick, box(16, 913, 57, 31), box(8, 940, 38, 57),
+             K["page"], box(*K["name"], 57, 31), box(*K["portrait"], 38, 57)),
+            ("charactermenualt.png", "CharacterMenuAlt.png", INK_TAINTED, fig_b, kick_b, box(136, 817, 74, 29),
+             box(10, 924, 45, 65), K["page_alt"], box(*K["name_alt"], 74, 29), box(*K["portrait_alt"], 45, 65))):
+        sheet_img = Image.open(T / "content/gfx" / tpl).convert("RGBA")
+        template_page = sheet_img.crop((0, 0) + PAGE)
+        draw_page(template_page, NAME, "QB", ink, f, sheet_img, (0, 0), nb, pb)
+        draw_page(template_page, "Kicker", "PK", ink, kf, sheet_img, page_at, knb, kpb)
+        sheet_img.save(CONTENT / out)
 
     # co-op select heads
-    for src, dst, f in (("coop menu.png", "coop menu.png", fig), ("coop menu b.png", "coop menu b.png", fig_b)):
+    for src, dst, f, kf in (("coop menu.png", "coop menu.png", fig, kick), ("coop menu b.png", "coop menu b.png", fig_b, kick_b)):
         img = Image.open(T / "content/gfx" / src).convert("RGBA")
         clear(img, (0, 0, 33, 31))
         img.alpha_composite(f.crop((4, 0, 36, 28)), (1, 2))
+        cx, cy = K["coop"]
+        clear(img, (cx, cy, cx + 33, cy + 31))
+        img.alpha_composite(kf.crop((4, 0, 36, 28)), (cx + 1, cy + 2))
         img.save(CONTENT / dst)
 
     # death screen names
     death = Image.open(T / "content/gfx/death portraits.png").convert("RGBA")
-    for b, ink in ((box(450, 125, 51, 22), INK), (box(443, 148, 67, 27), INK_TAINTED)):
+    for b, ink, tag in ((box(450, 125, 51, 22), INK, "QB"), (box(443, 148, 67, 27), INK_TAINTED, "QB"),
+                        (box(*K["death"], 51, 22), INK, "PK"), (box(*K["death_alt"], 67, 27), INK_TAINTED, "PK")):
         clear(death, b)
-        paste_center(death, text_image("QB", 18, ink), b)
+        paste_center(death, text_image(tag, 18, ink), b)
     death.save(CONTENT / "death portraits.png")
 
     for name in ("charactermenu", "charactermenualt", "characterportraits", "characterportraitsalt",
                  "coop menu", "coop menu alt", "death screen", "death screen alt"):
         rename_anm2(T / f"content/gfx/{name}.anm2", CONTENT / f"{name}.anm2")
+    G = CONTENT
+    add_animation(G / "charactermenu.anm2", "Kicker", [((0, 0, 480, 270), K["page"]), ((16, 913, 57, 31), K["name"])])
+    add_animation(G / "charactermenualt.anm2", "Kicker", [((0, 0, 480, 270), K["page_alt"]), ((136, 817, 74, 29), K["name_alt"])])
+    add_animation(G / "characterportraits.anm2", "Kicker", [((8, 940, 38, 57), K["portrait"])])
+    add_animation(G / "characterportraitsalt.anm2", "Kicker", [((10, 924, 45, 65), K["portrait_alt"])])
+    add_animation(G / "coop menu.anm2", "Kicker", [((0, 0, 32, 32), K["coop"])])
+    add_animation(G / "coop menu alt.anm2", "Kicker", [((0, 0, 32, 32), K["coop"])])
+    add_animation(G / "death screen.anm2", "Kicker", [((450, 125, 51, 22), K["death"])])
+    add_animation(G / "death screen alt.anm2", "Kicker", [((443, 148, 67, 27), K["death_alt"])])
 
     # VS screen name + stage portrait
-    for suffix, ink, f in (("", NAME_TAG, fig), ("_b", (196, 150, 150, 255), fig_b)):
+    for who, title, suffix, ink, f in (("quarterback", NAME, "", NAME_TAG, fig),
+                                       ("quarterback", NAME, "_b", (196, 150, 150, 255), fig_b),
+                                       ("kicker", "Kicker", "", NAME_TAG, kick),
+                                       ("kicker", "Kicker", "_b", (196, 150, 150, 255), kick_b)):
         tag = Image.new("RGBA", (192, 64), (0, 0, 0, 0))
-        paste_center(tag, text_image(NAME.upper(), 24, ink, outline=(40, 30, 30, 255)), (0, 0, 191, 63))
-        tag.save(RES / f"ui/boss/playername_quarterback{suffix}.png")
+        paste_center(tag, text_image(title.upper(), 24, ink, outline=(40, 30, 30, 255)), (0, 0, 191, 63))
+        tag.save(RES / f"ui/boss/playername_{who}{suffix}.png")
         portrait = Image.new("RGBA", (144, 144), (0, 0, 0, 0))
         paste_center(portrait, scaled(f, 3), (0, 0, 143, 143))
-        portrait.save(RES / f"ui/stage/playerportrait_quarterback{suffix}.png")
+        portrait.save(RES / f"ui/stage/playerportrait_{who}{suffix}.png")
     print("character art written")
 
 

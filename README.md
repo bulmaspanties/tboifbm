@@ -84,13 +84,16 @@ Clearing a normal room has a **6% chance** (once per floor, adjustable in the me
 
 These also appear in External Item Descriptions.
 
-## Playable character: The Quarterback
+## Playable characters: The Quarterback and The Kicker
 | Version | Health | Starts with | Play style |
 |---|---|---|---|
 | **The Quarterback** | 3 red hearts | Football Helmet, Team Jersey, **Playbook** (pocket active) | Every 3rd shot is a football, and all his footballs fly 25% faster and hit 25% harder. +0.2 shot speed. **Birthright:** every other shot is a football. |
 | **Tainted Quarterback** | 2 red + 1 soul | Football Helmet, Shoulder Pads, **Kicking Tee** (pocket active) | Throws **only footballs**: much slower fire rate, but each one hits hard. **Birthright:** footballs home in on enemies. |
 
-Both appear on the character select screen with their own page, portrait, co-op and death-screen art.
+| **The Kicker** | 2 red + 1 soul | Football Cleats, **Kicking Tee** (pocket active), a white headband | Quick (+0.15 speed) with long range, but 10% less damage. **Special Teams:** every field goal refunds 2 Tee charges and puts points on the board (+0.3 damage for the floor, up to 5). **Birthright:** every kick is good, and the blast is 50% bigger. |
+| **Tainted Kicker** | 2 red + 1 soul | Padded Pants, **Pigskin** (pocket active), a filthy torn headband | **Shanks:** his tears are slow, heavy lobs that clear rocks (+1 damage, slower fire rate), and every 4th one blows up like a mini field goal (it never hurts him). **Birthright:** every other shank explodes. |
+
+All four appear on the character select screen with their own page, portrait, co-op and death-screen art.
 
 ## Boss & enemies
 | Entity | Where | What it does |
