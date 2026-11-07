@@ -245,7 +245,7 @@ return function(mod)
         local toMe = npc.Position - target.Position
         local flank = target.Position + toMe:Rotated(90 * side):Resized(50)
         if hasPartner(d) then
-            npc.Pathfinder:FindGridPath(flank, d.captain and 0.5 or 0.38, 900, true)
+            npc.Pathfinder:FindGridPath(flank, (d.captain and 0.5 or 0.38) * (mod.drugTestOn() and 1.3 or 1), 900, true)
             local gap = d.partner.Position - npc.Position
             if gap:Length() > CHAIN_MAX then npc:AddVelocity(gap:Resized(1.5)) end   -- the chain pulls
             -- the chain hurts: only the first ref checks, so it's one hit per touch

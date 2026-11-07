@@ -188,6 +188,41 @@ def uniforms_sheet():
     return stack(header(body.width, "PICK YOUR TEAM COLOURS", "Helmet, jersey and pants: 11 colours each, from the settings menu"), body)
 
 
+# --- field decor ------------------------------------------------------------------------------
+def decor_scene():
+    """A mock basement floor with the decor props scattered the way decor.lua does it."""
+    anm2 = (GFX / "effects/gridiron_decor.anm2").read_text()
+    sheet = Image.open(GFX / "effects/gridiron_decor.png").convert("RGBA")
+    crops = {}
+    for name, x, w, h in re.findall(r'<Animation Name="(\w+)".*?XCrop="(\d+)" YCrop="0" Width="(\d+)" Height="(\d+)"', anm2, re.S):
+        crops[name] = sheet.crop((int(x), 0, int(x) + int(w), int(h)))
+    w, h = 440, 250
+    floor = Image.new("RGBA", (w, h), (82, 62, 52, 255))
+    d = ImageDraw.Draw(floor)
+    for x in range(0, w, 26):                                       # basement floor tiles
+        for y in range(0, h, 26):
+            shade = 6 if (x // 26 + y // 26) % 2 else 0
+            d.rectangle((x, y, x + 25, y + 25), fill=(82 - shade, 62 - shade, 52 - shade, 255))
+    def put_prop(name, cx, cy, flip=False):
+        img = crops[name].transpose(Image.FLIP_LEFT_RIGHT) if flip else crops[name]
+        floor.alpha_composite(img, (cx - img.width // 2, cy - img.height // 2))
+    for x in (100, 220, 340):
+        put_prop("Yardline", x, 125)
+        put_prop("Hash", x + 60, 60)
+        put_prop("Hash", x + 60, 190)
+    put_prop("Logo", 220, 125)
+    put_prop("Goalpost", 30, 60)
+    put_prop("Bench", 300, 228)
+    for name, x, y, flip in (("Cooler", 70, 200, False), ("Cups", 150, 70, True), ("BallBag", 390, 80, False),
+                             ("Pylon", 270, 60, False), ("Helmet", 160, 180, True), ("Mouthguard", 330, 150, False),
+                             ("Blood", 250, 170, False), ("Clipboard", 400, 190, False), ("Tape", 110, 140, False)):
+        put_prop(name, x, y, flip)
+    body = Image.new("RGBA", (w * 3 + 24, h * 3 + 24), NAVY + (255,))
+    body.alpha_composite(px(floor, 3), (12, 12))
+    return stack(header(body.width, "FOOTBALL IN THE BASEMENT",
+                        "Some rooms look like somebody played here: paint, sideline junk, goalposts. Never in the way."), body)
+
+
 # --- banner -------------------------------------------------------------------------------
 def banner():
     w, h = 1280, 420
@@ -222,6 +257,7 @@ def main():
         "enemies.png": enemies_sheet(),
         "bosses.png": bosses_sheet(),
         "uniforms.png": uniforms_sheet(),
+        "decor.png": decor_scene(),
     }
     for name, img in out.items():
         img.convert("RGB").save(DOCS / name, optimize=True)

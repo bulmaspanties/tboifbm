@@ -37,8 +37,11 @@ return function(mod)
 
     function mod:OnEntityKillFinger(entity)
         if not mod.isMarked(entity) then return end
-        Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, CoinSubType.COIN_PENNY,
-            entity.Position, Vector.Zero, nil)
+        local coin = CoinSubType.COIN_PENNY
+        mod.forEachPlayer(function(p)
+            if p:HasCollectible(Items.FOAM_FINGER) then coin = mod.fingerDrop(p) end
+        end)
+        Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_COIN, coin, entity.Position, Vector.Zero, nil)
         mod.popAt(entity.Position, "FAN FAVORITE!", mod.Colors.gold)
         marked, markedHash = nil, nil
     end

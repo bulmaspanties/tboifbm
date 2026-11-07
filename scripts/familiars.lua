@@ -73,6 +73,10 @@ return function(mod)
             d.hype = 0
             d.cheerTimer = Cfg.CHEER_FRAMES
             mod.refreshCache(player, CacheFlag.CACHE_FIREDELAY)
+            if player:HasCollectible(CollectibleType.COLLECTIBLE_JUMPER_CABLES) then
+                -- Jumper Cables: the routine charges your active item too
+                player:SetActiveCharge(player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY) + 1, ActiveSlot.SLOT_PRIMARY)
+            end
             for _, fam in ipairs(familiarsOf(player, Variants.CHEERLEADER)) do
                 fam:GetSprite():Play("Cheer", true)
                 mod.popOn(fam, "GO TEAM!", mod.Colors.gold)
@@ -103,9 +107,10 @@ return function(mod)
         local boss = game:GetRoom():GetType() == RoomType.ROOM_BOSS
         forEachPlayer(function(player)
             for _, fam in ipairs(familiarsOf(player, Variants.WATER_BOY)) do
-                local chance = (Cfg.WATER_BOY_CHANCE + player.Luck * 0.02) * mod.familiarBoost(player)
+                local trainer, heart = mod.waterBoyBoost(player)
+                local chance = (Cfg.WATER_BOY_CHANCE + player.Luck * 0.02) * mod.familiarBoost(player) * trainer
                 if boss or player:GetCollectibleRNG(Items.WATER_BOY):RandomFloat() < chance then
-                    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, HeartSubType.HEART_HALF,
+                    Isaac.Spawn(EntityType.ENTITY_PICKUP, PickupVariant.PICKUP_HEART, heart,
                         fam.Position, Vector(0, 2), fam)
                     fam:GetSprite():Play("Drop", true)
                     mod.popOn(fam, "HYDRATE!", mod.Colors.blue)
@@ -128,9 +133,10 @@ return function(mod)
         fam.OrbitDistance = EntityFamiliar.GetOrbitDistance(DUMMY_ORBIT_LAYER)
         fam.OrbitSpeed = 0.02
         fam.Velocity = fam:GetOrbitPosition(player.Position + player.Velocity) - fam.Position
-        for _, e in ipairs(Isaac.FindInRadius(fam.Position, Cfg.DUMMY_TAUNT_RADIUS * mod.familiarBoost(player), EntityPartition.ENEMY)) do
+        local leaf = mod.dummyPullMult(player)
+        for _, e in ipairs(Isaac.FindInRadius(fam.Position, Cfg.DUMMY_TAUNT_RADIUS * mod.familiarBoost(player) * math.sqrt(leaf), EntityPartition.ENEMY)) do
             if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) and not e:IsBoss() then
-                e:AddVelocity((fam.Position - e.Position):Resized(Cfg.DUMMY_TAUNT_PULL))
+                e:AddVelocity((fam.Position - e.Position):Resized(Cfg.DUMMY_TAUNT_PULL * leaf))
             end
         end
         backToIdle(fam)

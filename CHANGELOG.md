@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.0
+- **Football in the basement**: about a third of normal rooms are dressed with faded yard lines and hash marks, a scrubbed team logo, and sideline junk (cups, Gatorade stains, a tipped cooler, a ball bag, a busted pylon, a dented helmet, tape, a clipboard, a bloody mouthguard), with the odd goalpost, bench or tackling sled. Football boss rooms get stadium banners. Never in the way; *field decor* off / light / full in the menu.
+- **Juiced**: Roid Rage, Growth Hormones, Synthoil and Experimental Treatment make tackles hit 50% harder and send enemies pinballing into each other. Referees and the Chain Gang run **drug tests** on juiced players (can be turned off).
+- More sports-medicine synergies: Knockout Drops (longer tackle stuns), Mom's Bracelet (longer kicks and fumbles), Percs! and Addicted! (the Mouthguard works on every hit), Speed Ball and Speed Up (faster first downs), Adrenaline (the Gatorade shower is a rush), Champion Belt (rings worth double), Number One (#1 enemy: double damage and a nickel), Ball of Bandages (the Water Boy gives whole hearts), Jumper Cables (cheer routines charge your active), Gnawed Leaf (a stronger Tackling Dummy).
+
 ## 0.9.1
 - **Tainted Quarterback's art** now matches how he plays and starts: bare shoulder pads (no jersey) and a cracked, bloodied helmet, so he's clearly not the regular Quarterback.
 - A new-look GitHub page, and release notes that include what changed.

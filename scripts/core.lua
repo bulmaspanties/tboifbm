@@ -254,6 +254,14 @@ return function(mod)
         BOOM_KICK_RADIUS      = 1.5,   -- explosive items + Kicking Tee
         BFFS_FAMILIAR_BOOST   = 1.5,
         BIG_PANTS_BONUS       = 0.15,  -- Thunder Thighs / Leo + Padded Pants
+        JUICED_DAMAGE         = 1.5,   -- steroids + tackles
+        JUICED_KNOCKBACK      = 2,
+        PINBALL_FRAMES        = 14,    -- a juiced tackle sends the enemy flying this long
+        PINBALL_DAMAGE        = 0.5,   -- x the tackle's damage to whatever it hits
+        KNOCKOUT_STUN_MULT    = 3,     -- Knockout Drops + tackles
+        BRACELET_RANGE        = 1.5,   -- Mom's Bracelet + kicks and fumbles
+        ADRENALINE_DAMAGE     = 1,     -- Adrenaline + a Gatorade shower, for the room
+        ADRENALINE_SPEED      = 0.2,
         SHOWER_CREEP_SCALE    = 2.5,   -- Gatorade shower creep
         SHOWER_CREEP_FRAMES   = 240,
     }
@@ -312,6 +320,13 @@ return function(mod)
     function mod.inEndZone() return false end
     function mod.enemyDamageTakenMult() return 1 end
     function mod.kickAlwaysGood() return false end
+    function mod.isJuiced() return false end
+    function mod.tackleStunMult() return 1 end
+    function mod.throwRangeMult() return 1 end
+    function mod.waterBoyBoost() return 1, HeartSubType.HEART_HALF end
+    function mod.dummyPullMult() return 1 end
+    function mod.fingerDrop() return CoinSubType.COIN_PENNY end
+    function mod.drugTestOn() return false end
     function mod.kickerRadiusMult() return 1 end
     function mod.onFieldGoal() end
 

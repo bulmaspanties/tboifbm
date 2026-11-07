@@ -80,7 +80,12 @@ return function(mod)
     -- Referee: keeps his distance and throws flags -----------------------------------
     local function updateReferee(npc, d, target, s)
         if not d.mode then d.mode, d.timer = "walk", 60 + math.random(40); s:Play("Walk", true) end
-        d.timer = d.timer - 1
+        d.timer = d.timer - (mod.drugTestOn() and 2 or 1)   -- a juiced player gets flagged twice as often
+        if mod.drugTestOn() and not d.tested then
+            d.tested = true
+            mod.popOn(npc, "DRUG TEST!", mod.Colors.yellow, 1.1)
+            mod.playWhistle(0.6)
+        end
         local dist = (target.Position - npc.Position):Length()
         if d.mode == "walk" then
             if dist < 150 then

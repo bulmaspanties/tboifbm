@@ -12,7 +12,7 @@ return function(mod)
     local function launchBall(kind, player)
         local dir = mod.aimDirection(player)
         local kick = kind == "kick"
-        local range = kick and Cfg.KICK_RANGE or Cfg.FUMBLE_RANGE
+        local range = (kick and Cfg.KICK_RANGE or Cfg.FUMBLE_RANGE) * mod.throwRangeMult(player)
         local target = game:GetRoom():GetClampedPosition(player.Position + dir * range, 10)
         balls[#balls + 1] = {
             kind = kind,

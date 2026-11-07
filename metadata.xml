@@ -13,6 +13,7 @@ Suit up! Football gear with its own mechanics: no reskins, no stat-only items.
 [*][b]3 trinkets, a card and a pill[/b]: Referee Flag, Concussion Protocol, Turf Burn, Coin Toss, Timeout!
 [*][b]Wear 3+ pieces to get Suited Up[/b]: bonus damage, faster tackles, gold glow
 [*][b]Worn costumes[/b]: modern helmet with facemask, jersey over pads, pants and cleats, eye black, fitted per character
+[*][b]Football in the basement[/b]: rooms dressed with field paint, sideline junk and goalposts
 [*][b]Stadium sounds[/b]: crowd cheers and boos, helmet clacks, the air horn and a scoring fanfare
 [*][b]Pick your team colours[/b]: helmet, jersey and pants, 11 colours each (yes, pink too), from the settings menu
 [*][b]Two new bosses and 10 football enemies[/b]: The Linebacker, The Franchise (a two-phase final boss), the Coach miniboss, plus Mascot, Referee, Lineman, Blitzer, Punter, Huddle, Gatorade Cooler, Chain Gang and Sacker
@@ -32,6 +33,8 @@ Suit up! Football gear with its own mechanics: no reskins, no stat-only items.
 [*]Holy Water, lemons, Ball of Tar and Juicy Sack turn the Gatorade shower into creep
 [*]Pony speeds up first downs; Money = Power doubles the Super Bowl Ring; Marked boosts the Foam Finger
 [*]Tarot Cloth lands the Coin Toss on its edge; BFFS! upgrades the sideline crew
+[*][b]Juiced[/b]: Roid Rage, Growth Hormones and friends make tackles brutal, but the referees run drug tests
+[*]Sports medicine: Knockout Drops, Percs!, Adrenaline, Ball of Bandages, Mom's Bracelet, Champion Belt, Number One and more
 [/list]
 EID lists every synergy on the item it belongs to.
 
@@ -39,7 +42,7 @@ Debug console: [b]gridiron give[/b] drops all the gear as pedestals, [b]gridiron
 
 Requires Repentance+. REPENTOGON is not required.
 Source and bug reports: github.com/bulmaspanties/tboifbm</description>
-    <version>0.9.1</version>
+    <version>0.10.0</version>
     <visibility>Private</visibility>
     <tag id="Items"/>
     <tag id="Characters"/>

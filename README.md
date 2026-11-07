@@ -18,6 +18,8 @@ Then take on a rival Linebacker, a stadium full of grotesque football enemies, a
 - **Two bosses, a miniboss and 10 football enemies** in Isaac's own grotesque style, with gold **Team Captain** champions
 - **Worn costumes** fitted per character (roomy helmets for big hair, horn holes for horns), in **11 team colours**, pink included
 - **All-Pro** transformation, a **Halftime show** event, **completion notes**, and dozens of **base-game synergies**
+- **Football in the basement**: some rooms are dressed with faded field paint, sideline junk, goalposts and benches
+- **Juiced**: steroids make tackles brutal (enemies pinball into each other), but the referees run drug tests
 - **Stadium sounds**, a settings menu (press **C**), External Item Descriptions support, and save & continue
 
 <p align="center"><img src="docs/characters.png" alt="The Quarterback, Tainted QB, The Kicker and Tainted Kicker"></p>
@@ -25,6 +27,7 @@ Then take on a rival Linebacker, a stadium full of grotesque football enemies, a
 <p align="center"><img src="docs/enemies.png" alt="The football enemies"></p>
 <p align="center"><img src="docs/bosses.png" alt="The Linebacker, the Coach and The Franchise"></p>
 <p align="center"><img src="docs/uniforms.png" alt="Uniform colours"></p>
+<p align="center"><img src="docs/decor.png" alt="Football props in a basement room"></p>
 
 ## Everything in detail
 Click a section to expand it.
@@ -68,6 +71,9 @@ Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats
 ### Transformation: All-Pro
 Hold **any 3 Gridiron items** (passives, actives, familiars, Q4s: anything from this mod) to become **All-Pro**, for the rest of the run like a vanilla transformation: **+0.5 Damage**, **every 4th shot is a homing golden spiral**, and your eye black turns to **gold war paint** (it shows through the facemask).
 
+### Field decor
+About a third of normal rooms look like somebody played football in them: **faded yard lines and hash marks**, a half-scrubbed **team logo**, and **sideline junk** (crushed cups, Gatorade stains, a tipped cooler, a spilled ball bag, a busted pylon, a dented helmet, tape, a muddy clipboard, a bloody mouthguard). Now and then there's a **goalpost**, a **bench** or a **tackling sled**, and the football bosses' rooms get **stadium banners**. Props never collide with anything, and each room looks the same every time you come back. Set **field decor** to off, light or full in *visuals*.
+
 ### Halftime show
 Clearing a normal room has a **6% chance** (once per floor, adjustable in the menu) to start a **halftime show**: the whistle, the stadium horn, fireworks and the crowd. You get to **pick one**: a **Gridiron item you don't have yet** or a **soul heart**. Take one and the other disappears.
 
@@ -109,6 +115,17 @@ Clearing a normal room has a **6% chance** (once per floor, adjustable in the me
 | QB Wristband | Spoon Bender, Godhead, Sacred Heart | Footballs deal another +25% |
 | Coin Toss | Tarot Cloth | The coin lands on its edge: you get heads **and** tails |
 | Turf Burn | Football Cleats | Scorch marks last twice as long |
+| Football Helmet | Roid Rage, Growth Hormones, Synthoil, Experimental Treatment | **Juiced**: tackles hit 50% harder and send enemies **pinballing** into each other; the tackle glow runs red. Referees and the Chain Gang notice: **drug tests** (flags twice as often, faster refs). Turn drug tests off in the menu. |
+| Football Helmet | Knockout Drops | Tackled enemies stay down 3x longer |
+| Kicking Tee / Pigskin | Mom's Bracelet | Kicks and fumbles go 50% farther |
+| Mouthguard | Percs! / Addicted! pills | Playing through the pain: the Mouthguard works on every hit that room |
+| Football Cleats | Speed Ball, Speed Up pill | First downs need half the yards (the pill: for the room) |
+| Gatorade Bucket | Adrenaline | The shower is a rush: +1 damage and +0.2 speed for the room |
+| Super Bowl Ring | Champion Belt | Title belt and ring: rings worth double (stacks) |
+| Foam Finger | Number One | We're #1: double damage to the marked enemy, and it drops a nickel |
+| Water Boy | Ball of Bandages | A real trainer: drops more often, and whole hearts |
+| Cheerleader | Jumper Cables | Every routine charges your active item |
+| Tackling Dummy | Gnawed Leaf | Digs in: a much wider and twice as strong pull |
 | Every football | Tear effects (fire, poison, Ipecac, holy light, ice, charm, Dark Matter, Midas, homing) | The football takes on that effect's colour, so you can see the synergy |
 
 These also appear in External Item Descriptions.
@@ -209,8 +226,8 @@ If **External Item Descriptions** is installed, every item shows its description
 
 ## Settings menu
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
-- **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, Franchise boss chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
-- **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare)
+- **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, drug tests, Franchise boss chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
+- **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare), field decor (off / light / full)
 - **uniform:** pick your team colours: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colours each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts back the red/blue/white uniform. Helmet and Team Jersey **pedestals** show your colours too (except where the item could be hidden: Curse of the Blind and the alt-floor "?" treasure items)
 - **completion notes:** the marks each Gridiron character has earned
 - **costume fit:** hide the helmet, eye black, jersey/pads or pants/cleats for the character you're playing right now

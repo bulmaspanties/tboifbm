@@ -145,6 +145,7 @@ RenderMode = enum()
 RoomType = { ROOM_DEFAULT = 1, ROOM_BOSS = 5, ROOM_BOSSRUSH = 17 }
 CollectibleType = enum({ COLLECTIBLE_BIRTHRIGHT = 619 })
 WeaponType = enum()
+PillEffect = enum()
 HeartSubType = { HEART_FULL = 1, HEART_HALF = 2, HEART_SOUL = 3, HEART_DOUBLEPACK = 5, HEART_SCARED = 9 }
 Direction = { LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3 }
 PlayerType = { PLAYER_ISAAC = 0, PLAYER_MAGDALENE = 1, PLAYER_EVE = 5, PLAYER_AZAZEL = 7, PLAYER_THELOST = 10 }
@@ -1855,6 +1856,7 @@ check(eidText[Items.HELMET]:find("Mars", 1, true), "EID lists the helmet's syner
 check(eidText[Items.WRISTBAND]:find("Homing items", 1, true), "EID lists the wristband's synergies")
 check(eidText[Items.GATORADE]:find("Holy Water", 1, true), "EID lists the bucket's synergies")
 
+do -- uniform colours, sounds and character fit (scoped: the main chunk is capped at 200 locals)
 -- Uniform colours: the menu swaps in the matching costume colourway
 local up = newPlayer()
 players = { up }
@@ -1940,6 +1942,8 @@ end
 for _, color in ipairs(mod.UNIFORM_COLORS.helmet) do
     local name = "helmet_roomy" .. (color == mod.UNIFORM_COLORS.helmet[1] and "" or "_" .. color)
     check(costumePaths["gfx/characters/gridiron_" .. name .. ".anm2"], "roomy helmet exists in " .. color)
+end
+
 end
 
 -- All-Pro transformation -----------------------------------------------------------------------
@@ -2137,6 +2141,96 @@ do
     check(beam and (beam.Position - Vector(400, 0)):Length() < 1, "it lands in a beam of holy light")
     check(#world.entities - beforeBurst >= Cfg.HAIL_MARY_BURST, "and a ring of footballs")
     q.aim = Vector(0, 0)
+end
+
+-- Juice and sports medicine --------------------------------------------------------------------
+do
+    local C = CollectibleType
+    local jp = newPlayer()
+    players = { jp }
+    world.entities = { jp }
+    newRoom(false)
+    jp.items[Items.HELMET] = 1
+    local _, plainDmg, plainKnock = mod.tackleSynergy(jp)
+    jp.items[C.COLLECTIBLE_ROID_RAGE] = 1
+    local _, juicedDmg, juicedKnock = mod.tackleSynergy(jp)
+    check(mod.isJuiced(jp) and juicedDmg > plainDmg and juicedKnock > plainKnock, "roid rage: juiced tackles")
+
+    -- pinball: the tackled enemy flies into another one, then gets stunned
+    jp.Position, jp.Velocity = Vector(0, 0), Vector(5, 0)
+    tick(Cfg.TACKLE_WINDUP + 2)
+    local first = newEnemy(jp.Position + Vector(20, 0), 200)
+    tick()
+    check(first.data.GridironLaunched and not first.frozen, "a juiced tackle launches the enemy before stunning it")
+    jp.Velocity = Vector(0, 0)
+    local second = newEnemy(first.Position + Vector(10, 0), 200)
+    dispatch(ModCallbacks.MC_NPC_UPDATE, first.Type, first)
+    check(second.damageTaken > 0, "pinball! it crashes into the next one")
+    for _ = 1, Cfg.PINBALL_FRAMES do dispatch(ModCallbacks.MC_NPC_UPDATE, first.Type, first) end
+    check(first.frozen and first.data.GridironLaunched == nil, "and the stun lands after")
+
+    -- drug tests
+    check(mod.drugTestOn(), "referees notice a juiced player")
+    mod.Settings.drugTests = false
+    check(not mod.drugTestOn(), "drug tests can be turned off")
+    mod.Settings.drugTests = true
+    jp.items[C.COLLECTIBLE_ROID_RAGE] = nil
+    check(not mod.drugTestOn(), "clean players don't get tested")
+
+    -- the rest
+    check(mod.tackleStunMult(jp) == 1, "no knockout drops")
+    jp.items[C.COLLECTIBLE_KNOCKOUT_DROPS] = 1
+    check(mod.tackleStunMult(jp) > 1, "knockout drops: longer stuns")
+    jp.items[C.COLLECTIBLE_MOMS_BRACELET] = 1
+    check(mod.throwRangeMult(jp) > 1, "mom's bracelet: longer kicks")
+    jp.items[C.COLLECTIBLE_BALL_OF_BANDAGES] = 1
+    local trainer, heart = mod.waterBoyBoost(jp)
+    check(trainer > 1 and heart == HeartSubType.HEART_FULL, "ball of bandages: the water boy gives whole hearts")
+    jp.items[C.COLLECTIBLE_GNAWED_LEAF] = 1
+    check(mod.dummyPullMult(jp) > 1, "gnawed leaf: the dummy digs in")
+    check(mod.fingerDrop(jp) == CoinSubType.COIN_PENNY, "foam finger: a penny")
+    jp.items[C.COLLECTIBLE_NUMBER_ONE] = 1
+    check(mod.fingerDrop(jp) == CoinSubType.COIN_NICKEL and mod.fingerMult(jp) == 2, "number one: we're #1")
+    local ringBefore = mod.ringMult(jp)
+    jp.items[C.COLLECTIBLE_CHAMPION_BELT] = 1
+    check(mod.ringMult(jp) == ringBefore * 2, "champion belt doubles the rings")
+    check(mod.yardMult(jp) == 1, "normal yards")
+    jp.items[C.COLLECTIBLE_SPEED_BALL] = 1
+    check(mod.yardMult(jp) == 0.5, "speed ball: faster first downs")
+    jp.items[C.COLLECTIBLE_SPEED_BALL] = nil
+    dispatch(ModCallbacks.MC_USE_PILL, PillEffect.PILLEFFECT_SPEED_UP, PillEffect.PILLEFFECT_SPEED_UP, jp, 0)
+    check(mod.yardMult(jp) == 0.5, "speed up pill: the same for the room")
+    newRoom(false)
+    check(mod.yardMult(jp) == 1, "and it wears off")
+
+    -- Percs + Mouthguard: every hit is softened this room
+    jp.items[Items.MOUTHGUARD] = 1
+    jp.rng.value = 0.99
+    dispatch(ModCallbacks.MC_USE_PILL, PillEffect.PILLEFFECT_PERCS, PillEffect.PILLEFFECT_PERCS, jp, 0)
+    local hurt0 = jp.damageTaken
+    jp:TakeDamage(2, 0, EntityRef(newProjectile(jp.Position)), 0)
+    jp:TakeDamage(2, 0, EntityRef(newProjectile(jp.Position)), 0)
+    check(jp.damageTaken - hurt0 == 2, "percs: the mouthguard works on every hit")
+
+    -- Adrenaline + Gatorade: the shower is a rush
+    jp.items[C.COLLECTIBLE_ADRENALINE] = 1
+    jp:EvaluateItems()
+    local d0, s0 = jp.Damage, jp.MoveSpeed
+    mod.onGatoradeShower(jp)
+    jp:EvaluateItems()
+    check(jp.Damage > d0 and jp.MoveSpeed > s0, "adrenaline: the shower is a rush")
+    newRoom(false)
+    jp:EvaluateItems()
+    check(math.abs(jp.Damage - d0) < 1e-6, "the rush ends with the room")
+
+    -- Jumper Cables + Cheerleader: a routine charges the active
+    jp.items[Items.CHEERLEADER] = 1
+    jp.items[C.COLLECTIBLE_JUMPER_CABLES] = 1
+    jp.charges = { [ActiveSlot.SLOT_PRIMARY] = 0 }
+    for _ = 1, Cfg.CHEER_HYPE do dispatch(ModCallbacks.MC_POST_NPC_DEATH, nil, newEnemy(Vector(300, 0))) end
+    check(jp:GetActiveCharge(ActiveSlot.SLOT_PRIMARY) == 1, "jumper cables: the routine charges your active")
+    check(eidText[Items.HELMET]:find("Juiced", 1, true) and eidText[Items.MOUTHGUARD]:find("Percs", 1, true),
+        "EID lists the new synergies")
 end
 
 -- Settings survive a restart (fresh load reads the stored blob)

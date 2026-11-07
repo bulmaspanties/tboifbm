@@ -72,7 +72,11 @@ return function(mod)
         if not wasTackling then
             sfx:Play(SoundEffect.SOUND_FETUS_JUMP, 0.6, 0, false, 0.8)
         end
-        player:SetColor(Color(1, 1, 1, 1, 0.3, 0.18, 0), 2, 1, false, false)
+        if mod.isJuiced(player) then                       -- juiced: the glow runs red
+            player:SetColor(Color(1, 1, 1, 1, 0.45, 0.05, 0.05), 2, 1, false, false)
+        else
+            player:SetColor(Color(1, 1, 1, 1, 0.3, 0.18, 0), 2, 1, false, false)
+        end
         if d.runFrames % 6 == 0 then
             -- small, faint kicked-up turf (not the smoke-cloud effect: that one fills the screen)
             local puff = Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0,
@@ -94,7 +98,14 @@ return function(mod)
                     if e:IsBoss() then push = push * 0.25 end
                     e:AddVelocity(push)
                     e:AddConfusion(EntityRef(player), Cfg.TACKLE_CONFUSE, true)
-                    e:AddFreeze(EntityRef(player), e:IsBoss() and 10 or Cfg.TACKLE_STUN)   -- buckled chin strap
+                    local stun = math.floor((e:IsBoss() and 10 or Cfg.TACKLE_STUN) * mod.tackleStunMult(player))
+                    if mod.isJuiced(player) and not e:IsBoss() then
+                        -- juiced: he goes flying first (pinball), and the stun lands after
+                        ed.GridironLaunched = { frames = Cfg.PINBALL_FRAMES, dmg = dmg * Cfg.PINBALL_DAMAGE,
+                            stun = stun, player = player }
+                    else
+                        e:AddFreeze(EntityRef(player), stun)       -- buckled chin strap
+                    end
                     if Trinkets.TURF_BURN > 0 and player:HasTrinket(Trinkets.TURF_BURN) then
                         mod.scorch(player, e.Position, 1.3)
                     end
@@ -225,6 +236,9 @@ return function(mod)
             if d.allPro then
                 bonus = bonus + Cfg.ALLPRO_DAMAGE
             end
+            if d.adrenalineRush then
+                bonus = bonus + Cfg.ADRENALINE_DAMAGE
+            end
             if d.touchdown then   -- 2 = scored in the End Zone: it counts double
                 bonus = bonus + Cfg.TOUCHDOWN_DAMAGE * (d.touchdown == 2 and 2 or 1)
             end
@@ -235,6 +249,7 @@ return function(mod)
         elseif flag == CacheFlag.CACHE_SPEED then
             player.MoveSpeed = player.MoveSpeed + player:GetCollectibleNum(Items.CLEATS) * Cfg.CLEATS_SPEED
             if d.play == "blitz" then player.MoveSpeed = player.MoveSpeed + Cfg.BLITZ_SPEED end
+            if d.adrenalineRush then player.MoveSpeed = player.MoveSpeed + Cfg.ADRENALINE_SPEED end
         elseif flag == CacheFlag.CACHE_LUCK then
             player.Luck = player.Luck + player:GetCollectibleNum(Items.EYE_BLACK) * Cfg.EYE_BLACK_LUCK
                 + player:GetCollectibleNum(Items.RING) * Cfg.RING_LUCK
@@ -261,9 +276,9 @@ return function(mod)
             d.tackling = false
             d.guardUsed = false
             d.hitThisRoom = false
-            local zoned = d.inEndZone
-            d.inEndZone = false
-            if zoned or d.firstDowns > 0 or d.yardDist > 0 or d.touchdown or d.coinHeads then
+            local zoned, rushed = d.inEndZone, d.adrenalineRush
+            d.inEndZone, d.adrenalineRush, d.playingHurt, d.speedUpRoom = false, false, false, false
+            if zoned or rushed or d.firstDowns > 0 or d.yardDist > 0 or d.touchdown or d.coinHeads then
                 d.firstDowns = 0
                 d.yardDist = 0
                 d.touchdown = false
@@ -539,7 +554,7 @@ return function(mod)
         end
 
         -- Mouthguard: the first big hit each room only takes half a heart less.
-        if not reapplyingPlayer and not d.guardUsed and amount >= Cfg.MOUTHGUARD_MIN_HIT
+        if not reapplyingPlayer and (not d.guardUsed or d.playingHurt) and amount >= Cfg.MOUTHGUARD_MIN_HIT
             and player:HasCollectible(Items.MOUTHGUARD) then
             d.guardUsed = true
             reapplyingPlayer = true

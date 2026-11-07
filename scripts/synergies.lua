@@ -28,8 +28,86 @@ return function(mod)
             windup = 0
         end
         if hasAny(player, BIG) then dmg, knock = Cfg.BIG_TACKLE_DAMAGE, Cfg.BIG_TACKLE_KNOCKBACK end
+        if mod.isJuiced(player) then dmg, knock = dmg * Cfg.JUICED_DAMAGE, knock * Cfg.JUICED_KNOCKBACK end
         return windup, dmg, knock
     end
+
+    -- Juiced: steroids and football. Tackles hit far harder and send enemies flying into
+    -- each other (pinball), and referees take notice (drug tests; see monsters.lua / foes.lua).
+    local JUICE = { C.COLLECTIBLE_ROID_RAGE, C.COLLECTIBLE_GROWTH_HORMONES, C.COLLECTIBLE_SYNTHOIL,
+        C.COLLECTIBLE_EXPERIMENTAL_TREATMENT }
+    function mod.isJuiced(player)
+        return hasAny(player, JUICE)
+    end
+
+    function mod.drugTestOn()
+        if not mod.Settings.drugTests then return false end
+        local juiced = false
+        mod.forEachPlayer(function(p) if mod.isJuiced(p) then juiced = true end end)
+        return juiced
+    end
+
+    -- Pinball: a juiced tackle's victim crashes through anything in its way, then the stun lands.
+    function mod:OnNpcUpdatePinball(npc)
+        local launch = npc:GetData().GridironLaunched
+        if not launch then return end
+        launch.frames = launch.frames - 1
+        for _, other in ipairs(Isaac.FindInRadius(npc.Position, npc.Size + 18, EntityPartition.ENEMY)) do
+            if GetPtrHash(other) ~= GetPtrHash(npc) and other:IsVulnerableEnemy() and other:IsActiveEnemy(false)
+                and not other:GetData().GridironPinballed then
+                other:GetData().GridironPinballed = true
+                other:TakeDamage(launch.dmg, 0, EntityRef(launch.player), 0)
+                other:AddVelocity((other.Position - npc.Position):Resized(8))
+                mod.popOn(other, "PINBALL!", mod.Colors.red, 0.9)
+                mod.playSound("CLACK", 0.8)
+            end
+        end
+        if launch.frames <= 0 then
+            npc:GetData().GridironLaunched = nil
+            npc:AddFreeze(EntityRef(launch.player), launch.stun)
+        end
+    end
+    mod:AddCallback(ModCallbacks.MC_NPC_UPDATE, mod.OnNpcUpdatePinball)
+
+    -- Knockout Drops: tackled enemies stay down much longer.
+    function mod.tackleStunMult(player)
+        return player:HasCollectible(C.COLLECTIBLE_KNOCKOUT_DROPS) and Cfg.KNOCKOUT_STUN_MULT or 1
+    end
+
+    -- Mom's Bracelet: kicks and fumbles go much farther.
+    function mod.throwRangeMult(player)
+        return player:HasCollectible(C.COLLECTIBLE_MOMS_BRACELET) and Cfg.BRACELET_RANGE or 1
+    end
+
+    -- Ball of Bandages: the Water Boy is a real trainer now: more often, and whole hearts.
+    function mod.waterBoyBoost(player)
+        if player:HasCollectible(C.COLLECTIBLE_BALL_OF_BANDAGES) then return 1.5, HeartSubType.HEART_FULL end
+        return 1, HeartSubType.HEART_HALF
+    end
+
+    -- Gnawed Leaf: the Tackling Dummy digs in: wider and much stronger pull.
+    function mod.dummyPullMult(player)
+        return player:HasCollectible(C.COLLECTIBLE_GNAWED_LEAF) and 2 or 1
+    end
+
+    -- Number One + Foam Finger: "We're #1": the marked enemy drops a nickel instead of a penny.
+    function mod.fingerDrop(player)
+        return player:HasCollectible(C.COLLECTIBLE_NUMBER_ONE) and CoinSubType.COIN_NICKEL or CoinSubType.COIN_PENNY
+    end
+
+    -- Pills: playing through the pain, and speed.
+    function mod:OnUsePillSynergy(effect, player)
+        local d = pdata(player)
+        if effect == PillEffect.PILLEFFECT_PERCS or effect == PillEffect.PILLEFFECT_ADDICTED then
+            if player:HasCollectible(Items.MOUTHGUARD) then
+                d.playingHurt = true                         -- the Mouthguard works on every hit this room
+                mod.popOn(player, "PLAYING THROUGH THE PAIN", mod.Colors.blue, 0.9)
+            end
+        elseif effect == PillEffect.PILLEFFECT_SPEED_UP then
+            d.speedUpRoom = true                             -- first downs come twice as fast this room
+        end
+    end
+    mod:AddCallback(ModCallbacks.MC_USE_PILL, mod.OnUsePillSynergy)
 
     -- Receiver Gloves: Magneto / Telekinesis pull shots into your hands.
     function mod.catchBonus(player)
@@ -67,6 +145,12 @@ return function(mod)
         { C.COLLECTIBLE_JUICY_SACK,    "PLAYER_CREEP_WHITE" },
     }
     function mod.onGatoradeShower(player)
+        if player:HasCollectible(C.COLLECTIBLE_ADRENALINE) then
+            local d = pdata(player)                          -- Adrenaline: the shower is a rush
+            d.adrenalineRush = true
+            mod.refreshCache(player, CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_SPEED)
+            mod.popOn(player, "ADRENALINE!", mod.Colors.red, 1.0)
+        end
         for _, entry in ipairs(SHOWER_CREEP) do
             local variant = EffectVariant[entry[2]]
             if entry[1] and variant and player:HasCollectible(entry[1]) then
@@ -84,19 +168,22 @@ return function(mod)
 
     -- Football Cleats: Pony, White Pony and Taurus cover ground: first downs need half the yards.
     function mod.yardMult(player)
-        return hasAny(player, { C.COLLECTIBLE_PONY, C.COLLECTIBLE_WHITE_PONY, C.COLLECTIBLE_TAURUS }) and 0.5 or 1
+        if pdata(player).speedUpRoom then return 0.5 end
+        return hasAny(player, { C.COLLECTIBLE_PONY, C.COLLECTIBLE_WHITE_PONY, C.COLLECTIBLE_TAURUS,
+            C.COLLECTIBLE_SPEED_BALL }) and 0.5 or 1
     end
 
     -- Super Bowl Ring: Money = Power / Greed's Gullet: the hardware is worth twice as much.
     function mod.ringMult(player)
         local mult = hasAny(player, { C.COLLECTIBLE_MONEY_EQUALS_POWER, C.COLLECTIBLE_GREEDS_GULLET }) and 2 or 1
         if player:HasCollectible(Items.CHAMP_RING) then mult = mult * 2 end   -- back-to-back rings
+        if player:HasCollectible(C.COLLECTIBLE_CHAMPION_BELT) then mult = mult * 2 end   -- title belt and ring
         return mult
     end
 
     -- Foam Finger: Marked / Eye of the Occult: the #1 enemy takes double the bonus.
     function mod.fingerMult(player)
-        return hasAny(player, { C.COLLECTIBLE_MARKED, C.COLLECTIBLE_EYE_OF_THE_OCCULT }) and 2 or 1
+        return hasAny(player, { C.COLLECTIBLE_MARKED, C.COLLECTIBLE_EYE_OF_THE_OCCULT, C.COLLECTIBLE_NUMBER_ONE }) and 2 or 1
     end
 
     -- Padded Pants: big legs shrug off more.
@@ -163,35 +250,48 @@ return function(mod)
     mod.SynergyNotes = {
         [Items.HELMET] = icon(C.COLLECTIBLE_MARS) .. " Mars: every dash is a tackle#" ..
             icon(C.COLLECTIBLE_ARIES) .. icon(C.COLLECTIBLE_TAURUS) .. " Aries / Taurus: tackles go live twice as fast#" ..
-            icon(C.COLLECTIBLE_LEO) .. icon(C.COLLECTIBLE_THUNDER_THIGHS) .. " Size-up items: harder, longer tackles",
+            icon(C.COLLECTIBLE_LEO) .. icon(C.COLLECTIBLE_THUNDER_THIGHS) .. " Size-up items: harder, longer tackles#" ..
+            icon(C.COLLECTIBLE_ROID_RAGE) .. icon(C.COLLECTIBLE_GROWTH_HORMONES) .. icon(C.COLLECTIBLE_SYNTHOIL) ..
+            " Juiced: tackles hit 50% harder and send enemies pinballing into each other (referees notice)#" ..
+            icon(C.COLLECTIBLE_KNOCKOUT_DROPS) .. " Knockout Drops: tackled enemies stay down 3x longer",
+        [Items.MOUTHGUARD] = "{{Pill}} Percs! / Addicted!: works on every hit for the room",
         [Items.GLOVES] = icon(C.COLLECTIBLE_MAGNETO) .. icon(C.COLLECTIBLE_TELEKINESIS) .. " Magneto / Telekinesis: +20% catch chance",
         [Items.PADS] = icon(C.COLLECTIBLE_INFAMY) .. " Infamy: +15% deflect chance",
         [Items.JERSEY] = icon(C.COLLECTIBLE_BRIMSTONE) .. " Brimstone, Technology, Mom's Knife, etc.: still throw footballs#" ..
             "Footballs take on your tear effects' colours (fire, poison, holy, ice...)",
         [Items.CLEATS] = icon(C.COLLECTIBLE_PONY) .. icon(C.COLLECTIBLE_WHITE_PONY) .. icon(C.COLLECTIBLE_TAURUS) ..
-            " Pony / White Pony / Taurus: first downs need half the yards",
+            icon(C.COLLECTIBLE_SPEED_BALL) .. " Pony / White Pony / Taurus / Speed Ball: first downs need half the yards#" ..
+            "{{Pill}} Speed Up: the same, for the room",
         [Items.PANTS] = icon(C.COLLECTIBLE_THUNDER_THIGHS) .. icon(C.COLLECTIBLE_LEO) .. " Thunder Thighs / Leo: +15% shrug-off chance",
         [Items.RING] = icon(C.COLLECTIBLE_MONEY_EQUALS_POWER) .. icon(C.COLLECTIBLE_GREEDS_GULLET) ..
             " Money = Power / Greed's Gullet: rings give double damage#" ..
+            icon(C.COLLECTIBLE_CHAMPION_BELT) .. " Champion Belt: title belt and ring, double again#" ..
             icon(Items.CHAMP_RING) .. " Championship Ring: rings give double damage (stacks)",
         [Items.CHAMP_RING] = icon(Items.RING) .. " Super Bowl Ring: its rings give double damage",
         [Items.GOLDEN_ARM] = icon(Items.WRISTBAND) .. " QB Wristband: every golden football homes in#" ..
             icon(C.COLLECTIBLE_BRIMSTONE) .. " Works with non-tear weapons too (every few attacks)",
         [Items.HAIL_MARY] = icon(C.COLLECTIBLE_CAR_BATTERY) .. " Car Battery: two Hail Marys",
         [Items.FOAM_FINGER] = icon(C.COLLECTIBLE_MARKED) .. icon(C.COLLECTIBLE_EYE_OF_THE_OCCULT) ..
-            " Marked / Eye of the Occult: +100% damage to the #1 enemy",
+            " Marked / Eye of the Occult: +100% damage to the #1 enemy#" ..
+            icon(C.COLLECTIBLE_NUMBER_ONE) .. " Number One: we're #1! Double damage, and it drops a nickel",
         [Items.WRISTBAND] = icon(C.COLLECTIBLE_SPOON_BENDER) .. icon(C.COLLECTIBLE_GODHEAD) .. icon(C.COLLECTIBLE_SACRED_HEART) ..
             " Homing items: footballs deal another +25%#" .. icon(Items.JERSEY) .. icon(Items.GLOVES) .. icon(Items.PLAYBOOK) ..
             " Works on every football: Jersey, Gloves, Trick Play, the Quarterback",
         [Items.END_ZONE] = icon(Items.PIGSKIN) .. " Pigskin: a touchdown scored in the end zone counts double",
-        [Items.KICKING_TEE] = icon(C.COLLECTIBLE_IPECAC) .. icon(C.COLLECTIBLE_DR_FETUS) .. " Explosive items: +50% blast radius",
+        [Items.KICKING_TEE] = icon(C.COLLECTIBLE_IPECAC) .. icon(C.COLLECTIBLE_DR_FETUS) .. " Explosive items: +50% blast radius#" ..
+            icon(C.COLLECTIBLE_MOMS_BRACELET) .. " Mom's Bracelet: kicks go 50% farther",
         [Items.PIGSKIN] = icon(C.COLLECTIBLE_STRANGE_ATTRACTOR) .. icon(C.COLLECTIBLE_MAGNETO) .. " Magnets: pulls enemies twice as hard and far#" ..
+            icon(C.COLLECTIBLE_MOMS_BRACELET) .. " Mom's Bracelet: fumbles go 50% farther#" ..
             icon(Items.END_ZONE) .. " End Zone: touchdowns in it count double",
         [Items.GATORADE] = icon(C.COLLECTIBLE_HOLY_WATER) .. icon(C.COLLECTIBLE_FREE_LEMONADE) .. icon(C.COLLECTIBLE_BALL_OF_TAR) ..
-            " Holy Water, lemons, Ball of Tar, Juicy Sack: the shower leaves matching creep",
-        [Items.CHEERLEADER] = icon(C.COLLECTIBLE_BFFS) .. " BFFS!: stronger routines",
-        [Items.WATER_BOY] = icon(C.COLLECTIBLE_BFFS) .. " BFFS!: drops hearts more often",
-        [Items.DUMMY] = icon(C.COLLECTIBLE_BFFS) .. " BFFS!: pulls enemies from farther away",
+            " Holy Water, lemons, Ball of Tar, Juicy Sack: the shower leaves matching creep#" ..
+            icon(C.COLLECTIBLE_ADRENALINE) .. " Adrenaline: the shower is a rush (+1 damage, +0.2 speed for the room)",
+        [Items.CHEERLEADER] = icon(C.COLLECTIBLE_BFFS) .. " BFFS!: stronger routines#" ..
+            icon(C.COLLECTIBLE_JUMPER_CABLES) .. " Jumper Cables: every routine charges your active item",
+        [Items.WATER_BOY] = icon(C.COLLECTIBLE_BFFS) .. " BFFS!: drops hearts more often#" ..
+            icon(C.COLLECTIBLE_BALL_OF_BANDAGES) .. " Ball of Bandages: a real trainer: more often, and whole hearts",
+        [Items.DUMMY] = icon(C.COLLECTIBLE_BFFS) .. " BFFS!: pulls enemies from farther away#" ..
+            icon(C.COLLECTIBLE_GNAWED_LEAF) .. " Gnawed Leaf: digs in: much wider, twice as strong pull",
     }
     mod.RegisterEID()
 end
