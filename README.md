@@ -43,6 +43,9 @@ Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats
 ### Transformation: All-Pro
 Hold **any 3 Gridiron items** (passives, actives, familiars, Q4s: anything from this mod) to become **All-Pro**, for the rest of the run like a vanilla transformation: **+0.5 Damage**, **every 4th shot is a homing golden spiral**, and your eye black turns to **gold war paint** (it shows through the facemask).
 
+### Halftime show
+Clearing a normal room has a **6% chance** (once per floor, adjustable in the menu) to start a **halftime show**: the whistle, the stadium horn, fireworks and the crowd. You get to **pick one**: a **Gridiron item you don't have yet** or a **soul heart**. Take one and the other disappears.
+
 ### Familiars
 | Item | Quality | Pools | What it does |
 |---|---|---|---|
@@ -150,7 +153,7 @@ If **External Item Descriptions** is installed, every item shows its description
 
 ## Settings menu
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
-- **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, Linebacker boss chance, football-enemy chance, reset to defaults
+- **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
 - **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare)
 - **uniform:** pick your team colours: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colours each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts back the red/blue/white uniform. Helmet and Team Jersey **pedestals** show your colours too (except where the item could be hidden: Curse of the Blind and the alt-floor "?" treasure items)
 - **costume fit:** hide the helmet, eye black, jersey/pads or pants/cleats for the character you're playing right now

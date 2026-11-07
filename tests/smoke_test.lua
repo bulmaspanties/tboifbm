@@ -331,6 +331,7 @@ local function newEntity(t)
     function e:ToProjectile() return self.isProjectile and self or nil end
     function e:ToEffect() return self.Type == EntityType.ENTITY_EFFECT and self or nil end
     function e:ToFamiliar() return self.Type == EntityType.ENTITY_FAMILIAR and self or nil end
+    function e:ToPickup() return self.Type == EntityType.ENTITY_PICKUP and self or nil end
     function e:IsEnemy() return self.isEnemy == true end
     function e:IsVulnerableEnemy() return self.isEnemy == true end
     function e:IsActiveEnemy() return self.isEnemy == true and self.exists end
@@ -607,6 +608,7 @@ local Items, Trinkets, Cfg = mod.Items, mod.Trinkets, mod.Cfg
 -- The older scenarios check exact stats with 3+ items held; keep All-Pro out of them
 -- (it gets its own scenario near the end).
 Cfg.ALLPRO_ITEMS = 999
+Cfg.HALFTIME_CHANCE = 0   -- the mock rng rolls low; halftime gets its own scenario
 
 for key, id in pairs(Items) do check(id > 0, "item name not found in items.xml: " .. key) end
 for key, id in pairs(Trinkets) do check(id > 0, "trinket name not found in items.xml: " .. key) end
@@ -1791,6 +1793,40 @@ do
     tick()
     check(mod.pdata(ap).allPro, "All-Pro is permanent, like a vanilla transformation")
     Cfg.ALLPRO_ITEMS = 999
+end
+
+-- Halftime show --------------------------------------------------------------------------------
+do
+    local hp = newPlayer()
+    players = { hp }
+    world.entities = { hp }
+    Cfg.HALFTIME_CHANCE = 0.06
+    world.stage = 3
+    newRoom(false)
+    world.spawned = {}
+    hp.rng.value = 0.9
+    dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, hp.rng, Vector(0, 0))
+    check(#world.spawned == 0, "most cleared rooms are just cleared")
+    hp.rng.value = 0.01
+    dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, hp.rng, Vector(0, 0))
+    local item, heart, fireworks = nil, nil, 0
+    for _, e in ipairs(world.spawned) do
+        if e.Variant == PickupVariant.PICKUP_COLLECTIBLE then item = e end
+        if e.Variant == PickupVariant.PICKUP_HEART then heart = e end
+        if e.Variant == EffectVariant.FIREWORKS then fireworks = fireworks + 1 end
+    end
+    check(item and heart and item.OptionsPickupIndex ~= 0 and item.OptionsPickupIndex == heart.OptionsPickupIndex,
+        "halftime offers a gridiron item or a soul heart (pick one)")
+    local isGridiron = false
+    for _, id in pairs(Items) do if id == item.SubType then isGridiron = true end end
+    check(isGridiron and item.SubType ~= Items.CHAMP_RING, "the item is a gridiron item, never a Q4")
+    check(fireworks > 0 and world.hudText[#world.hudText] == "Halftime!", "with fireworks and a banner")
+    world.spawned = {}
+    newRoom(false)
+    dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, hp.rng, Vector(0, 0))
+    check(#world.spawned == 0, "only one halftime per floor")
+    world.stage = nil
+    Cfg.HALFTIME_CHANCE = 0
 end
 
 -- Q4 items -----------------------------------------------------------------------------------

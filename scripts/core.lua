@@ -213,6 +213,9 @@ return function(mod)
         HAIL_MARY_DMG_MULT    = 8,     -- x player damage, plus a flat 30
         HAIL_MARY_BURST       = 10,
 
+        -- Halftime show
+        HALFTIME_CHANCE       = 0.06,  -- (menu) per cleared normal room, once per floor
+
         -- All-Pro transformation: any 3 Gridiron items
         ALLPRO_ITEMS          = 3,
         ALLPRO_EVERY          = 4,     -- every Nth shot is a golden spiral
