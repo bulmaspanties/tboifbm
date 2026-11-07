@@ -148,6 +148,7 @@ WeaponType = enum()
 HeartSubType = { HEART_FULL = 1, HEART_HALF = 2, HEART_SOUL = 3, HEART_DOUBLEPACK = 5, HEART_SCARED = 9 }
 Direction = { LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3 }
 PlayerType = { PLAYER_ISAAC = 0, PLAYER_MAGDALENE = 1, PLAYER_EVE = 5, PLAYER_AZAZEL = 7, PLAYER_THELOST = 10 }
+StageType = { STAGETYPE_ORIGINAL = 0, STAGETYPE_REPENTANCE = 4, STAGETYPE_REPENTANCE_B = 5 }
 EntityGridCollisionClass = enum()
 GridCollisionClass = { COLLISION_NONE = 0, COLLISION_WALL = 1 }
 EntityCollisionClass = { ENTCOLL_NONE = 0, ENTCOLL_PLAYERONLY = 1, ENTCOLL_PLAYEROBJECTS = 2, ENTCOLL_ENEMIES = 3, ENTCOLL_ALL = 4 }
@@ -225,6 +226,12 @@ function Sprite()
     function s:IsFinished() return self.finished == true end
     function s:SetFrame(name) check(self.anims and self.anims[name], "animation missing: " .. tostring(name)) end
     function s:Update() end
+    function s:ReplaceSpritesheet(layer, path)
+        check(readFile("resources/" .. path) ~= nil, "replacement spritesheet missing: " .. path)
+        self.sheets = self.sheets or {}
+        self.sheets[layer] = path
+    end
+    function s:LoadGraphics() end
     function s:Render(pos) assert(getmetatable(pos) == VMT, "Render needs a Vector"); self.renders = self.renders + 1 end
     return s
 end
@@ -490,6 +497,8 @@ function Game()
         GetRoom = function() return room end,
         GetHUD = function() return hud end,
         GetLevel = function() return { GetStage = function() return world.stage or 2 end,
+            GetCurses = function() return world.curses or 0 end,
+            GetStageType = function() return world.stageType or 0 end,
             GetCurrentRoomDesc = function() return { Data = { Type = world.roomType } } end } end,
         GetItemPool = function() return { ForceAddPillEffect = function(_, effect) return 7 end } end,
         GetSeeds = function() return { GetStartSeed = function() return 123456 end } end,
@@ -1677,6 +1686,34 @@ world.entities = { lost }
 lost.items[Items.HELMET], lost.items[Items.PANTS] = 1, 1
 tick()
 check(costumeOn(lost, "helmet") and not costumeOn(lost, "legs_pants"), "the lost wears a helmet but no pants")
+local az = newPlayer(PlayerType.PLAYER_AZAZEL)
+players = { az }
+world.entities = { az }
+az.items[Items.HELMET] = 1
+tick()
+check(costumeOn(az, "helmet_horns") and not costumeOn(az, "legs_pants"), "azazel's horns come through a horned helmet")
+
+-- pedestal icons follow the uniform colours, but never reveal a blind item
+local ped = newEntity({ Type = EntityType.ENTITY_PICKUP, Variant = PickupVariant.PICKUP_COLLECTIBLE, SubType = Items.JERSEY })
+findButton("uniform", "jersey").store(11)        -- pink
+dispatch(ModCallbacks.MC_POST_PICKUP_UPDATE, PickupVariant.PICKUP_COLLECTIBLE, ped)
+check(ped.sprite.sheets and ped.sprite.sheets[1] == "gfx/items/collectibles/team_jersey_pink.png", "jersey pedestal turns pink")
+local blindPed = newEntity({ Type = EntityType.ENTITY_PICKUP, Variant = PickupVariant.PICKUP_COLLECTIBLE, SubType = Items.HELMET })
+world.curses = LevelCurse.CURSE_OF_BLIND
+dispatch(ModCallbacks.MC_POST_PICKUP_UPDATE, PickupVariant.PICKUP_COLLECTIBLE, blindPed)
+check(blindPed.sprite.sheets == nil, "curse of the blind keeps the pedestal hidden")
+world.curses = nil
+findButton("uniform", "team defaults").func()
+for kind, base in pairs({ helmet = "football_helmet", jersey = "team_jersey" }) do
+    for i, color in ipairs(mod.UNIFORM_COLORS[kind]) do
+        local path = "resources/gfx/items/collectibles/" .. base .. (i == 1 and "" or "_" .. color) .. ".png"
+        check(readFile(path) ~= nil, "pedestal icon exists: " .. path)
+    end
+end
+for _, color in ipairs(mod.UNIFORM_COLORS.helmet) do
+    local name = "helmet_horns" .. (color == mod.UNIFORM_COLORS.helmet[1] and "" or "_" .. color)
+    check(costumePaths["gfx/characters/gridiron_" .. name .. ".anm2"], "horned helmet exists in " .. color)
+end
 for _, color in ipairs(mod.UNIFORM_COLORS.helmet) do
     local name = "helmet_roomy" .. (color == mod.UNIFORM_COLORS.helmet[1] and "" or "_" .. color)
     check(costumePaths["gfx/characters/gridiron_" .. name .. ".anm2"], "roomy helmet exists in " .. color)

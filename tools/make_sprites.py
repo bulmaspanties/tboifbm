@@ -824,7 +824,25 @@ def render(spec):
     return strip
 
 
+def jersey_colourways():
+    """Team Jersey icon in every uniform colour (scripts/costumes.lua swaps it on pedestals)."""
+    from make_costumes import JERSEY_COLORS, TEAM_COLORS, icon_tone
+    spec = SPRITES["items/collectibles/team_jersey.png"]
+    saved = {k: PALETTE[k] for k in "bBLYyW"}
+    for color in JERSEY_COLORS[1:]:
+        tones, trim = TEAM_COLORS[color]
+        PALETTE["b"], PALETTE["B"], PALETTE["L"] = (icon_tone(tones[0]) + (255,), icon_tone(tones[1]) + (255,),
+                                                    icon_tone(tones[2]) + (255,))
+        PALETTE["Y"] = tuple(trim) + (255,)
+        PALETTE["y"] = icon_tone(tuple(int(c * 0.8) for c in trim)) + (255,)
+        # a light jersey needs a dark number
+        PALETTE["W"] = (tuple(trim) + (255,)) if color in ("white", "silver") else saved["W"]
+        finish(render(spec)).save(GFX / f"items/collectibles/team_jersey_{color}.png")
+    PALETTE.update(saved)
+
+
 def main():
+    jersey_colourways()
     for rel, spec in SPRITES.items():
         # "content:" sprites (card fronts) live next to content/gfx/ui_cardfronts.anm2
         out = ROOT / "content/gfx" / rel[8:] if rel.startswith("content:") else GFX / rel

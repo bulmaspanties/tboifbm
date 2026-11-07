@@ -76,6 +76,14 @@ def rgba(c):
     return tuple(c) + (255,)
 
 
+def icon_tone(c, floor=52):
+    """Lift a very dark tone so the icon finishing pass doesn't read it as outline."""
+    c = tuple(c)
+    while 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2] < floor:
+        c = tuple(min(255, int(v * 1.2 + 6)) for v in c)
+    return c
+
+
 def use_helmet_color(name):
     global HELMET, HELMET_STRIPE, HELMET_STRIPE_SHADE
     tones, stripe = TEAM_COLORS[name]
@@ -239,6 +247,26 @@ def roomy(src, grow=2):
 
 def paint_helmet_roomy(src, view):
     return paint_helmet(roomy(src), view)
+
+
+# where horns come up through the shell, per view (front/back: both corners; side: one)
+HORN_HOLES = {"down": [(8, 4), (23, 4)], "up": [(8, 4), (23, 4)], "right": [(12, 3)]}
+
+
+def paint_helmet_horns(src, view):
+    """Roomy shell with reinforced horn holes, so horns come up *through* the helmet
+    (Azazel, Lilith, Apollyon) instead of just poking out from under it."""
+    out = paint_helmet(roomy(src), view)
+    o = out.load()
+    for cx, cy in HORN_HOLES[view]:
+        hole = {(x, y) for y in range(cy - 2, cy + 2) for x in range(cx - 2, cx + 2)
+                if ((x - cx + 0.5) / 2) ** 2 + ((y - cy + 0.5) / 1.6) ** 2 <= 1 and o[x, y][3]}
+        ring = {p for p in outline_mask(hole, CELL, CELL) if o[p[0], p[1]][3]}
+        for (x, y) in hole:
+            o[x, y] = CLEAR                          # the horn shows through here
+        for (x, y) in ring:
+            o[x, y] = BUMPER[1] if y < cy else BUMPER[0]   # grommet: lit on top, shaded below
+    return out
 
 
 def paint_helmet(src, view):
@@ -511,6 +539,14 @@ def main(template_root):
     finish(helmet_item_icon(head.crop((2 * CELL, 0, 3 * CELL, CELL)))).save(
         ROOT / "resources/gfx/items/collectibles/football_helmet.png")
 
+    # coloured pedestal icons, swapped in by scripts/costumes.lua to match the uniform setting
+    for color in HELMET_COLORS[1:]:
+        use_helmet_color(color)
+        HELMET[:] = [rgba(icon_tone(t[:3])) for t in HELMET]   # dark shells would turn to ink
+        finish(helmet_item_icon(head.crop((2 * CELL, 0, 3 * CELL, CELL)))).save(
+            ROOT / f"resources/gfx/items/collectibles/football_helmet_{color}.png")
+    use_helmet_color(HELMET_COLORS[0])
+
     def head_sheet(name, painter, layer):
         sheet = Image.new("RGBA", head.size, CLEAR)
         for i, view, frame in head_frames(head):
@@ -533,6 +569,7 @@ def main(template_root):
         use_helmet_color(color)
         head_sheet("gridiron_helmet" + suffix(color, HELMET_COLORS[0]), paint_helmet, "head5")
         head_sheet("gridiron_helmet_roomy" + suffix(color, HELMET_COLORS[0]), paint_helmet_roomy, "head5")
+        head_sheet("gridiron_helmet_horns" + suffix(color, HELMET_COLORS[0]), paint_helmet_horns, "head5")
 
     # body rows 0-1 are the side view (right / left), rows 2-3 front/back
     body_sheet("gridiron_torso_pads", lambda cell, cy: paint_torso(cell, False, True, cy < 64), "body1")
@@ -555,7 +592,8 @@ def main(template_root):
              '         from scripts/costumes.lua, so they can be toggled, hidden per character and recoloured',
              '         (each uniform colour is its own costume). Pieces sharing a body layer come combined. -->']
     names = ["helmet" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS]
-    names += ["helmet_roomy" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS] + ["eyeblack", "torso_pads"]
+    names += ["helmet_roomy" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS]
+    names += ["helmet_horns" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS] + ["eyeblack", "torso_pads"]
     names += [n + suffix(c, JERSEY_COLORS[0]) for c in JERSEY_COLORS for n in ("torso_jersey", "torso_jerseypads")]
     names += ["legs_cleats"] + [n + suffix(c, PANTS_COLORS[0]) for c in PANTS_COLORS
                                 for n in ("legs_pants", "legs_pantscleats")]

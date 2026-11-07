@@ -147,7 +147,7 @@ If **External Item Descriptions** is installed, every item shows its description
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
 - **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, Linebacker boss chance, football-enemy chance, reset to defaults
 - **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare)
-- **uniform:** pick your team colours: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colours each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts back the red/blue/white uniform
+- **uniform:** pick your team colours: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colours each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts back the red/blue/white uniform. Helmet and Team Jersey **pedestals** show your colours too (except where the item could be hidden: Curse of the Blind and the alt-floor "?" treasure items)
 - **costume fit:** hide the helmet, eye black, jersey/pads or pants/cleats for the character you're playing right now
 
 Settings are saved and kept between runs. Your run state (caught balls, bucket, jersey, current play…) also survives **save & continue**.
@@ -168,6 +168,7 @@ Your character wears what you pick up: the helmet (with facemask) and eye black 
 All costumes are managed in Lua, so they can be turned off, hidden per character, and are re-applied after anything that resets costumes.
 They're drawn on Isaac's body shape, with fixes per character, sized from each character's sprite:
 - **Big hair** (Magdalene, Eve, Samson, Bethany, Lilith, Lazarus, Eden and their tainted versions, plus Tainted Judas and Tainted Cain) gets a **roomy helmet**, 2px bigger all round. The biggest curls and pigtails still peek out the sides, like hair under a real helmet.
+- **Horns** (Azazel, Lilith, Apollyon and their tainted versions) come up **through reinforced holes** in the shell instead of poking out from under it.
 - **No legs** (The Lost, The Soul, Azazel and their tainted versions): no pants or cleats.
 
 If a piece still looks wrong on a character, hide it from **costume fit** in the menu (or `gridiron hide <slot>`).

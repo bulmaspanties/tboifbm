@@ -22,7 +22,7 @@ return function(mod)
         return color == mod.UNIFORM_COLORS[kind][1] and "" or "_" .. color
     end
     for _, color in ipairs(mod.UNIFORM_COLORS.helmet) do
-        for _, size in ipairs({ "", "_roomy" }) do
+        for _, size in ipairs({ "", "_roomy", "_horns" }) do
             local key = "helmet" .. size .. colorSuffix("helmet", color)
             Costumes.helmet[key] = nullCostume(key)
         end
@@ -60,6 +60,13 @@ return function(mod)
         if P[name] then mod.ROOMY_HELMET[P[name]] = true end
     end
 
+    -- Horns come up through reinforced holes in the shell instead of poking out from under it.
+    mod.HORNED_HELMET = {}
+    for _, name in ipairs({ "PLAYER_AZAZEL", "PLAYER_AZAZEL_B", "PLAYER_LILITH", "PLAYER_LILITH_B",
+        "PLAYER_APOLLYON", "PLAYER_APOLLYON_B" }) do
+        if P[name] then mod.HORNED_HELMET[P[name]] = true end
+    end
+
     local function slotAllowed(player, slot)
         if not mod.Settings.costumes then return false end
         local ptype = player:GetPlayerType()
@@ -73,8 +80,9 @@ return function(mod)
     local function desiredCostumes(player)
         local want = { helmet = "none", eyeblack = "none", torso = "none", legs = "none" }
         local S = mod.Settings
-        local roomy = mod.ROOMY_HELMET[player:GetPlayerType()] and "_roomy" or ""
-        local helmetKey = "helmet" .. roomy .. colorSuffix("helmet", S.helmetColor)
+        local ptype = player:GetPlayerType()
+        local fit = (mod.HORNED_HELMET[ptype] and "_horns") or (mod.ROOMY_HELMET[ptype] and "_roomy") or ""
+        local helmetKey = "helmet" .. fit .. colorSuffix("helmet", S.helmetColor)
         local jerseySfx = colorSuffix("jersey", S.jerseyColor)
         local pantsSfx = colorSuffix("pants", S.pantsColor)
         if player:HasCollectible(Items.HELMET) then want.helmet = helmetKey end
@@ -139,4 +147,39 @@ return function(mod)
         mod.refreshAllCostumes()
     end
     mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.OnNewRoomCostumes)
+
+    -- Pedestal icons follow the uniform colours too (Helmet and Team Jersey).
+    -- Never on a pedestal that could be hiding its item: Curse of the Blind, or the
+    -- alt-floor treasure rooms whose second choice is a "?".
+    local function mayBeBlind()
+        local level = mod.game:GetLevel()
+        if level:GetCurses() & LevelCurse.CURSE_OF_BLIND ~= 0 then return true end
+        local alt = level:GetStageType() == StageType.STAGETYPE_REPENTANCE
+            or level:GetStageType() == StageType.STAGETYPE_REPENTANCE_B
+        return alt and mod.game:GetRoom():GetType() == RoomType.ROOM_TREASURE
+    end
+
+    local function pedestalIcon(subtype)
+        local S = mod.Settings
+        if subtype == Items.HELMET then
+            local sfx = colorSuffix("helmet", S.helmetColor)
+            return "gfx/items/collectibles/football_helmet" .. sfx .. ".png"
+        elseif subtype == Items.JERSEY then
+            local sfx = colorSuffix("jersey", S.jerseyColor)
+            return "gfx/items/collectibles/team_jersey" .. sfx .. ".png"
+        end
+    end
+    mod.pedestalIcon = pedestalIcon
+
+    function mod:OnPedestalUpdate(pickup)
+        local icon = pedestalIcon(pickup.SubType)
+        if not icon then return end
+        local d = pickup:GetData()
+        if d.GridironIcon == icon or mayBeBlind() then return end
+        d.GridironIcon = icon
+        local s = pickup:GetSprite()
+        s:ReplaceSpritesheet(1, icon)
+        s:LoadGraphics()
+    end
+    mod:AddCallback(ModCallbacks.MC_POST_PICKUP_UPDATE, mod.OnPedestalUpdate, PickupVariant.PICKUP_COLLECTIBLE)
 end
