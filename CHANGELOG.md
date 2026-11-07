@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.1
+- **Tainted Quarterback's art** now matches how he plays and starts: bare shoulder pads (no jersey) and a cracked, bloodied helmet, so he's clearly not the regular Quarterback.
+- A new-look GitHub page, and release notes that include what changed.
+
 ## 0.9.0
 - **The Franchise**: a two-phase final boss for floors 7-8. Phase 1 runs a route tree (slants, the go route, screen pass, Hail Mary, audibles); phase 2, the Stadium, brings the crowd wave, the Kiss Cam and falling goalposts.
 - **The Kicker** and **Tainted Kicker**: Special Teams field goals that refund Tee charges and put points on the board; Tainted shanks heavy lobbed tears, every 4th one explodes.

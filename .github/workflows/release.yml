@@ -41,7 +41,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
         run: |
-          cat > notes.md <<NOTES
+          version="${TAG#v}"
+          # this version's CHANGELOG entry (from its heading to the next one)
+          awk -v v="## $version" '$0 == v {on = 1; next} /^## / && on {exit} on' CHANGELOG.md > changes.md
+          {
+            echo '![Gridiron](https://raw.githubusercontent.com/${{ github.repository }}/main/docs/banner.png)'
+            echo
+            if [ -s changes.md ]; then echo "## What's new"; cat changes.md; echo; fi
+          } > notes.md
+          cat >> notes.md <<NOTES
           ## Install
           1. Download \`gridiron-$TAG.zip\` below.
           2. Unzip it into your Isaac mods folder so you end up with \`mods/gridiron/metadata.xml\`.
