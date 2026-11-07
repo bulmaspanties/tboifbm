@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8.0
+- **Fix: `gridiron give` could crash the game.** It placed ~30 pickups in one frame with the game's free-spot search, which could lock up once the floor filled. It now picks open floor tiles itself and drops one pickup every couple of frames.
+- **4 Q4 items:** Championship Ring (x1.25 damage, a trophy item from every floor's boss), Hall of Fame Jacket (counts as 3 gear pieces: instantly Suited Up with a double bonus and 4x faster tackles), Golden Arm (every shot is a golden football), Hail Mary (6-charge active: a giant golden football that lands in a beam of holy light and a ring of footballs).
+- **Character fit:** a roomy helmet for big-haired characters (Magdalene, Eve, Samson, Bethany, Lilith, Lazarus, Eden and tainted versions, Tainted Judas and Cain); no pants or cleats on The Lost, The Soul and Azazel.
+- **Sounds:** crowd cheers and boos, a helmet clack on tackles and facemask blocks, the stadium horn and a scoring fanfare. Turn the crowd off in *visuals*.
+- **Balance:** items also appear in Greed mode, the library (Playbook, which now counts toward Book Worm), beggars, crane games and golden chests; every passive works with Lemegeton; Mouthguard is Q1; facemask block 40%; Turf Burn toned down; the Coach's blitz can't snowball.
+- The Linebacker introduces himself with a banner (a modded boss can't have its own VS screen without StageAPI).
+
 ## 0.7.0
 - **8 new football enemies**: Lineman (digs in and charges), Blitzer (a fly that circles and dives), Punter (lobs spiked footballs), Huddle (four of them; hit one and they all break and rush you), Gatorade Cooler (bursts into slowing creep), Chain Gang (two refs on a chain that hurts), Sacker (tunnels and bursts up under you) and **The Coach** miniboss (calls Blitz, Prevent D and Pep Talk plays for the other enemies, and subs in Linemen). Each replaces the vanilla enemy it fights like.
 - Monster art now follows Isaac's rules: giant black eyes with a glint, dark coloured interior lines instead of black, and something gross on everyone (blood, drool, torn seams, a hanging googly eye). The Mascot and Referee got the same treatment.

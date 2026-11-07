@@ -8,10 +8,12 @@ Suit up! Football gear with its own mechanics: no reskins, no stat-only items.
 [h2]What's inside[/h2]
 [list]
 [*][b]20 items[/b]: Football Helmet (tackles, stuns and a facemask), Shoulder Pads, Team Jersey, Football Cleats, Eye Black, Receiver Gloves, Mouthguard, Padded Pants, QB Wristband, Foam Finger, Super Bowl Ring, Gatorade Bucket, plus the Kicking Tee, Pigskin, Playbook, Coach's Whistle and End Zone actives
+[*][b]4 legendary Q4 items[/b]: Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary
 [*][b]3 familiars[/b]: Cheerleader, Water Boy, Tackling Dummy
 [*][b]3 trinkets, a card and a pill[/b]: Referee Flag, Concussion Protocol, Turf Burn, Coin Toss, Timeout!
 [*][b]Wear 3+ pieces to get Suited Up[/b]: bonus damage, faster tackles, gold glow
-[*][b]Worn costumes[/b]: modern helmet with facemask, jersey over pads, pants and cleats, eye black
+[*][b]Worn costumes[/b]: modern helmet with facemask, jersey over pads, pants and cleats, eye black, fitted per character
+[*][b]Stadium sounds[/b]: crowd cheers and boos, helmet clacks, the air horn and a scoring fanfare
 [*][b]Pick your team colours[/b]: helmet, jersey and pants, 11 colours each (yes, pink too), from the settings menu
 [*][b]A new boss and 10 football enemies[/b]: The Linebacker, the Coach miniboss, plus Mascot, Referee, Lineman, Blitzer, Punter, Huddle, Gatorade Cooler, Chain Gang and Sacker
 [*][b]A new character[/b]: The Quarterback and Tainted Quarterback
@@ -36,7 +38,7 @@ Debug console: [b]gridiron give[/b] drops all the gear as pedestals, [b]gridiron
 
 Requires Repentance+. REPENTOGON is not required.
 Source and bug reports: github.com/bulmaspanties/tboifbm</description>
-    <version>0.7.0</version>
+    <version>0.8.0</version>
     <visibility>Private</visibility>
     <tag id="Items"/>
     <tag id="Characters"/>

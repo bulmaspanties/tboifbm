@@ -149,6 +149,7 @@ HeartSubType = { HEART_FULL = 1, HEART_HALF = 2, HEART_SOUL = 3, HEART_DOUBLEPAC
 Direction = { LEFT = 0, UP = 1, RIGHT = 2, DOWN = 3 }
 PlayerType = { PLAYER_ISAAC = 0, PLAYER_MAGDALENE = 1, PLAYER_EVE = 5, PLAYER_AZAZEL = 7, PLAYER_THELOST = 10 }
 EntityGridCollisionClass = enum()
+GridCollisionClass = { COLLISION_NONE = 0, COLLISION_WALL = 1 }
 EntityCollisionClass = { ENTCOLL_NONE = 0, ENTCOLL_PLAYERONLY = 1, ENTCOLL_PLAYEROBJECTS = 2, ENTCOLL_ENEMIES = 3, ENTCOLL_ALL = 4 }
 ProjectileVariant = { PROJECTILE_NORMAL = 0 }
 EntityFamiliar = { GetOrbitDistance = function(layer) return Vector(30 + layer * 10, 30 + layer * 10) end }
@@ -470,7 +471,15 @@ local room = {
     GetType = function() return world.roomType end,
     GetClampedPosition = function(_, pos) return pos end,
     GetCenterPos = function() return Vector(320, 280) end,
-    FindFreePickupSpawnPosition = function(_, pos) return pos end,
+    -- a 15x9 room: the outer ring is wall
+    GetGridSize = function() return 135 end,
+    GetGridPosition = function(_, i) return Vector((i % 15) * 40, (i // 15) * 40) end,
+    GetGridCollision = function(_, i)
+        local x, y = i % 15, i // 15
+        return (x == 0 or y == 0 or x == 14 or y == 8) and 1 or 0
+    end,
+    IsPositionInRoom = function() return true end,
+    FindFreePickupSpawnPosition = function(_, pos) world.freeSpawnCalls = (world.freeSpawnCalls or 0) + 1; return pos end,
     GetRenderMode = function() return 0 end,
 }
 local hud = { ShowItemText = function(_, a) world.hudText[#world.hudText + 1] = a end }
@@ -887,7 +896,23 @@ local p2 = newPlayer()
 players[1] = p2
 world.entities = { p2 }
 local spawnedBefore = #world.spawned
-check(dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "give"):find("dropped"), "give command")
+world.freeSpawnCalls = 0
+check(dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "give"):find("dropping"), "give command")
+check(#world.spawned == spawnedBefore, "give doesn't spawn everything in one frame")
+tick(120)
+check(world.freeSpawnCalls == 0, "give picks tiles itself (FindFreePickupSpawnPosition could crash the game)")
+local seenTiles, onWall = {}, false
+for i = spawnedBefore + 1, #world.spawned do
+    local e = world.spawned[i]
+    if e.Type == EntityType.ENTITY_PICKUP then
+        local key = e.Position.X .. "," .. e.Position.Y
+        check(not seenTiles[key], "every drop gets its own tile")
+        seenTiles[key] = true
+        local gx, gy = e.Position.X // 40, e.Position.Y // 40
+        if gx == 0 or gy == 0 or gx == 14 or gy == 8 then onWall = true end
+    end
+end
+check(not onWall, "nothing drops inside a wall")
 local pedestals = 0
 local isOurs = {}
 for _, id in pairs(Items) do isOurs[id] = true end
@@ -899,6 +924,7 @@ check(pedestals == itemCount, "give drops every item as a pedestal (so pickups c
 check(not p2:HasCollectible(Items.HELMET), "give doesn't hand items over directly")
 world.spawned = {}
 check(dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "give quick"):find("gave"), "give quick command")
+tick(40)
 local hasAll = true
 for _, id in pairs(Items) do
     if not mod.ACTIVE_ITEMS[id] then hasAll = hasAll and p2:HasCollectible(id) end

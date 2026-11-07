@@ -156,7 +156,7 @@ Settings are saved and kept between runs. Your run state (caught balls, bucket, 
 Open the debug console with `~`:
 | Command | What it does |
 |---|---|
-| `gridiron give` | Drops every item as a pedestal. Walk over them: picking an item up is what adds it to your collection and the pause screen's *My Stuff* list |
+| `gridiron give` | Drops every item as a pedestal on the open floor around you, one every couple of frames. Walk over them: picking an item up is what adds it to your collection and the pause screen's *My Stuff* list |
 | `gridiron give quick` | Gives every passive instantly (they show as "?" in *My Stuff* until you find them for real); drops actives and trinkets |
 | `gridiron boss` / `gridiron enemies` | Spawn the Linebacker, or a Mascot and a Referee, next to you |
 | `gridiron spawn <name>` | Spawn one football enemy: `mascot referee lineman blitzer punter huddle cooler chaingang sacker coach linebacker` |

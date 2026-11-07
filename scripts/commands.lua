@@ -24,6 +24,45 @@ return function(mod)
         return (visible and "showing " or "hiding ") .. slot .. " for this character"
     end
 
+    -- Dropping ~30 pickups in one frame with Room:FindFreePickupSpawnPosition could hang or
+    -- crash the game once the floor filled up. Instead: pick open floor tiles ourselves
+    -- (nearest to the player first) and drop one pickup every couple of frames.
+    local drops = {}
+
+    local function openTiles(room, from)
+        local tiles = {}
+        for i = 0, room:GetGridSize() - 1 do
+            local pos = room:GetGridPosition(i)
+            local d = (pos - from):Length()
+            if d > 50 and room:IsPositionInRoom(pos, 0) and room:GetGridCollision(i) == GridCollisionClass.COLLISION_NONE then
+                tiles[#tiles + 1] = { pos = pos, d = d }
+            end
+        end
+        table.sort(tiles, function(x, y) return x.d < y.d end)
+        return tiles
+    end
+
+    function mod.queueDrops(list, player)
+        local tiles = openTiles(Game():GetRoom(), player.Position)
+        for i, entry in ipairs(list) do
+            local tile = tiles[i]
+            drops[#drops + 1] = { variant = entry[1], subtype = entry[2],
+                pos = tile and tile.pos or player.Position }
+        end
+    end
+
+    function mod:OnUpdateDrops()
+        if #drops == 0 or Game():GetFrameCount() % 2 ~= 0 then return end
+        local d = table.remove(drops, 1)
+        Isaac.Spawn(EntityType.ENTITY_PICKUP, d.variant, d.subtype, d.pos, Vector.Zero, nil)
+        Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, d.pos, Vector.Zero, nil)
+    end
+    mod:AddCallback(ModCallbacks.MC_POST_UPDATE, mod.OnUpdateDrops)
+
+    -- leaving the room drops whatever was still queued: it belongs to the old room's tiles
+    function mod:OnNewRoomDrops() drops = {} end
+    mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.OnNewRoomDrops)
+
     function mod:OnExecuteCmd(cmd, params)
         if cmd ~= "gridiron" then return end
         local args = {}
@@ -35,29 +74,26 @@ return function(mod)
             -- "quick" hands passives straight over for fast testing.
             local quick = args[2] == "quick"
             local player = Isaac.GetPlayer(0)
-            local room = Game():GetRoom()
-            local function drop(variant, id)
-                local pos = room:FindFreePickupSpawnPosition(player.Position, 40, true)
-                Isaac.Spawn(EntityType.ENTITY_PICKUP, variant, id, pos, Vector.Zero, nil)
-            end
+            local queue = {}
             for _, id in pairs(mod.Items) do
                 if id > 0 then
                     if not quick or mod.ACTIVE_ITEMS[id] then
-                        drop(PickupVariant.PICKUP_COLLECTIBLE, id)
+                        queue[#queue + 1] = { PickupVariant.PICKUP_COLLECTIBLE, id }
                     elseif not player:HasCollectible(id) then
                         player:AddCollectible(id)
                     end
                 end
             end
             for _, id in pairs(mod.Trinkets) do
-                if id > 0 then drop(PickupVariant.PICKUP_TRINKET, id) end
+                if id > 0 then queue[#queue + 1] = { PickupVariant.PICKUP_TRINKET, id } end
             end
-            if mod.Cards.COIN_TOSS > 0 then drop(PickupVariant.PICKUP_TAROTCARD, mod.Cards.COIN_TOSS) end
+            if mod.Cards.COIN_TOSS > 0 then queue[#queue + 1] = { PickupVariant.PICKUP_TAROTCARD, mod.Cards.COIN_TOSS } end
             if mod.Pills.TIMEOUT >= 0 then
-                drop(PickupVariant.PICKUP_PILL, Game():GetItemPool():ForceAddPillEffect(mod.Pills.TIMEOUT))
+                queue[#queue + 1] = { PickupVariant.PICKUP_PILL, Game():GetItemPool():ForceAddPillEffect(mod.Pills.TIMEOUT) }
             end
-            if quick then return "gave all Gridiron passives; actives and trinkets are on the floor" end
-            return "dropped every Gridiron item: walk over them to pick them up"
+            mod.queueDrops(queue, player)
+            if quick then return "gave all Gridiron passives; actives and trinkets are dropping around you" end
+            return "dropping every Gridiron item around you: walk over them to pick them up"
         elseif args[1] == "boss" or args[1] == "enemies" then
             local player = Isaac.GetPlayer(0)
             local room = Game():GetRoom()
