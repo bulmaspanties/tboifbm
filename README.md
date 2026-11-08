@@ -20,6 +20,7 @@ Then take on a rival Linebacker, a stadium full of grotesque football enemies, a
 - **All-Pro** transformation, a **Halftime show** event, **completion notes**, and dozens of **base-game synergies**
 - **Football in the basement**: some rooms are dressed with faded field paint, sideline junk, goalposts and benches
 - **Juiced**: steroids make tackles brutal (enemies pinball into each other), but the referees run drug tests
+- **Boss themes** for the Linebacker and The Franchise: marching drumlines, brass, organ and a dark choir
 - **Stadium sounds**, a settings menu (press **C**), External Item Descriptions support, and save & continue
 
 <p align="center"><img src="docs/characters.png" alt="The Quarterback, Tainted QB, The Kicker and Tainted Kicker"></p>
@@ -246,7 +247,7 @@ If **External Item Descriptions** is installed, every item shows its description
 ## Settings menu
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
 - **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, drug tests, Franchise boss chance, Pro Shop chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
-- **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare), field decor (off / light / full)
+- **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare), boss music, field decor (off / light / full)
 - **uniform:** by default (**auto**) every character suits up in **their own colours**: Magdalene in pink and white, Judas in black and red, Cain in green and gold, Keeper in gold and money green, Blue Baby in blues, the tainted characters in darker, meaner versions, and so on. Or pick your team colours yourself: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colours each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts everything back on auto. Helmet and Team Jersey **pedestals** show your colours too (except where the item could be hidden: Curse of the Blind and the alt-floor "?" treasure items)
 - **completion notes:** the marks each Gridiron character has earned
 - **costume fit:** hide the helmet, eye black, jersey/pads or pants/cleats for the character you're playing right now
@@ -319,7 +320,7 @@ scripts/dssmenucore.lua         Dead Sea Scrolls library (public domain, unmodif
 content/                        items, pools, costumes, entities, players, sounds, menu art
 resources/                      sprites, costumes, sounds
 tests/smoke_test.lua            runs the mod against a mock of the Isaac API (2000+ checks)
-tools/                          generators for every sprite, costume, sound and the README images
+tools/                          generators for every sprite, costume, sound, the boss music and the README images
 reference/                      vanilla character/boss sprites used as art reference (not shipped)
 ```
 

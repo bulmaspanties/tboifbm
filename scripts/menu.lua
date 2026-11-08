@@ -180,6 +180,7 @@ return function(mod)
                 toggle("hud text", "hud", { "downs, plays and", "bucket under", "your character" }),
                 toggle("popup text", "popups", { "callouts like", "tackle! and", "it's good!" }),
                 toggle("crowd sounds", "crowd", { "cheers, boos,", "the stadium horn", "and fanfare" }),
+                toggle("boss music", "bossMusic", { "themes for the", "linebacker and", "the franchise" }),
                 {
                     str = "field decor", choices = { "off", "light", "full" }, setting = 3, variable = "Gridiron_decor",
                     load = function()

@@ -69,6 +69,17 @@ for name in pocketXml:gmatch('<pilleffect[^>]-name="(.-)"') do
     pillCount = pillCount + 1
 end
 
+local musicIds = {}
+;(function()  -- own function: the main chunk is capped at 200 locals
+    local musicXml = assert(readFile("content/music.xml"))
+    local count = 0
+    for name, path in musicXml:gmatch('<track name="(.-)" path="(.-)"') do
+        count = count + 1
+        musicIds[name] = 200 + count
+        check(readFile("resources/music/" .. path) ~= nil, "music file missing: " .. path)
+    end
+end)()
+
 local entitiesXml = assert(readFile("content/entities2.xml"))
 local entityByName, entityByVariant, entityCount = {}, {}, 0
 for attrs in entitiesXml:gmatch("<entity%s+(.-)>") do
@@ -83,7 +94,7 @@ end
 
 local playersXml = assert(readFile("content/players.xml"))
 local playerTypes = {}
-do
+;(function()  -- own function: the main chunk is capped at 200 locals
     local root = playersXml:match('%sroot="(.-)"')
     local nameRoot, portraitRoot = playersXml:match('nameimageroot="(.-)"'), playersXml:match('portraitroot="(.-)"')
     local n = 40
@@ -107,7 +118,7 @@ do
             end
         end
     end
-end
+end)()
 
 local challengeXml = assert(readFile("content/challenges.xml"))
 local challengeIds, challengeCount = {}, 0
@@ -544,6 +555,11 @@ function Game()
         end,
     }
 end
+local nowPlaying = 0
+function MusicManager()
+    return { GetCurrentMusicID = function() return nowPlaying end,
+        Crossfade = function(_, id) nowPlaying = id end, Play = function(_, id) nowPlaying = id end }
+end
 local soundsPlayed = {}
 function SFXManager() return { Play = function(_, id) soundsPlayed[id] = true end } end
 
@@ -595,6 +611,7 @@ Isaac = {
     WorldToScreen = function(pos) return pos * 0.65 end,
     GetScreenWidth = function() return 480 end,
     GetCardIdByName = function(name) return cardIds[name] or -1 end,
+    GetMusicIdByName = function(name) return musicIds[name] or -1 end,
     GetEntityVariantByName = function(name) return entityByName[name] and entityByName[name].variant or -1 end,
     GetPlayerTypeByName = function(name, tainted) return playerTypes[name .. (tainted and "#b" or "")] or -1 end,
     GetEntityTypeByName = function(name) return entityByName[name] and entityByName[name].type or 0 end,
@@ -1379,7 +1396,7 @@ check(#Isaac.FindByType(MT, MV.LINEMAN) > linemen, "short-handed, the coach subs
 dispatch(ModCallbacks.MC_POST_NPC_DEATH, MT, co)
 check(mod.currentCoachPlay() == nil, "fire the coach and the play is off")
 -- The Franchise: route tree, then the stadium
-do
+;(function()  -- own function: the main chunk is capped at 200 locals
     local fr = mod.spawnMonster(MV.FRANCHISE, Vector(320, 200))
     fr.MaxHitPoints, fr.HitPoints = 1000, 1000
     ff.Position = Vector(320, 380)
@@ -1441,7 +1458,7 @@ do
     check(swapF and swapF[2] == MV.FRANCHISE, "loki on floor 7 can become the franchise")
     world.roomType, world.stage = RoomType.ROOM_DEFAULT, nil
     newRoom(false)
-end
+end)()
 
 -- Team Captains: gold champions with a twist
 local function captain(variant, pos, seed)
@@ -1545,7 +1562,7 @@ dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
 check(not isaac:HasCollectible(Items.HELMET), "other characters get nothing")
 
 -- The Kicker -------------------------------------------------------------------------------
-do
+;(function()  -- own function: the main chunk is capped at 200 locals
     check(PT.KICKER and PT.KICKER > 0 and PT.KICKER_B and PT.KICKER_B > 0, "kicker player types registered")
     local kk = newPlayer(PT.KICKER)
     players = { kk }
@@ -1589,10 +1606,10 @@ do
     local hurtBefore = tk.damageTaken
     dispatch(ModCallbacks.MC_POST_ENTITY_REMOVE, EntityType.ENTITY_TEAR, live)
     check(victim.damageTaken > 0 and tk.damageTaken == hurtBefore, "a live shank blows up enemies, not him")
-end
+end)()
 
 -- Completion notes -------------------------------------------------------------------------
-do
+;(function()  -- own function: the main chunk is capped at 200 locals
     local cq = newPlayer(PT.QUARTERBACK)
     local isaac = newPlayer(0)
     players = { cq, isaac }
@@ -1625,7 +1642,7 @@ do
     mod.GetSaveData().marks = {}
     players = { cq }
     newRoom(false)
-end
+end)()
 
 -- Challenges ---------------------------------------------------------------------------
 for key, c in pairs(mod.CHALLENGES) do check(c.id and c.id > 0, "challenge in challenges.xml: " .. key) end
@@ -1960,7 +1977,7 @@ end
 end
 
 -- All-Pro transformation -----------------------------------------------------------------------
-do
+;(function()  -- own function: the main chunk is capped at 200 locals
     Cfg.ALLPRO_ITEMS = mod.Defaults.ALLPRO_ITEMS
     local ap = newPlayer()
     players = { ap }
@@ -1989,7 +2006,7 @@ do
     tick()
     check(mod.pdata(ap).allPro, "All-Pro is permanent, like a vanilla transformation")
     Cfg.ALLPRO_ITEMS = 999
-end
+end)()
 
 -- Field decor ----------------------------------------------------------------------------------
 local function decorScenario() -- its own function: the main chunk is capped at 200 locals
@@ -2108,7 +2125,7 @@ end
 decorScenario()
 
 -- Halftime show --------------------------------------------------------------------------------
-do
+;(function()  -- own function: the main chunk is capped at 200 locals
     local hp = newPlayer()
     players = { hp }
     world.entities = { hp }
@@ -2139,10 +2156,10 @@ do
     check(#world.spawned == 0, "only one halftime per floor")
     world.stage = nil
     Cfg.HALFTIME_CHANCE = 0
-end
+end)()
 
 -- Q4 items -----------------------------------------------------------------------------------
-do
+;(function()  -- own function: the main chunk is capped at 200 locals
     local q = newPlayer()
     players = { q }
     world.entities = { q }
@@ -2208,10 +2225,10 @@ do
     check(beam and (beam.Position - Vector(400, 0)):Length() < 1, "it lands in a beam of holy light")
     check(#world.entities - beforeBurst >= Cfg.HAIL_MARY_BURST, "and a ring of footballs")
     q.aim = Vector(0, 0)
-end
+end)()
 
 -- Juice and sports medicine --------------------------------------------------------------------
-do
+;(function()  -- own function: the main chunk is capped at 200 locals
     local C = CollectibleType
     local jp = newPlayer()
     players = { jp }
@@ -2298,10 +2315,10 @@ do
     check(jp:GetActiveCharge(ActiveSlot.SLOT_PRIMARY) == 1, "jumper cables: the routine charges your active")
     check(eidText[Items.HELMET]:find("Juiced", 1, true) and eidText[Items.MOUTHGUARD]:find("Percs", 1, true),
         "EID lists the new synergies")
-end
+end)()
 
 -- Trinket batch two -----------------------------------------------------------------------------
-do
+;(function()  -- own function: the main chunk is capped at 200 locals
     local tp = newPlayer()
     players = { tp }
     world.entities = { tp }
@@ -2369,10 +2386,10 @@ do
     dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, cold)
     check(not cold.data.GridironFootball, "only the one shot")
     tp.trinkets[Trinkets.HAND_WARMER] = nil
-end
+end)()
 
 -- Cards and pills, batch two -------------------------------------------------------------------
-do
+;(function()  -- own function: the main chunk is capped at 200 locals
     local cp2 = newPlayer()
     players = { cp2 }
     world.entities = { cp2 }
@@ -2395,10 +2412,10 @@ do
     cp2.coins, cp2.bombs, cp2.keys = 5, 3, 1
     dispatch(ModCallbacks.MC_USE_PILL, mod.Pills.TWO_POINT, mod.Pills.TWO_POINT, cp2, 0)
     check(cp2.keys == 3 and cp2.coins == 5, "two-point conversion: +2 keys when keys are lowest")
-end
+end)()
 
 -- Pro Shop ---------------------------------------------------------------------------------------
-do
+;(function()  -- own function: the main chunk is capped at 200 locals
     local sp2 = newPlayer()
     players = { sp2 }
     local seed
@@ -2426,7 +2443,33 @@ do
     check(shopItem.SubType == 1, "only on the first visit")
     world.decorSeed, world.roomIndex, world.roomType = nil, nil, RoomType.ROOM_DEFAULT
     newRoom(false)
-end
+end)()
+
+-- Boss music --------------------------------------------------------------------------------
+;(function()  -- own function: the main chunk is capped at 200 locals
+    local bm = newPlayer()
+    players = { bm }
+    newRoom(false, RoomType.ROOM_BOSS)
+    world.entities = { bm }
+    local lb2 = mod.spawnMonster(MV.LINEBACKER, Vector(300, 200))
+    world.frame = 10
+    dispatch(ModCallbacks.MC_POST_UPDATE)
+    check(nowPlaying == musicIds["Gridiron Linebacker"], "the linebacker brings his theme")
+    local fr2 = mod.spawnMonster(MV.FRANCHISE, Vector(300, 300))
+    world.frame = 20
+    dispatch(ModCallbacks.MC_POST_UPDATE)
+    check(nowPlaying == musicIds["Gridiron Franchise"], "the franchise's theme wins")
+    lb2.exists, fr2.exists = false, false
+    world.roomClear = true
+    check(mod.bossTheme() == nil, "a cleared room is left to the game's own music")
+    world.roomClear = false
+    mod.Settings.bossMusic = false
+    fr2.exists = true
+    check(mod.bossTheme() == nil, "boss music can be turned off")
+    mod.Settings.bossMusic = true
+    fr2.exists = false
+    newRoom(false)
+end)()
 
 -- Settings survive a restart (fresh load reads the stored blob)
 findButton("gameplay", "kick damage").store(70)

@@ -306,6 +306,7 @@ return function(mod)
         crowd = true,          -- crowd cheers/boos, horn and fanfare
         decor = "full",        -- football props in rooms: "off", "light" or "full"
         drugTests = true,      -- referees and the coach go after juiced players
+        bossMusic = true,      -- the Linebacker and The Franchise get their own themes
         helmetColor = "auto",  -- uniform colours (menu: uniform); "auto" = the character's own colours
         jerseyColor = "auto",
         pantsColor = "auto",

@@ -1,0 +1,5 @@
+<music root="music/">
+    <!-- Gridiron boss themes (tools/make_music.py), played from scripts/music.lua -->
+    <track name="Gridiron Linebacker" path="gridiron_linebacker.ogg" loop="true" />
+    <track name="Gridiron Franchise" path="gridiron_franchise.ogg" loop="true" />
+</music>
