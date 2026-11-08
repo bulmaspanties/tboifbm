@@ -3,4 +3,6 @@
     <challenge name="Fourth and Long" playertype="0" endstage="8" />
     <challenge name="Two-Minute Drill" playertype="0" endstage="6" />
     <challenge name="Ground Game" playertype="0" endstage="6" canshoot="false" />
+    <challenge name="Special Teams" playertype="0" endstage="6" canshoot="false" />
+    <challenge name="Sudden Death" playertype="0" endstage="8" />
 </challenges>

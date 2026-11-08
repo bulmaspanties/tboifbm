@@ -456,6 +456,9 @@ local function newPlayer(ptype)
     function p:GetEffectiveMaxHearts() return self.maxHearts end
     function p:AddHearts(n) self.hearts = math.min(self.maxHearts, self.hearts + n) end
     function p:AddSoulHearts(n) self.soul = self.soul + n end
+    function p:GetSoulHearts() return self.soul end
+    function p:GetMaxHearts() return self.maxHearts end
+    function p:AddMaxHearts(n) self.maxHearts = self.maxHearts + n; self.hearts = math.min(self.hearts, self.maxHearts) end
     function p:SetMinDamageCooldown() end
     function p:AddNullCostume(id) check(type(id) == "number" and id > 0, "bad null costume id"); self.nullCostumes[id] = true end
     function p:TryRemoveNullCostume(id) self.nullCostumes[id] = nil end
@@ -1695,8 +1698,32 @@ check(tm.damageTaken > hpTm, "overtime costs health")
 
 startChallenge("groundgame")
 check(mod.tackleDamageMult() == 2 and mod.tackleWindupMult() == 0.5, "ground game boosts tackles")
+;(function()
+    local st = startChallenge("specialteams")
+    check(st:GetActiveItem() == Items.KICKING_TEE and st:HasCollectible(Items.CLEATS), "special teams hands out the kicking unit")
+    check(mod.kickDamageMult() == 1.5, "special teams: kicks hit harder")
+    st.charged = false
+    dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, st.rng, Vector(0, 0))
+    check(st.charged, "special teams: the tee recharges on every clear")
+    local sd = startChallenge("suddendeath")
+    check(sd:GetMaxHearts() == 2 and sd:GetSoulHearts() == 4 and sd:HasCollectible(Items.FOAM_FINGER),
+        "sudden death: one heart container, two soul hearts")
+    check(mod.footballBossesForced(), "sudden death forces football bosses")
+    world.roomType, world.stage = RoomType.ROOM_BOSS, 3
+    dispatch(ModCallbacks.MC_POST_NEW_ROOM)
+    local swap = dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 20, 0, 0, 0, 999)   -- a roll that normally fails
+    check(swap and swap[2] == MV.LINEBACKER, "sudden death: monstro is always the linebacker")
+    world.stage = 7
+    dispatch(ModCallbacks.MC_POST_NEW_ROOM)
+    swap = dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 69, 0, 0, 0, 999)
+    check(swap and swap[2] == MV.FRANCHISE, "sudden death: the franchise always shows up late")
+    world.roomType, world.stage = RoomType.ROOM_DEFAULT, 2
+    dispatch(ModCallbacks.MC_POST_NEW_ROOM)
+end)()
+
 world.challenge = 0
 check(mod.tackleDamageMult() == 1 and mod.currentChallenge() == nil, "no challenge, no rules")
+check(mod.kickDamageMult() == 1 and not mod.footballBossesForced(), "no challenge, normal kicks and bosses")
 
 -- New items (QB Wristband, End Zone, Turf Burn) ---------------------------------------------
 local wp = newPlayer()

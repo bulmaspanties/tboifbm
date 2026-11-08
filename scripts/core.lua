@@ -342,6 +342,8 @@ return function(mod)
     -- Defaults for hooks that later scripts (challenges.lua) override.
     function mod.tackleWindupMult() return 1 end
     function mod.tackleDamageMult() return 1 end
+    function mod.kickDamageMult() return 1 end
+    function mod.footballBossesForced() return false end
     function mod.currentChallenge() return nil end
     function mod.quarterbackKind() return nil end
     -- base-game synergy hooks (scripts/synergies.lua)

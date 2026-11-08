@@ -216,6 +216,8 @@ Find these under **Challenges → Custom**:
 | **Fourth and Long** | Mom's Heart | Start Suited Up (Helmet, Pads, Jersey) with the Gatorade Bucket. Red hearts turn into pennies, so Gatorade showers are your only healing. |
 | **Two-Minute Drill** | Mom | Start with the Playbook, Cleats and Eye Black. Each floor runs on a 2:00 game clock; every cleared room adds 10 seconds and recharges the Playbook. In overtime you lose half a heart every 15 seconds. |
 | **Ground Game** | Mom | You can't shoot. Start with the Helmet, Pads, Cleats, Pants and Kicking Tee. Tackles deal double damage and wind up twice as fast. |
+| **Special Teams** | Mom | You can't shoot. Start with the Kicking Tee, Cleats and Receiver Gloves. Kicks deal 1.5x damage and the tee fully recharges after every cleared room. |
+| **Sudden Death** | Mom's Heart | Start Suited Up (Helmet, Pads, Jersey) plus the Foam Finger, but with one heart container and two soul hearts. Football bosses take every room they can (the Linebacker and The Mascot on floors 2–6, The Franchise on 7–8) and football enemies are three times as common. |
 
 </details>
 

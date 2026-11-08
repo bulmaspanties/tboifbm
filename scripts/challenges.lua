@@ -19,6 +19,17 @@ return function(mod)
             items = { Items.HELMET, Items.PADS, Items.CLEATS, Items.PANTS, Items.KICKING_TEE },
             intro = { "Ground game", "No passing - run them over" },
         },
+        specialteams = {
+            name = "Special Teams",
+            items = { Items.KICKING_TEE, Items.CLEATS, Items.GLOVES },
+            intro = { "Special teams", "No tears - the kicking unit wins this one" },
+        },
+        suddendeath = {
+            name = "Sudden Death",
+            items = { Items.HELMET, Items.PADS, Items.JERSEY, Items.FOAM_FINGER },
+            intro = { "Sudden death", "Football bosses take every field they can" },
+            hearts = { containers = 2, soul = 4 },     -- one red heart, two soul hearts
+        },
     }
     mod.CHALLENGES = CHALLENGES
 
@@ -44,6 +55,11 @@ return function(mod)
         mod.forEachPlayer(function(player)
             for _, id in ipairs(c.items) do
                 if id > 0 then player:AddCollectible(id, 99) end
+            end
+            if c.hearts then
+                player:AddMaxHearts(c.hearts.containers - player:GetMaxHearts(), true)
+                player:AddHearts(c.hearts.containers)
+                player:AddSoulHearts(c.hearts.soul - player:GetSoulHearts())
             end
         end)
         mod.RunState.clock = TWO_MINUTES
@@ -90,6 +106,12 @@ return function(mod)
     mod:AddCallback(ModCallbacks.MC_POST_UPDATE, mod.OnUpdateChallenge)
 
     function mod:OnRoomClearChallenge()
+        if mod.currentChallenge() == "specialteams" then
+            mod.forEachPlayer(function(player)                -- the kicking unit is always ready
+                if player:GetActiveItem() == Items.KICKING_TEE then player:FullCharge() end
+            end)
+            return
+        end
         if mod.currentChallenge() ~= "twominute" then return end
         mod.RunState.clock = math.max(0, mod.RunState.clock or 0) + CLEAR_BONUS
         mod.forEachPlayer(function(player)
@@ -124,5 +146,13 @@ return function(mod)
     end
     function mod.tackleDamageMult()
         return mod.currentChallenge() == "groundgame" and 2 or 1
+    end
+
+    -- Special Teams: kicks hit harder. Sudden Death: football bosses and more football foes.
+    function mod.kickDamageMult()
+        return mod.currentChallenge() == "specialteams" and 1.5 or 1
+    end
+    function mod.footballBossesForced()
+        return mod.currentChallenge() == "suddendeath"
     end
 end

@@ -308,24 +308,26 @@ return function(mod)
     function mod:OnPreRoomEntitySpawn(type, variant, _, _, seed)
         local stage = game:GetLevel():GetStage()
         local roll = (seed % 1000) / 1000
+        local forced = mod.footballBossesForced()                 -- the Sudden Death challenge
+        local bossRoll = forced and 0 or roll
         if currentRoomType() == RoomType.ROOM_BOSS then
             if REPLACEABLE_FINAL[type] and variant == 0 and (stage == 7 or stage == 8)
-                and not bossSwappedThisRoom and roll < Cfg.FRANCHISE_CHANCE then
+                and not bossSwappedThisRoom and bossRoll < Cfg.FRANCHISE_CHANCE then
                 bossSwappedThisRoom = true
                 return { TYPE, V.FRANCHISE, 0 }
             end
             if REPLACEABLE_MID[type] and variant == 0 and stage >= 2 and stage <= 6
-                and not bossSwappedThisRoom and roll < Cfg.MASCOT_BOSS_CHANCE then
+                and not bossSwappedThisRoom and bossRoll < Cfg.MASCOT_BOSS_CHANCE then
                 bossSwappedThisRoom = true
                 return { TYPE, V.MASCOT_BOSS, 0 }
             end
             if REPLACEABLE_BOSSES[type] and variant == 0 and stage >= 2 and stage <= 6
-                and not bossSwappedThisRoom and roll < Cfg.LINEBACKER_CHANCE then
+                and not bossSwappedThisRoom and bossRoll < Cfg.LINEBACKER_CHANCE then
                 bossSwappedThisRoom = true
                 return { TYPE, V.LINEBACKER, 0 }
             end
         elseif SWAPS[type] and variant == 0 and stage <= 8 then
-            local chance = Cfg.FOOTBALL_ENEMY_CHANCE * (type == 208 and Cfg.COACH_CHANCE_MULT or 1)
+            local chance = Cfg.FOOTBALL_ENEMY_CHANCE * (type == 208 and Cfg.COACH_CHANCE_MULT or 1) * (forced and 3 or 1)
             if roll < chance then
                 local list = SWAPS[type]
                 return { TYPE, list[(seed // 1000) % #list + 1], 0 }

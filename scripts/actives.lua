@@ -40,7 +40,7 @@ return function(mod)
 
     local function landKick(ball)
         local player = ball.player
-        local dmg = Cfg.KICK_DAMAGE + player.Damage * Cfg.KICK_DAMAGE_MULT
+        local dmg = (Cfg.KICK_DAMAGE + player.Damage * Cfg.KICK_DAMAGE_MULT) * mod.kickDamageMult()
 
         -- It's good if the explosion is going to finish something off.
         local good = false
