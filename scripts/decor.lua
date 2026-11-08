@@ -11,7 +11,8 @@ return function(mod)
     mod.DecorVariant = VARIANT
 
     local FLOOR = { Yardline = true, Hash = true, Logo = true, Cups = true, Stain = true, Tape = true,
-        Clipboard = true, Mouthguard = true, Blood = true }
+        Clipboard = true, Mouthguard = true, Blood = true, Sideline = true, EndStripes = true,
+        Num10 = true, Num20 = true, Num30 = true, Num40 = true, Num50 = true }
     local SCATTER = { "Cups", "Stain", "Cooler", "BallBag", "Pylon", "Helmet", "Tape", "Clipboard",
         "Mouthguard", "Blood", "Cups", "Stain" }
     local DENSITY = {
@@ -44,16 +45,70 @@ return function(mod)
         return tiles
     end
 
-    local function fieldPaint(room, rng)
+    -- Layouts: each dressed room picks one, with random offsets, so no two look alike.
+    local function midfield(room, rng)                  -- a few yard lines and maybe the logo
         local tl, br, c = room:GetTopLeftPos(), room:GetBottomRightPos(), room:GetCenterPos()
-        for k = -3, 3 do
-            local x = c.X + k * 120
+        local offset = rng:RandomFloat() * 120 - 60
+        local lines = 2 + rng:RandomInt(3)
+        for k = 0, lines - 1 do
+            local x = c.X + offset + (k - (lines - 1) / 2) * 120
             if x > tl.X + 20 and x < br.X - 20 then
-                prop("Yardline", Vector(x, c.Y))
-                for _, y in ipairs({ c.Y - 60, c.Y + 60 }) do prop("Hash", Vector(x + 60, y)) end
+                prop("Yardline", Vector(x, c.Y + rng:RandomFloat() * 30 - 15))
+                prop("Hash", Vector(x + 60, c.Y - 60))
+                prop("Hash", Vector(x + 60, c.Y + 60))
             end
         end
-        if br.X - tl.X > 360 and rng:RandomFloat() < 0.6 then prop("Logo", c) end
+        if br.X - tl.X > 360 and rng:RandomFloat() < 0.4 then prop("Logo", c + Vector(offset, 0)) end
+    end
+
+    local function numbers(room, rng)                   -- yard lines with their numbers painted on
+        local tl, br, c = room:GetTopLeftPos(), room:GetBottomRightPos(), room:GetCenterPos()
+        local start = rng:RandomInt(4)
+        local nums = { "Num10", "Num20", "Num30", "Num40", "Num50" }
+        local x = tl.X + 80 + rng:RandomFloat() * 60
+        local i = 0
+        while x < br.X - 40 do
+            prop("Yardline", Vector(x, c.Y))
+            local num = nums[math.min(5, start + 1 + i)]
+            prop(num, Vector(x, br.Y - 40))
+            prop(num, Vector(x, tl.Y + 40))
+            x, i = x + 120 + rng:RandomFloat() * 20, i + 1
+        end
+    end
+
+    local function sideline(room, rng)                  -- a sideline down one wall, junk piled along it
+        local tl, br, c = room:GetTopLeftPos(), room:GetBottomRightPos(), room:GetCenterPos()
+        local top = rng:RandomInt(2) == 0
+        local y = top and tl.Y + 34 or br.Y - 34
+        for x = tl.X + 75, br.X - 75, 150 do prop("Sideline", Vector(x, y)) end
+        for _ = 1, 2 + rng:RandomInt(3) do
+            local name = ({ "Cups", "Cooler", "Stain", "Tape", "BallBag" })[rng:RandomInt(5) + 1]
+            prop(name, Vector(tl.X + 50 + rng:RandomFloat() * (br.X - tl.X - 100), y + (top and 22 or -22)),
+                rng:RandomInt(2) == 0)
+        end
+        return c
+    end
+
+    local function endzone(room, rng)                   -- end zone stripes in a corner, a pylon on the line
+        local tl, br = room:GetTopLeftPos(), room:GetBottomRightPos()
+        local left, top = rng:RandomInt(2) == 0, rng:RandomInt(2) == 0
+        local x, y = left and tl.X + 44 or br.X - 44, top and tl.Y + 34 or br.Y - 34
+        prop("EndStripes", Vector(x, y), not left)
+        prop("Pylon", Vector(x + (left and 40 or -40), y), rng:RandomInt(2) == 0)
+    end
+
+    local LAYOUTS = {   -- weight, painter (nil = sideline junk only)
+        { 40, nil }, { 20, sideline }, { 15, midfield }, { 15, numbers }, { 10, endzone },
+    }
+    local function paint(room, rng)
+        local roll, acc = rng:RandomInt(100), 0
+        for _, layout in ipairs(LAYOUTS) do
+            acc = acc + layout[1]
+            if roll < acc then
+                if layout[2] then layout[2](room, rng) end
+                return
+            end
+        end
     end
 
     local function setPiece(room, rng, tiles)
@@ -76,7 +131,7 @@ return function(mod)
         rng:SetSeed(math.max(1, room:GetDecorationSeed()), 35)
         if rng:RandomFloat() >= level.chance then return end
         local tiles = openTiles(room)
-        if rng:RandomFloat() < 0.5 then fieldPaint(room, rng) end
+        paint(room, rng)
         local n = level.props[1] + rng:RandomInt(level.props[2] - level.props[1] + 1)
         for _ = 1, math.min(n, #tiles) do
             local i = rng:RandomInt(#tiles) + 1

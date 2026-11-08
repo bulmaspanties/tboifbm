@@ -2021,7 +2021,24 @@ do
     check(same, "a room looks the same every time you come back")
     local empty = 0
     for sd = 1, 200 do if #propsIn(sd) == 0 then empty = empty + 1 end end
-    check(empty > 100, "most rooms stay plain")
+    check(empty > 150, "most rooms stay plain (about one in eight is dressed)")
+    local looks = {}
+    for sd = 1, 600 do
+        local names = {}
+        for _, e in ipairs(propsIn(sd)) do
+            local n = e.data.GridironDecor
+            if n == "Yardline" or n == "Sideline" or n == "EndStripes" or n:sub(1, 3) == "Num" or n == "Logo" then
+                names[n:sub(1, 3) == "Num" and "Num" or n] = true
+            end
+        end
+        local key = {}
+        for n in pairs(names) do key[#key + 1] = n end
+        table.sort(key)
+        looks[table.concat(key, "+")] = true
+    end
+    local variety = 0
+    for _ in pairs(looks) do variety = variety + 1 end
+    check(variety >= 4, "dressed rooms use several different layouts")
     mod.Settings.decor = "off"
     check(#propsIn(seed) == 0, "decor can be turned off")
     mod.Settings.decor = "full"

@@ -805,6 +805,37 @@ def decor_props():
         for y in range(3):
             g[y][x] = "1"
     props["Hash"] = (rect_rows(g), True, (5, 1))
+    g = grid(150, 3)                                       # a sideline, along a wall
+    for x in range(150):
+        if rnd.random() > 0.12:
+            for y in range(3):
+                g[y][x] = "1" if rnd.random() > 0.25 else "2"
+    props["Sideline"] = (rect_rows(g), True, (75, 1))
+    digits = {"1": ["01", "11", "01", "01", "01"], "2": ["11", "01", "11", "10", "11"],
+              "3": ["11", "01", "11", "01", "11"], "4": ["101", "101", "111", "001", "001"],
+              "5": ["11", "10", "11", "01", "11"], "0": ["111", "101", "101", "101", "111"]}
+    for num in ("10", "20", "30", "40", "50"):            # painted yard numbers, 3x scale
+        cols = sum(len(digits[c][0]) for c in num) + 1
+        g = grid(cols * 3 + 2, 17)
+        x0 = 1
+        for c in num:
+            for yy, row in enumerate(digits[c]):
+                for xx, bit in enumerate(row):
+                    if bit == "1":
+                        for dy in range(3):
+                            for dx in range(3):
+                                if rnd.random() > 0.15:
+                                    g[1 + yy * 3 + dy][x0 + xx * 3 + dx] = "1"
+            x0 += len(digits[c][0]) * 3 + 3
+        props["Num" + num] = (rect_rows(g), True, (len(g[0]) // 2, 8))
+    g = grid(64, 44)                                       # end zone corner stripes
+    for k in range(-44, 64, 10):
+        for y in range(44):
+            for w in range(4):
+                x = k + y + w
+                if 0 <= x < 64 and rnd.random() > 0.2:
+                    g[y][x] = "3"
+    props["EndStripes"] = (rect_rows(g), True, (32, 22))
     g = grid(56, 36)
     ellipse(g, 27.5, 17.5, 27, 17, "3")                    # scrubbed team logo
     ellipse(g, 27.5, 17.5, 22, 13, ".")
