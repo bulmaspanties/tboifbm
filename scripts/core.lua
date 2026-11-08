@@ -296,9 +296,9 @@ return function(mod)
         crowd = true,          -- crowd cheers/boos, horn and fanfare
         decor = "full",        -- football props in rooms: "off", "light" or "full"
         drugTests = true,      -- referees and the coach go after juiced players
-        helmetColor = "red",   -- uniform colours (menu: uniform); each is a pre-made costume
-        jerseyColor = "blue",
-        pantsColor = "white",
+        helmetColor = "auto",  -- uniform colours (menu: uniform); "auto" = the character's own colours
+        jerseyColor = "auto",
+        pantsColor = "auto",
     }
     mod.SettingDefaults = {}
     for k, v in pairs(mod.Settings) do mod.SettingDefaults[k] = v end

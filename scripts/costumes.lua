@@ -40,6 +40,58 @@ return function(mod)
     mod.Costumes = Costumes
     mod.COSTUME_SLOTS = { "helmet", "eyeblack", "torso", "legs" }
 
+    -- "auto" uniform colours: every character suits up in colours that match their look.
+    -- { helmet, jersey, pants }; anyone not listed wears the classic red / blue / white.
+    local TEAM = {
+        PLAYER_ISAAC = { "red", "blue", "white" },        PLAYER_MAGDALENE = { "pink", "white", "pink" },
+        PLAYER_CAIN = { "green", "gold", "white" },       PLAYER_JUDAS = { "black", "red", "black" },
+        PLAYER_BLUEBABY = { "blue", "navy", "white" },    PLAYER_EVE = { "black", "red", "black" },
+        PLAYER_SAMSON = { "red", "gold", "white" },       PLAYER_AZAZEL = { "black", "black", "red" },
+        PLAYER_LAZARUS = { "silver", "navy", "white" },   PLAYER_LAZARUS2 = { "white", "silver", "white" },
+        PLAYER_EDEN = { "purple", "green", "gold" },      PLAYER_THELOST = { "white", "white", "silver" },
+        PLAYER_BLACKJUDAS = { "black", "black", "black" }, PLAYER_LILITH = { "black", "purple", "black" },
+        PLAYER_KEEPER = { "gold", "green", "gold" },      PLAYER_APOLLYON = { "black", "silver", "black" },
+        PLAYER_THEFORGOTTEN = { "silver", "white", "silver" }, PLAYER_THESOUL = { "white", "blue", "white" },
+        PLAYER_BETHANY = { "gold", "white", "white" },    PLAYER_JACOB = { "navy", "blue", "white" },
+        PLAYER_ESAU = { "red", "orange", "red" },
+        -- tainted: darker, meaner versions
+        PLAYER_ISAAC_B = { "navy", "red", "black" },      PLAYER_MAGDALENE_B = { "red", "pink", "red" },
+        PLAYER_CAIN_B = { "black", "green", "black" },    PLAYER_JUDAS_B = { "black", "purple", "black" },
+        PLAYER_BLUEBABY_B = { "navy", "orange", "navy" }, PLAYER_EVE_B = { "red", "black", "red" },
+        PLAYER_SAMSON_B = { "red", "red", "black" },      PLAYER_AZAZEL_B = { "black", "red", "black" },
+        PLAYER_LAZARUS_B = { "silver", "black", "navy" }, PLAYER_LAZARUS2_B = { "black", "silver", "navy" },
+        PLAYER_EDEN_B = { "green", "purple", "orange" },  PLAYER_THELOST_B = { "white", "black", "silver" },
+        PLAYER_LILITH_B = { "purple", "black", "purple" }, PLAYER_KEEPER_B = { "gold", "black", "gold" },
+        PLAYER_APOLLYON_B = { "silver", "black", "silver" }, PLAYER_THEFORGOTTEN_B = { "black", "silver", "black" },
+        PLAYER_BETHANY_B = { "red", "black", "gold" },    PLAYER_JACOB_B = { "black", "navy", "black" },
+        PLAYER_JACOB2_B = { "black", "navy", "black" },   PLAYER_THESOUL_B = { "black", "white", "black" },
+    }
+    mod.CharacterTeamColors = {}
+    for name, colors in pairs(TEAM) do
+        if PlayerType and PlayerType[name] then mod.CharacterTeamColors[PlayerType[name]] = colors end
+    end
+    -- the Gridiron characters (registered by name, looked up once they exist)
+    local OWN_TEAMS = {
+        QUARTERBACK = { "red", "blue", "white" }, QUARTERBACK_B = { "black", "blue", "white" },
+        KICKER = { "gold", "white", "white" }, KICKER_B = { "black", "silver", "black" },
+        COACH = { "navy", "navy", "silver" }, COACH_B = { "black", "orange", "black" },
+    }
+    local SLOT = { helmet = 1, jersey = 2, pants = 3 }
+
+    -- The colour a player actually wears for one piece.
+    function mod.uniformColor(player, kind)
+        local chosen = mod.Settings[kind .. "Color"]
+        if chosen and chosen ~= "auto" then return chosen end
+        local ptype = player and player:GetPlayerType()
+        local team = ptype and mod.CharacterTeamColors[ptype]
+        if not team and mod.PlayerTypes then
+            for key, colors in pairs(OWN_TEAMS) do
+                if mod.PlayerTypes[key] and mod.PlayerTypes[key] == ptype then team = colors end
+            end
+        end
+        return team and team[SLOT[kind]] or mod.UNIFORM_COLORS[kind][1]
+    end
+
     -- Per-character hides: CharacterCostumeRules[PlayerType] = { helmet = false, ... }.
     -- Built-in rules go here; players can add their own with the `gridiron hide` command.
     -- Characters with no legs to put pants on (ghosts, and Azazel's bat body) skip the legs.
@@ -82,9 +134,9 @@ return function(mod)
         local S = mod.Settings
         local ptype = player:GetPlayerType()
         local fit = (mod.HORNED_HELMET[ptype] and "_horns") or (mod.ROOMY_HELMET[ptype] and "_roomy") or ""
-        local helmetKey = "helmet" .. fit .. colorSuffix("helmet", S.helmetColor)
-        local jerseySfx = colorSuffix("jersey", S.jerseyColor)
-        local pantsSfx = colorSuffix("pants", S.pantsColor)
+        local helmetKey = "helmet" .. fit .. colorSuffix("helmet", mod.uniformColor(player, "helmet"))
+        local jerseySfx = colorSuffix("jersey", mod.uniformColor(player, "jersey"))
+        local pantsSfx = colorSuffix("pants", mod.uniformColor(player, "pants"))
         if player:HasCollectible(Items.HELMET) then want.helmet = helmetKey end
         if pdata(player).allPro then
             want.eyeblack = "allpro"                       -- All-Pro: gold war paint
@@ -166,10 +218,10 @@ return function(mod)
     local function pedestalIcon(subtype)
         local S = mod.Settings
         if subtype == Items.HELMET then
-            local sfx = colorSuffix("helmet", S.helmetColor)
+            local sfx = colorSuffix("helmet", mod.uniformColor(Isaac.GetPlayer(0), "helmet"))
             return "gfx/items/collectibles/football_helmet" .. sfx .. ".png"
         elseif subtype == Items.JERSEY then
-            local sfx = colorSuffix("jersey", S.jerseyColor)
+            local sfx = colorSuffix("jersey", mod.uniformColor(Isaac.GetPlayer(0), "jersey"))
             return "gfx/items/collectibles/team_jersey" .. sfx .. ".png"
         end
     end

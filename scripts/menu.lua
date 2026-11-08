@@ -106,7 +106,8 @@ return function(mod)
 
     -- Uniform colours: each choice swaps in a pre-made costume colourway.
     local function colorChoice(label, kind, key, tip)
-        local colors = mod.UNIFORM_COLORS[kind]
+        local colors = { "auto" }
+        for _, c in ipairs(mod.UNIFORM_COLORS[kind]) do colors[#colors + 1] = c end
         local function indexOf(c)
             for i, name in ipairs(colors) do if name == c then return i end end
             return 1
@@ -191,9 +192,9 @@ return function(mod)
         uniform = {
             title = "uniform",
             buttons = {
-                colorChoice("helmet", "helmet", "helmetColor", { "helmet shell", "colour" }),
-                colorChoice("jersey", "jersey", "jerseyColor", { "jersey colour", "(trim matches)" }),
-                colorChoice("pants", "pants", "pantsColor", { "pants colour" }),
+                colorChoice("helmet", "helmet", "helmetColor", { "helmet shell", "colour (auto:", "your character's)" }),
+                colorChoice("jersey", "jersey", "jerseyColor", { "jersey colour", "(auto: your", "character's)" }),
+                colorChoice("pants", "pants", "pantsColor", { "pants colour", "(auto: your", "character's)" }),
                 { str = "", fsize = 2, nosel = true },
                 {
                     str = "team defaults",
@@ -204,7 +205,7 @@ return function(mod)
                         mod.StoreSaveData()
                         mod.refreshAllCostumes()
                     end,
-                    tooltip = { strset = { "red helmet,", "blue jersey,", "white pants" } },
+                    tooltip = { strset = { "back to auto:", "every character", "in their colours" } },
                 },
             },
         },

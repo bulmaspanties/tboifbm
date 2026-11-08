@@ -1865,9 +1865,9 @@ newRoom(false)
 up.items[Items.HELMET], up.items[Items.JERSEY], up.items[Items.PADS], up.items[Items.PANTS] = 1, 1, 1, 1
 tick()
 check(costumeOn(up, "helmet") and costumeOn(up, "torso_jerseypads") and costumeOn(up, "legs_pants"), "default uniform")
-findButton("uniform", "helmet").store(8)        -- black
-findButton("uniform", "jersey").store(2)        -- red
-findButton("uniform", "pants").store(3)         -- gold
+findButton("uniform", "helmet").store(9)        -- black (1 is auto)
+findButton("uniform", "jersey").store(3)        -- red
+findButton("uniform", "pants").store(4)         -- gold
 tick()
 check(costumeOn(up, "helmet_black") and not costumeOn(up, "helmet"), "helmet colour swaps the helmet costume")
 check(costumeOn(up, "torso_jerseypads_red") and not costumeOn(up, "torso_jerseypads"), "jersey colour swaps the torso")
@@ -1885,7 +1885,7 @@ tick()
 check(costumeOn(up, "helmet") and costumeOn(up, "torso_jerseypads") and costumeOn(up, "legs_pants"), "team defaults restore the uniform")
 findButton("uniform", "jersey").store(4)
 mod.ResetSettings()
-check(mod.Settings.jerseyColor == "blue", "reset settings restores the uniform colours too")
+check(mod.Settings.jerseyColor == "auto", "reset settings puts the uniform back on auto")
 
 -- Stadium sounds follow the crowd setting; gameplay feedback always plays
 for k in pairs(soundsPlayed) do soundsPlayed[k] = nil end
@@ -1904,23 +1904,27 @@ world.entities = { mag }
 newRoom(false)
 mag.items[Items.HELMET], mag.items[Items.PANTS] = 1, 1
 tick()
-check(costumeOn(mag, "helmet_roomy") and not costumeOn(mag, "helmet"), "magdalene gets the roomy helmet")
+check(costumeOn(mag, "helmet_roomy_pink") and not costumeOn(mag, "helmet"), "magdalene gets the roomy helmet, in her pink")
+check(mod.uniformColor(mag, "jersey") == "white" and mod.uniformColor(mag, "pants") == "pink", "auto: magdalene's colours")
+mod.Settings.helmetColor = "green"
+check(mod.uniformColor(mag, "helmet") == "green", "a colour picked in the menu overrides auto")
+mod.Settings.helmetColor = "auto"
 local lost = newPlayer(PlayerType.PLAYER_THELOST)
 players = { lost }
 world.entities = { lost }
 lost.items[Items.HELMET], lost.items[Items.PANTS] = 1, 1
 tick()
-check(costumeOn(lost, "helmet") and not costumeOn(lost, "legs_pants"), "the lost wears a helmet but no pants")
+check(costumeOn(lost, "helmet_white") and not costumeOn(lost, "legs_pants_silver"), "the lost wears a white helmet but no pants")
 local az = newPlayer(PlayerType.PLAYER_AZAZEL)
 players = { az }
 world.entities = { az }
 az.items[Items.HELMET] = 1
 tick()
-check(costumeOn(az, "helmet_horns") and not costumeOn(az, "legs_pants"), "azazel's horns come through a horned helmet")
+check(costumeOn(az, "helmet_horns_black") and not costumeOn(az, "legs_pants_red"), "azazel's horns come through a black horned helmet")
 
 -- pedestal icons follow the uniform colours, but never reveal a blind item
 local ped = newEntity({ Type = EntityType.ENTITY_PICKUP, Variant = PickupVariant.PICKUP_COLLECTIBLE, SubType = Items.JERSEY })
-findButton("uniform", "jersey").store(11)        -- pink
+findButton("uniform", "jersey").store(12)        -- pink
 dispatch(ModCallbacks.MC_POST_PICKUP_UPDATE, PickupVariant.PICKUP_COLLECTIBLE, ped)
 check(ped.sprite.sheets and ped.sprite.sheets[1] == "gfx/items/collectibles/team_jersey_pink.png", "jersey pedestal turns pink")
 local blindPed = newEntity({ Type = EntityType.ENTITY_PICKUP, Variant = PickupVariant.PICKUP_COLLECTIBLE, SubType = Items.HELMET })
