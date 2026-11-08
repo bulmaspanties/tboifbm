@@ -417,7 +417,11 @@ local function newPlayer(ptype)
     function p:SetPocketActiveItem(id) self.pocket = id end
     function p:AddCard(id) self.card = id end
     function p:FullCharge() self.charged = true; return true end
-    function p:GetEffects() return { GetCollectibleEffectNum = function() return 0 end } end
+    function p:GetEffects()
+        local me = self
+        return { GetCollectibleEffectNum = function() return 0 end,
+            HasCollectibleEffect = function(_, id) return me.effects ~= nil and me.effects[id] == true end }
+    end
     function p:CheckFamiliar(variant, count)
         local mine = {}
         for _, e in ipairs(world.entities) do
@@ -2469,6 +2473,42 @@ end)()
     mod.Settings.bossMusic = true
     fr2.exists = false
     newRoom(false)
+end)()
+
+-- More interactions ------------------------------------------------------------------------------
+;(function()
+    local C = CollectibleType
+    local ip = newPlayer()
+    players = { ip }
+    world.entities = { ip }
+    newRoom(false)
+    -- Holy Mantle + Pads: the shield breaking sets off the pads
+    ip.items[Items.PADS] = 1
+    ip.effects = { [C.COLLECTIBLE_HOLY_MANTLE] = true }
+    tick()
+    local near = newEnemy(ip.Position + Vector(40, 0), 50)
+    ip.effects = {}
+    tick()
+    check(near.damageTaken > 0, "holy mantle breaking: shield pop")
+    ip.items[Items.PADS] = nil
+    -- Lucky Foot + Cleats
+    ip.items[Items.CLEATS], ip.items[C.COLLECTIBLE_LUCKY_FOOT] = 1, 1
+    ip:EvaluateItems()
+    local luck0 = ip.Luck
+    mod.pdata(ip).firstDowns = 2
+    ip:EvaluateItems()
+    check(ip.Luck == luck0 + 2 * Cfg.LUCKY_FOOT_LUCK, "lucky foot: first downs are lucky")
+    mod.pdata(ip).firstDowns = 0
+    -- Mom's Contacts + Eye Black, Mega Mush, Old Bandage
+    check(mod.eyeBlackMult(ip) == 1, "no contacts")
+    ip.items[C.COLLECTIBLE_MOMS_CONTACTS] = 1
+    check(mod.eyeBlackMult(ip) > 1, "mom's contacts sharpen eye black")
+    ip.items[C.COLLECTIBLE_MEGA_MUSH] = 1
+    local _, bigD = mod.tackleSynergy(ip)
+    check(bigD > 1, "mega mush: big tackles")
+    ip.items[C.COLLECTIBLE_OLD_BANDAGE] = 1
+    local _, heart = mod.waterBoyBoost(ip)
+    check(heart == HeartSubType.HEART_FULL, "old bandage: the water boy gives whole hearts")
 end)()
 
 -- Settings survive a restart (fresh load reads the stored blob)

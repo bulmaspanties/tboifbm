@@ -19,7 +19,7 @@ return function(mod)
     -- Big bodies (Leo, Thunder Thighs, Magic Mushroom, Bucket of Lard) hit harder.
     local CHARGERS = { C.COLLECTIBLE_ARIES, C.COLLECTIBLE_TAURUS }
     local BIG = { C.COLLECTIBLE_LEO, C.COLLECTIBLE_THUNDER_THIGHS, C.COLLECTIBLE_MAGIC_MUSHROOM,
-        C.COLLECTIBLE_BUCKET_OF_LARD }
+        C.COLLECTIBLE_BUCKET_OF_LARD, C.COLLECTIBLE_MEGA_MUSH }
 
     function mod.tackleSynergy(player)
         local windup, dmg, knock = 1, 1, 1
@@ -81,7 +81,9 @@ return function(mod)
 
     -- Ball of Bandages: the Water Boy is a real trainer now: more often, and whole hearts.
     function mod.waterBoyBoost(player)
-        if player:HasCollectible(C.COLLECTIBLE_BALL_OF_BANDAGES) then return 1.5, HeartSubType.HEART_FULL end
+        if hasAny(player, { C.COLLECTIBLE_BALL_OF_BANDAGES, C.COLLECTIBLE_OLD_BANDAGE, C.COLLECTIBLE_SUPER_BANDAGE }) then
+            return 1.5, HeartSubType.HEART_FULL
+        end
         return 1, HeartSubType.HEART_HALF
     end
 
@@ -94,6 +96,32 @@ return function(mod)
     function mod.fingerDrop(player)
         return player:HasCollectible(C.COLLECTIBLE_NUMBER_ONE) and CoinSubType.COIN_NICKEL or CoinSubType.COIN_PENNY
     end
+
+    -- Mom's Contacts + Eye Black: sharper eyes, a bigger long-range bonus.
+    function mod.eyeBlackMult(player)
+        return player and player:HasCollectible(C.COLLECTIBLE_MOMS_CONTACTS) and 1.5 or 1
+    end
+
+    -- Lucky Foot + Cleats: every first down is lucky too (for the room).
+    function mod:OnCacheLuckyFoot(player, flag)
+        if flag == CacheFlag.CACHE_LUCK and player:HasCollectible(C.COLLECTIBLE_LUCKY_FOOT)
+            and player:HasCollectible(Items.CLEATS) then
+            player.Luck = player.Luck + (pdata(player).firstDowns or 0) * Cfg.LUCKY_FOOT_LUCK
+        end
+    end
+    mod:AddCallback(ModCallbacks.MC_EVALUATE_CACHE, mod.OnCacheLuckyFoot)
+
+    -- Holy Mantle + Shoulder Pads: when the shield breaks, the pads go off.
+    function mod:OnPeffectMantle(player)
+        local d = pdata(player)
+        local up = player:GetEffects():HasCollectibleEffect(C.COLLECTIBLE_HOLY_MANTLE)
+        if d.mantleUp and not up and player:HasCollectible(Items.PADS) then
+            mod.padPop(player, player.Position, 1.2)
+            mod.popOn(player, "SHIELD POP!", mod.Colors.blue)
+        end
+        d.mantleUp = up
+    end
+    mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.OnPeffectMantle)
 
     -- Pills: playing through the pain, and speed.
     function mod:OnUsePillSynergy(effect, player)
@@ -256,12 +284,15 @@ return function(mod)
             icon(C.COLLECTIBLE_KNOCKOUT_DROPS) .. " Knockout Drops: tackled enemies stay down 3x longer",
         [Items.MOUTHGUARD] = "{{Pill}} Percs! / Addicted!: works on every hit for the room",
         [Items.GLOVES] = icon(C.COLLECTIBLE_MAGNETO) .. icon(C.COLLECTIBLE_TELEKINESIS) .. " Magneto / Telekinesis: +20% catch chance",
-        [Items.PADS] = icon(C.COLLECTIBLE_INFAMY) .. " Infamy: +15% deflect chance",
+        [Items.PADS] = icon(C.COLLECTIBLE_INFAMY) .. " Infamy: +15% deflect chance#" ..
+            icon(C.COLLECTIBLE_HOLY_MANTLE) .. " Holy Mantle: when the shield breaks, the pads release a shockwave",
+        [Items.EYE_BLACK] = icon(C.COLLECTIBLE_MOMS_CONTACTS) .. " Mom's Contacts: +50% to the long-range bonus",
         [Items.JERSEY] = icon(C.COLLECTIBLE_BRIMSTONE) .. " Brimstone, Technology, Mom's Knife, etc.: still throw footballs#" ..
             "Footballs take on your tear effects' colours (fire, poison, holy, ice...)",
         [Items.CLEATS] = icon(C.COLLECTIBLE_PONY) .. icon(C.COLLECTIBLE_WHITE_PONY) .. icon(C.COLLECTIBLE_TAURUS) ..
             icon(C.COLLECTIBLE_SPEED_BALL) .. " Pony / White Pony / Taurus / Speed Ball: first downs need half the yards#" ..
-            "{{Pill}} Speed Up: the same, for the room",
+            "{{Pill}} Speed Up: the same, for the room#" ..
+            icon(C.COLLECTIBLE_LUCKY_FOOT) .. " Lucky Foot: every first down is +0.5 Luck for the room",
         [Items.PANTS] = icon(C.COLLECTIBLE_THUNDER_THIGHS) .. icon(C.COLLECTIBLE_LEO) .. " Thunder Thighs / Leo: +15% shrug-off chance",
         [Items.RING] = icon(C.COLLECTIBLE_MONEY_EQUALS_POWER) .. icon(C.COLLECTIBLE_GREEDS_GULLET) ..
             " Money = Power / Greed's Gullet: rings give double damage#" ..
@@ -289,7 +320,8 @@ return function(mod)
         [Items.CHEERLEADER] = icon(C.COLLECTIBLE_BFFS) .. " BFFS!: stronger routines#" ..
             icon(C.COLLECTIBLE_JUMPER_CABLES) .. " Jumper Cables: every routine charges your active item",
         [Items.WATER_BOY] = icon(C.COLLECTIBLE_BFFS) .. " BFFS!: drops hearts more often#" ..
-            icon(C.COLLECTIBLE_BALL_OF_BANDAGES) .. " Ball of Bandages: a real trainer: more often, and whole hearts",
+            icon(C.COLLECTIBLE_BALL_OF_BANDAGES) .. icon(C.COLLECTIBLE_OLD_BANDAGE) .. icon(C.COLLECTIBLE_SUPER_BANDAGE) ..
+            " Bandages: a real trainer: more often, and whole hearts",
         [Items.DUMMY] = icon(C.COLLECTIBLE_BFFS) .. " BFFS!: pulls enemies from farther away#" ..
             icon(C.COLLECTIBLE_GNAWED_LEAF) .. " Gnawed Leaf: digs in: much wider, twice as strong pull",
     }

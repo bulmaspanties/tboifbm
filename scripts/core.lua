@@ -281,6 +281,7 @@ return function(mod)
         BOOM_KICK_RADIUS      = 1.5,   -- explosive items + Kicking Tee
         BFFS_FAMILIAR_BOOST   = 1.5,
         BIG_PANTS_BONUS       = 0.15,  -- Thunder Thighs / Leo + Padded Pants
+        LUCKY_FOOT_LUCK       = 0.5,   -- Lucky Foot + Cleats, per first down
         JUICED_DAMAGE         = 1.5,   -- steroids + tackles
         JUICED_KNOCKBACK      = 2,
         PINBALL_FRAMES        = 14,    -- a juiced tackle sends the enemy flying this long
@@ -351,6 +352,7 @@ return function(mod)
     function mod.buckleWindup() return 1 end
     function mod.bossPushMult() return 0.25 end
     function mod.isJuiced() return false end
+    function mod.eyeBlackMult() return 1 end
     function mod.tackleStunMult() return 1 end
     function mod.throwRangeMult() return 1 end
     function mod.waterBoyBoost() return 1, HeartSubType.HEART_HALF end

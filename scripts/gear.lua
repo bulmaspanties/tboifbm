@@ -132,7 +132,7 @@ return function(mod)
         if d.yardDist >= needed then
             d.yardDist = d.yardDist - needed
             d.firstDowns = d.firstDowns + 1
-            mod.refreshCache(player)
+            mod.refreshCache(player, CacheFlag.CACHE_DAMAGE | CacheFlag.CACHE_LUCK)
             player:SetColor(Color(1, 1, 1, 1, 0.1, 0.4, 0.1), 10, 1, true, false)
             sfx:Play(SoundEffect.SOUND_THUMBSUP, 0.7)
             local ord = ({ "1ST", "2ND", "3RD", "4TH" })[d.firstDowns] or ""
@@ -611,6 +611,7 @@ return function(mod)
             if origin then
                 local dist = (source.Entity.Position - origin):Length()
                 mult = mult + math.min(dist / Cfg.EYE_BLACK_RANGE_FULL, 1) * Cfg.EYE_BLACK_MAX_BONUS
+                    * mod.eyeBlackMult(playerFromSource(source))
             end
         end
         if mod.isMarked and mod.isMarked(entity) then

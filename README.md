@@ -146,6 +146,11 @@ Clearing a normal room has a **6% chance** (once per floor, adjustable in the me
 | Water Boy | Ball of Bandages | A real trainer: drops more often, and whole hearts |
 | Cheerleader | Jumper Cables | Every routine charges your active item |
 | Tackling Dummy | Gnawed Leaf | Digs in: a much wider and twice as strong pull |
+| Shoulder Pads | Holy Mantle | When the shield breaks, the pads release a shockwave |
+| Eye Black | Mom's Contacts | +50% to the long-range damage bonus |
+| Football Cleats | Lucky Foot | Every first down is also +0.5 Luck for the room |
+| Football Helmet | Mega Mush | Counts as a big body: harder, farther tackles |
+| Water Boy | Old Bandage, Super Bandage | Same as Ball of Bandages: more often, and whole hearts |
 | Every football | Tear effects (fire, poison, Ipecac, holy light, ice, charm, Dark Matter, Midas, homing) | The football takes on that effect's colour, so you can see the synergy |
 
 These also appear in External Item Descriptions.
