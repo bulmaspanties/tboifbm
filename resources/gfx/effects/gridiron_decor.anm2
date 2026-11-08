@@ -126,5 +126,70 @@
 			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="25" YPivot="17" XCrop="742" YCrop="0" Width="50" Height="18" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
 			<NullAnimations/><Triggers/>
 		</Animation>
+		<Animation Name="Locker" FrameNum="1" Loop="true">
+			<RootAnimation><Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></RootAnimation>
+			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="10" YPivot="41" XCrop="794" YCrop="0" Width="20" Height="42" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
+			<NullAnimations/><Triggers/>
+		</Animation>
+		<Animation Name="LockerOpen" FrameNum="1" Loop="true">
+			<RootAnimation><Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></RootAnimation>
+			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="10" YPivot="41" XCrop="816" YCrop="0" Width="20" Height="42" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
+			<NullAnimations/><Triggers/>
+		</Animation>
+		<Animation Name="Whiteboard" FrameNum="1" Loop="true">
+			<RootAnimation><Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></RootAnimation>
+			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="23" YPivot="31" XCrop="838" YCrop="0" Width="46" Height="32" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
+			<NullAnimations/><Triggers/>
+		</Animation>
+		<Animation Name="Drain" FrameNum="1" Loop="true">
+			<RootAnimation><Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></RootAnimation>
+			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="8" YPivot="6" XCrop="886" YCrop="0" Width="16" Height="12" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
+			<NullAnimations/><Triggers/>
+		</Animation>
+		<Animation Name="Puddle" FrameNum="1" Loop="true">
+			<RootAnimation><Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></RootAnimation>
+			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="15" YPivot="7" XCrop="904" YCrop="0" Width="30" Height="14" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
+			<NullAnimations/><Triggers/>
+		</Animation>
+		<Animation Name="Towel" FrameNum="1" Loop="true">
+			<RootAnimation><Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></RootAnimation>
+			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="11" YPivot="7" XCrop="936" YCrop="0" Width="22" Height="14" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
+			<NullAnimations/><Triggers/>
+		</Animation>
+		<Animation Name="JerseyFloor" FrameNum="1" Loop="true">
+			<RootAnimation><Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></RootAnimation>
+			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="12" YPivot="8" XCrop="960" YCrop="0" Width="24" Height="16" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
+			<NullAnimations/><Triggers/>
+		</Animation>
+		<Animation Name="Trash" FrameNum="1" Loop="true">
+			<RootAnimation><Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></RootAnimation>
+			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="9" YPivot="23" XCrop="986" YCrop="0" Width="18" Height="24" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
+			<NullAnimations/><Triggers/>
+		</Animation>
+		<Animation Name="Cone" FrameNum="1" Loop="true">
+			<RootAnimation><Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></RootAnimation>
+			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="5" YPivot="9" XCrop="1006" YCrop="0" Width="10" Height="10" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
+			<NullAnimations/><Triggers/>
+		</Animation>
+		<Animation Name="Ladder" FrameNum="1" Loop="true">
+			<RootAnimation><Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></RootAnimation>
+			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="13" YPivot="48" XCrop="1018" YCrop="0" Width="26" Height="96" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
+			<NullAnimations/><Triggers/>
+		</Animation>
+		<Animation Name="Tire" FrameNum="1" Loop="true">
+			<RootAnimation><Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></RootAnimation>
+			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="11" YPivot="10" XCrop="1046" YCrop="0" Width="22" Height="14" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
+			<NullAnimations/><Triggers/>
+		</Animation>
+		<Animation Name="Turf" FrameNum="1" Loop="true">
+			<RootAnimation><Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></RootAnimation>
+			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="40" YPivot="28" XCrop="1070" YCrop="0" Width="80" Height="56" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
+			<NullAnimations/><Triggers/>
+		</Animation>
+		<Animation Name="TurfSmall" FrameNum="1" Loop="true">
+			<RootAnimation><Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></RootAnimation>
+			<LayerAnimations><LayerAnimation LayerId="0" Visible="true"><Frame XPosition="0" YPosition="0" XPivot="22" YPivot="15" XCrop="1152" YCrop="0" Width="44" Height="30" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/></LayerAnimation></LayerAnimations>
+			<NullAnimations/><Triggers/>
+		</Animation>
 	</Animations>
 </AnimatedActor>

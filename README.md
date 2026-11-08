@@ -78,7 +78,14 @@ Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats
 Hold **any 3 Gridiron items** (passives, actives, familiars, Q4s: anything from this mod) to become **All-Pro**, for the rest of the run like a vanilla transformation: **+0.5 Damage**, **every 4th shot is a homing golden spiral**, and your eye black turns to **gold war paint** (it shows through the facemask).
 
 ### Field decor
-About one normal room in eight looks like somebody played football in it, each in its own way: **faded yard lines and hash marks**, **painted yard numbers**, a **sideline** down one wall, **end zone stripes** in a corner, a half-scrubbed **team logo**, or just and **sideline junk** (crushed cups, Gatorade stains, a tipped cooler, a spilled ball bag, a busted pylon, a dented helmet, tape, a muddy clipboard, a bloody mouthguard). Now and then there's a **goalpost**, a **bench** or a **tackling sled**, and the football bosses' rooms get **stadium banners**. Props never collide with anything, and each room looks the same every time you come back. Set **field decor** to off, light or full in *visuals*.
+About one normal room in eight looks like somebody played football in it, and no two look alike:
+- **Game field:** goalposts at both ends, end zones, yard lines and painted numbers.
+- **Locker room:** a row of dented lockers along the wall (some hanging open), a whiteboard of plays, a bench, the shower drain and puddles, bloody towels and dropped jerseys.
+- **Practice field:** a line of cones, a taped agility ladder, a tire drill, a sled and ball bags.
+- **Turf field:** torn, filthy patches of old artificial turf laid over the floor.
+- Or just a **sideline** down one wall, **end zone stripes** in a corner, **painted yard numbers**, a scrubbed **team logo**, or sideline junk (cups, stains, a tipped cooler, a busted pylon, a dented helmet, a bloody mouthguard).
+
+The football bosses' rooms get **stadium banners**. Props never collide with anything or block a door, and each room looks the same every time you come back. Set **field decor** to off, light or full in *visuals*.
 
 ### Halftime show
 Clearing a normal room has a **6% chance** (once per floor, adjustable in the menu) to start a **halftime show**: the whistle, the stadium horn, fireworks and the crowd. You get to **pick one**: a **Gridiron item you don't have yet** or a **soul heart**. Take one and the other disappears.

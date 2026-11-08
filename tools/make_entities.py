@@ -968,6 +968,112 @@ def decor_props():
     rect(g, 2, 0, 3, 2, "n")
     rect(g, 46, 0, 47, 2, "n")
     props["Banner"] = (rect_rows(outline(g)), False, (25, 17))
+
+    # locker room
+    for name, open_door in (("Locker", False), ("LockerOpen", True)):
+        g = grid(20, 42)
+        rect(g, 1, 1, 18, 40, "N")                         # dented steel locker
+        rect(g, 1, 1, 3, 40, "G")
+        rect(g, 16, 1, 18, 40, "n")
+        for y in (5, 7, 9):                                # vents
+            rect(g, 6, y, 13, y, "n")
+        rect(g, 14, 18, 15, 22, "v")                       # handle
+        put(g, [(9, 26), (10, 27), (8, 28), (11, 30)], "v")  # dents
+        put(g, [(5, 33), (6, 34), (12, 36)], "d")          # rust
+        rect(g, 1, 40, 18, 41, "n")
+        if open_door:
+            rect(g, 3, 3, 15, 38, "D")                     # dark inside
+            rect(g, 5, 8, 13, 20, "B")                     # a jersey hanging
+            rect(g, 5, 8, 6, 20, "L")
+            rect(g, 8, 11, 10, 15, "W")
+            ellipse(g, 9, 30, 4, 3, "R")                   # a helmet on the shelf
+            put(g, [(12, 34), (12, 35), (11, 36)], "i")    # something dripping
+        props[name] = (rect_rows(outline(g)), False, (10, 41))
+    g = grid(46, 32)
+    rect(g, 1, 1, 44, 26, "W")                             # whiteboard of plays
+    rect(g, 1, 1, 44, 1, "v")
+    rect(g, 1, 26, 44, 26, "v")
+    for x, y in ((8, 8), (16, 6), (24, 9), (32, 7)):
+        put(g, [(x, y), (x + 1, y + 1), (x + 1, y), (x, y + 1)], "R")   # X's
+    for x, y in ((10, 18), (20, 20), (30, 18), (38, 19)):
+        ellipse(g, x, y, 2, 2, "B")                        # O's
+        ellipse(g, x, y, 1, 1, "W")
+    for i in range(10):
+        put(g, [(12 + i * 2, 16 - i // 2)], "k")           # route arrows
+    put(g, [(33, 9), (34, 10), (35, 11), (36, 12), (37, 13)], "k")
+    put(g, [(40, 4), (41, 5), (39, 22), (6, 22)], "i")     # someone wrote in blood
+    rect(g, 6, 27, 7, 31, "n")
+    rect(g, 38, 27, 39, 31, "n")
+    props["Whiteboard"] = (rect_rows(outline(g)), False, (23, 31))
+    g = grid(16, 12)
+    ellipse(g, 7.5, 6, 7, 5, "n")                          # floor drain
+    for x in range(3, 13, 2):
+        rect(g, x, 3, x, 9, "D")
+    props["Drain"] = (rect_rows(outline(g)), True, (8, 6))
+    g = grid(30, 14)
+    ellipse(g, 15, 7, 14, 6, "6")                          # shower puddle
+    ellipse(g, 11, 6, 6, 2, "7")
+    props["Puddle"] = (rect_rows(g), True, (15, 7))
+    g = grid(22, 14)
+    ellipse(g, 11, 7, 10, 5, "W")                          # a crumpled, bloody towel
+    put(g, [(5, 6), (8, 9), (14, 4), (17, 8)], "w")
+    ellipse(g, 14, 8, 3, 2, "i")
+    props["Towel"] = (rect_rows(outline(g)), True, (11, 7))
+    g = grid(24, 16)
+    rect(g, 3, 4, 20, 13, "B")                             # a jersey on the floor
+    rect(g, 0, 4, 3, 8, "B")
+    rect(g, 20, 4, 23, 8, "B")
+    rect(g, 8, 2, 15, 4, "L")
+    rect(g, 9, 6, 13, 11, "W")
+    put(g, [(4, 12), (19, 11), (17, 5)], "b")
+    props["JerseyFloor"] = (rect_rows(outline(g)), True, (12, 8))
+    g = grid(18, 24)
+    rect(g, 2, 6, 15, 22, "n")                             # trash can of cups
+    rect(g, 2, 6, 4, 22, "N")
+    rect(g, 1, 4, 16, 6, "N")
+    for x, y in ((4, 2), (8, 1), (12, 3), (6, 4)):
+        rect(g, x, y, x + 2, y + 2, "W")
+    put(g, [(13, 1), (14, 2)], "O")
+    props["Trash"] = (rect_rows(outline(g)), False, (9, 23))
+
+    # practice field
+    g = grid(10, 10)
+    for y in range(2, 9):                                  # a training cone
+        half = (y - 1) // 2
+        rect(g, 4 - half, y, 5 + half, y, "O")
+    rect(g, 4, 2, 5, 3, "P")
+    rect(g, 0, 8, 9, 9, "o")
+    props["Cone"] = (rect_rows(outline(g)), False, (5, 9))
+    g = grid(26, 96)
+    for x in (2, 23):                                      # agility ladder, taped on the floor
+        rect(g, x, 1, x + 1, 94, "Y")
+    for y in range(4, 94, 12):
+        rect(g, 2, y, 24, y + 1, "Y")
+    for y in range(96):
+        for x in range(26):
+            if g[y][x] == "Y" and (x * 7 + y * 3) % 11 == 0:
+                g[y][x] = "."                              # scuffed
+    props["Ladder"] = (rect_rows(g), True, (13, 48))
+    g = grid(22, 14)
+    ellipse(g, 11, 7, 10, 6, "k")                          # a drill tire
+    ellipse(g, 11, 7, 10, 6, "n")
+    ellipse(g, 11, 7, 5, 2.5, ".")
+    put(g, [(4, 4), (16, 3), (19, 9)], "N")
+    props["Tire"] = (rect_rows(outline(g)), False, (11, 10))
+
+    # turf: torn patches of filthy old artificial turf laid over the floor
+    for name, (w, h) in (("Turf", (80, 56)), ("TurfSmall", (44, 30))):
+        g = grid(w, h)
+        for y in range(h):
+            for x in range(w):
+                d = ((x - w / 2) / (w / 2)) ** 2 + ((y - h / 2) / (h / 2)) ** 2
+                if d < 0.85 + 0.25 * rnd.random():           # ragged torn edge
+                    g[y][x] = "8" if rnd.random() > 0.3 else "9"
+        for _ in range(w * h // 60):                       # grime, dirt and a stain or two
+            x, y = rnd.randrange(w), rnd.randrange(h)
+            if g[y][x] != ".":
+                g[y][x] = "d" if rnd.random() < 0.7 else "i"
+        props[name] = (rect_rows(g), True, (w // 2, h // 2))
     return props
 
 
@@ -986,7 +1092,9 @@ def decor_sheet():
     """Pack every prop into one strip and write a matching anm2 (one animation per prop)."""
     from PIL import Image
     extra = {"1": (236, 236, 226, 115), "2": (236, 236, 226, 60), "3": (236, 236, 226, 70),
-             "4": (238, 122, 32, 95), "5": (255, 176, 86, 70)}
+             "4": (238, 122, 32, 95), "5": (255, 176, 86, 70),
+             "6": (120, 150, 170, 90), "7": (200, 225, 240, 80),          # shower water
+             "8": (52, 92, 46, 170), "9": (40, 74, 38, 170)}               # filthy turf
     pal = dict(PALETTE, **extra)
     props = decor_props()
     widths = [len(rows[0]) for rows, _, _ in props.values()]

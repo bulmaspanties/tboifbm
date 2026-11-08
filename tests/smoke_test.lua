@@ -498,6 +498,7 @@ local room = {
     GetCenterPos = function() return Vector(320, 280) end,
     GetBossID = function() return world.bossID or 0 end,
     GetDecorationSeed = function() return world.decorSeed or 12345 end,
+    GetDoor = function(_, slot) return world.doors and world.doors[slot] or nil end,
     GetTopLeftPos = function() return Vector(60, 140) end,
     GetBottomRightPos = function() return Vector(580, 420) end,
     -- a 15x9 room: the outer ring is wall
@@ -1983,7 +1984,7 @@ do
 end
 
 -- Field decor ----------------------------------------------------------------------------------
-do
+local function decorScenario() -- its own function: the main chunk is capped at 200 locals
     local dp = newPlayer()
     players = { dp }
     world.entities = { dp }
@@ -2043,6 +2044,42 @@ do
     local variety = 0
     for _ in pairs(looks) do variety = variety + 1 end
     check(variety >= 4, "dressed rooms use several different layouts")
+    -- every themed room, called directly
+    local function layout(name, doors)
+        world.spawned = {}
+        world.doors = doors
+        local rng = RNG()
+        rng:SetSeed(77, 35)
+        local tiles = {}
+        for i = 16, 118 do
+            if i % 15 > 1 and i % 15 < 13 then tiles[#tiles + 1] = Vector((i % 15) * 40, (i // 15) * 40) end
+        end
+        local themed = mod.DECOR_LAYOUTS[name](room, rng, tiles)
+        local got = {}
+        for _, e in ipairs(world.spawned) do
+            local n = e.data.GridironDecor
+            if n then got[n] = (got[n] or 0) + 1 end
+        end
+        world.doors = nil
+        return got, themed
+    end
+    local field, themed = layout("gamefield")
+    check(themed and field.Goalpost == 2 and field.EndStripes == 2 and (field.Yardline or 0) >= 2, "game field: goalposts at both ends")
+    local lockers = layout("lockerroom")
+    check((lockers.Locker or 0) + (lockers.LockerOpen or 0) >= 5 and lockers.Drain == 1 and lockers.Bench == 1,
+        "locker room: a row of lockers, a bench and the shower drain")
+    local blocked = layout("lockerroom", { [1] = { Position = Vector(320, 186) } })
+    local nearDoor = false
+    for _, e in ipairs(world.spawned) do
+        local n = e.data.GridironDecor
+        if (n == "Locker" or n == "LockerOpen") and math.abs(e.Position.X - 320) < 60 then nearDoor = true end
+    end
+    check(not nearDoor, "lockers leave the doorway clear")
+    local drills = layout("practice")
+    check((drills.Cone or 0) >= 4 and drills.Ladder == 1 and drills.Tire == 6, "practice field: cones, ladder, tires")
+    local turf = layout("turffield")
+    check((turf.Turf or 0) + (turf.TurfSmall or 0) >= 3, "turf field: torn turf laid over the floor")
+
     mod.Settings.decor = "off"
     check(#propsIn(seed) == 0, "decor can be turned off")
     mod.Settings.decor = "full"
@@ -2060,6 +2097,7 @@ do
     mod.Settings.decor = "off"
     newRoom(false)
 end
+decorScenario()
 
 -- Halftime show --------------------------------------------------------------------------------
 do
