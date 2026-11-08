@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.12.4
+- **Room art redrawn to Isaac's rules**: three-quarter view, desaturated and grimy, dark brown outlines, top-left light and floor shadows.
+  - **Goalposts are back on the painted fields**, rebuilt as rusted iron pipe on a filthy padded base wrapped in caution tape, with blood, dirt and a shadow. They never stand on a rock.
+  - The **Pylon** (trinket marker) is a squat, faded, dirty box instead of a bright orange shape.
+  - **Field paint** is a dirty bone-white with muddy footprints; **turf patches** have a matted rim and torn-up dirt.
+  - The **End Zone** item's paint is faded and chipped, with dirt and dried blood.
+
 ## 0.12.3
 - **The painted football field is back, without the goalposts**: about one plain room in twelve gets yard lines, numbers, end zones and a turf patch painted on the floor. Paint only, only in ordinary rectangular rooms (never L-shaped or narrow), with a *football fields* toggle in the menu.
 

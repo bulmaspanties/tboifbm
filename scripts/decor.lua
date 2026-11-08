@@ -1,7 +1,9 @@
 -- Football fields, Pro Shop, and the Pylon trinket's marker.
 -- Now and then a plain rectangular room has a faded football field painted on its floor: yard
--- lines with their numbers, end zone stripes at both ends and a torn patch of turf or two.
--- Paint only (no props standing in the room), and never in L-shaped or narrow rooms.
+-- lines with their numbers, end zone stripes at both ends, a torn patch of turf or two, and
+-- an old iron goalpost at each end. Never in L-shaped or narrow rooms. Everything is drawn the
+-- way Isaac draws its rooms: three-quarter view, grimy and desaturated, dark brown outlines,
+-- lit from the top left with a soft shadow on the floor.
 return function(mod)
     local game = mod.game
     local Cfg = mod.Cfg
@@ -9,12 +11,14 @@ return function(mod)
     local VARIANT = Isaac.GetEntityVariantByName("Gridiron Decor")
     mod.DecorVariant = VARIANT
 
-    -- A floor marker (used by the Pylon trinket). Effects never collide with anything.
+    -- Field props are effects, so they never collide with anything. Paint lies on the floor;
+    -- the goalposts and the Pylon stand up and sort with everything else in the room.
+    local UPRIGHT = { Goalpost = true, Pylon = true }
     function mod.spawnDecor(name, pos)
         if VARIANT <= 0 then return nil end
         local e = Isaac.Spawn(EntityType.ENTITY_EFFECT, VARIANT, 0, pos, Vector.Zero, nil)
         e:GetSprite():Play(name, true)
-        e:AddEntityFlags(EntityFlag.FLAG_RENDER_FLOOR)
+        if not UPRIGHT[name] then e:AddEntityFlags(EntityFlag.FLAG_RENDER_FLOOR) end
         e:GetData().GridironDecor = name
         return e
     end
@@ -44,6 +48,12 @@ return function(mod)
         local tl, br, c = room:GetTopLeftPos(), room:GetBottomRightPos(), room:GetCenterPos()
         for _, left in ipairs({ true, false }) do                   -- end zones at both ends
             paintAt(room, "EndStripes", Vector(left and tl.X + 52 or br.X - 52, c.Y), not left)
+            -- an old iron goalpost at each end, its base against the end wall (unless a rock
+            -- or a pit is in the way)
+            local base = Vector(left and tl.X + 18 or br.X - 18, c.Y + 26)
+            if room:GetGridCollisionAtPos(base) == GridCollisionClass.COLLISION_NONE then
+                paintAt(room, "Goalpost", base, not left)
+            end
         end
         local span = br.X - tl.X - 220
         local lines = math.max(1, math.floor(span / 100))

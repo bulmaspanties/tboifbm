@@ -942,6 +942,100 @@ def rect_rows(g):
 DECOR_FADE = {"y": (238, 238, 228, 110), "Y_": (238, 238, 228, 70)}
 
 
+# --- The goalpost: an old iron pipe post that's been rotting in the basement ------------------
+# Three-quarter top-down like Isaac's rocks and props: the padded base stands on the floor
+# against the end wall, the gooseneck pipe reaches out over the end zone, the crossbar recedes
+# into depth (near end low, far end high) and an upright rises from each end. Faded mustard
+# paint with rust, a filthy pad wrapped in caution tape, blood and dirt at the foot, a soft
+# shadow on the floor, lit from the top left, outlined in dark brown.
+GOALPOST_COLOURS = {
+    "(": (204, 178, 104, 255),   # paint, lit side
+    ")": (166, 138, 70, 255),    # paint
+    "[": (112, 88, 46, 255),     # paint, shaded side
+    "]": (118, 64, 38, 255),     # rust
+    "=": (176, 92, 52, 255),     # pylon, faded orange
+    "-": (124, 62, 38, 255),     # pylon, shaded
+    "+": (204, 124, 76, 255),    # pylon, lit top
+    "{": (70, 74, 92, 255),      # filthy pad
+    "}": (46, 48, 62, 255),      # pad, shaded
+    "<": (178, 156, 72, 255),    # caution tape (faded)
+    ">": (40, 34, 30, 255),      # caution tape stripe
+    ";": (0, 0, 0, 80),          # floor shadow (drawn after the outline)
+}
+
+
+def pipe(g, pts, lit="(", mid=")", shade="["):
+    """A 3px pipe through the points: lit on its top-left edge, shaded on the bottom-right."""
+    for (x0, y0), (x1, y1) in zip(pts, pts[1:]):
+        n = max(abs(x1 - x0), abs(y1 - y0), 1)
+        flat = abs(x1 - x0) > abs(y1 - y0)
+        for k in range(n + 1):
+            x = round(x0 + (x1 - x0) * k / n)
+            y = round(y0 + (y1 - y0) * k / n)
+            if flat:
+                put(g, [(x, y - 1)], lit)
+                put(g, [(x, y)], mid)
+                put(g, [(x, y + 1)], shade)
+            else:
+                put(g, [(x - 1, y)], lit)
+                put(g, [(x, y)], mid)
+                put(g, [(x + 1, y)], shade)
+
+
+def floor_shadow(g, shapes):
+    """Soft translucent shadow on empty pixels only (after the outline): (cx, cy, rx, ry)."""
+    for y in range(len(g)):
+        for x in range(len(g[0])):
+            if g[y][x] == "." and any(((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 for cx, cy, rx, ry in shapes):
+                g[y][x] = ";"
+
+
+def goalpost():
+    g = grid(44, 76)
+    near, far = (29, 42), (37, 25)                                   # crossbar ends (near is lower)
+    pipe(g, [(far[0], far[1]), (far[0], 3)])                         # far upright, behind
+    pipe(g, [near, far])                                             # crossbar receding into depth
+    pipe(g, [(near[0], near[1]), (near[0], 11)])                     # near upright, in front
+    pipe(g, [(10, 46), (10, 37), (13, 34), (21, 34), (32, 33)])      # gooseneck out over the end zone
+    put(g, [(37, 13), (29, 24), (33, 33), (14, 34), (10, 41), (38, 7), (29, 16)], "]")   # rust
+    put(g, [(30, 31), (30, 33), (29, 36), (30, 38)], "i")            # blood run down the near upright
+    put(g, [(31, 10), (32, 10), (32, 11), (33, 11), (33, 12)], "r")  # rotten flags on the uprights
+    put(g, [(39, 2), (40, 2), (40, 3), (41, 3), (41, 4)], "r")
+    # the padded base: a squat cylinder (top face, body, flat-ish bottom), wrapped in caution tape
+    rect(g, 4, 50, 16, 66, "{")
+    ellipse(g, 10, 66, 6.5, 2.5, "{")
+    rect(g, 13, 50, 16, 66, "}")                                     # shaded right side
+    ellipse(g, 14.5, 66, 2.5, 2, "}")
+    ellipse(g, 10, 50, 6.5, 2.5, "}")                                # top face (darker, the post goes in)
+    ellipse(g, 10, 49.6, 4.5, 1.4, "{")
+    pipe(g, [(10, 49), (10, 46)])
+    for y in (54, 55, 56):
+        for x in range(4, 17):
+            g[y][x] = ">" if (x + y) % 4 < 2 else "<"                # caution tape band
+    put(g, [(6, 59), (7, 63), (12, 65), (5, 67), (15, 61), (9, 68)], "d")   # dirt
+    put(g, [(8, 60), (9, 61), (8, 65), (14, 58), (13, 68), (6, 52)], "i")   # dried blood
+    outline(g)
+    floor_shadow(g, [(12, 70, 9, 2.6), (26, 71, 13, 1.8)])          # under the base, and cast down-right
+    return rect_rows(g), False, (10, 69)
+
+
+def pylon():
+    """An end zone pylon, bent and filthy: a squat box seen from above-front, top face lit."""
+    g = grid(16, 20)
+    rect(g, 3, 6, 11, 15, "=")                                       # front face
+    rect(g, 9, 6, 11, 15, "-")                                       # shaded side
+    for y in range(3, 7):                                            # top face, skewed for depth
+        for x in range(3 + (6 - y), 12 + (6 - y)):
+            if 0 <= x < 16:
+                g[y][x] = "+"
+    put(g, [(5, 9), (6, 9), (7, 9), (5, 12), (6, 12), (7, 12)], "w")  # grimy reflective stripes
+    put(g, [(4, 14), (8, 13), (10, 8), (6, 4)], "d")
+    put(g, [(4, 11), (9, 14)], "i")
+    outline(g)
+    floor_shadow(g, [(8, 17, 7, 2), (12, 17, 5, 1.6)])
+    return rect_rows(g), False, (7, 16)
+
+
 def decor_props():
     """name -> (rows, floor?, pivot) for every prop. Floor props lie flat (rendered under
     everything); upright ones stand on their pivot."""
@@ -955,6 +1049,8 @@ def decor_props():
         if rnd.random() > 0.12:                           # scuffed gaps
             for x in range(3):
                 g[y][x] = "1" if rnd.random() > 0.25 else "2"
+        if rnd.random() < 0.05:                           # muddy footprints across the paint
+            g[y][rnd.randrange(3)] = "0"
     props["Yardline"] = (rect_rows(g), True, (1, 75))
     g = grid(10, 3)
     for x in (0, 1, 8, 9):
@@ -1040,14 +1136,7 @@ def decor_props():
         ellipse(g, cx, cy, 3.5, 2.2, "F")
         put(g, [(cx, cy - 1)], "W")
     props["BallBag"] = (rect_rows(outline(g)), False, (12, 15))
-    g = grid(12, 16)
-    for y in range(3, 14):                                 # a pylon, kicked over and bent
-        x0 = 2 + (y - 3) // 3
-        for x in range(x0, x0 + 4):
-            g[y][x] = "O"
-    put(g, [(4, 7), (5, 7), (6, 8), (7, 8)], "W")
-    rect(g, 3, 13, 9, 14, "o")
-    props["Pylon"] = (rect_rows(outline(g)), False, (6, 13))
+    props["Pylon"] = pylon()
     g = grid(20, 14)
     ellipse(g, 9, 7, 8, 6, "m")                            # a dented rival helmet, face down
     ellipse(g, 7, 5, 4, 2, "W")
@@ -1078,21 +1167,7 @@ def decor_props():
     props["Blood"] = (rect_rows(g), True, (10, 6))
 
     # set pieces
-    g = grid(30, 66)
-    rect(g, 13, 26, 16, 64, "Y")                           # goalpost upright with padding
-    rect(g, 13, 26, 13, 64, "U")
-    rect(g, 16, 26, 16, 64, "y")
-    rect(g, 2, 24, 27, 27, "Y")                            # crossbar stub
-    rect(g, 2, 24, 27, 24, "U")
-    rect(g, 3, 0, 5, 24, "Y")                              # uprights
-    rect(g, 24, 0, 26, 24, "Y")
-    rect(g, 3, 0, 3, 24, "U")
-    rect(g, 24, 0, 24, 24, "U")
-    rect(g, 11, 50, 18, 64, "B")                           # base pad
-    rect(g, 11, 50, 12, 64, "L")
-    put(g, [(14, 55), (15, 58), (16, 61)], "b")
-    rect(g, 3, 6, 5, 7, "R")                               # a torn flag
-    props["Goalpost"] = (rect_rows(outline(g)), False, (14, 64))
+    props["Goalpost"] = goalpost()
     g = grid(50, 18)
     rect(g, 1, 4, 48, 8, "f")                              # bench
     rect(g, 1, 4, 48, 4, "E")
@@ -1224,11 +1299,16 @@ def decor_props():
             for x in range(w):
                 d = ((x - w / 2) / (w / 2)) ** 2 + ((y - h / 2) / (h / 2)) ** 2
                 if d < 0.85 + 0.25 * rnd.random():           # ragged torn edge
-                    g[y][x] = "8" if rnd.random() > 0.3 else "9"
+                    g[y][x] = "9" if d > 0.62 else ("8" if rnd.random() > 0.3 else "9")   # matted, darker rim
         for _ in range(w * h // 60):                       # grime, dirt and a stain or two
             x, y = rnd.randrange(w), rnd.randrange(h)
             if g[y][x] != ".":
                 g[y][x] = "d" if rnd.random() < 0.7 else "i"
+        for y in range(h):                                  # dirt where the edge is torn up
+            for x in range(w):
+                if g[y][x] == "." and any(0 <= x + dx < w and 0 <= y + dy < h and g[y + dy][x + dx] in "89"
+                                          for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))) and rnd.random() < 0.45:
+                    g[y][x] = "0"
         props[name] = (rect_rows(g), True, (w // 2, h // 2))
     return props
 
@@ -1246,17 +1326,18 @@ def outline_soft(g):
 
 # Only floor paint for the football fields, plus the Pylon trinket's marker. The standing props
 # (lockers, goalposts, benches, junk) are gone: they never fit Isaac's rooms.
-DECOR_KEPT = ("Pylon", "Yardline", "EndStripes", "TurfSmall", "Num10", "Num20", "Num30", "Num40", "Num50")
+DECOR_KEPT = ("Pylon", "Goalpost", "Yardline", "EndStripes", "TurfSmall", "Num10", "Num20", "Num30", "Num40", "Num50")
 
 
 def decor_sheet():
     """Pack every prop into one strip and write a matching anm2 (one animation per prop)."""
     from PIL import Image
-    extra = {"1": (236, 236, 226, 115), "2": (236, 236, 226, 60), "3": (236, 236, 226, 70),
+    extra = {"1": (214, 204, 182, 105), "2": (214, 204, 182, 50), "3": (214, 204, 182, 60),
+             "0": (70, 46, 30, 110),                                       # churned-up dirt
              "4": (238, 122, 32, 95), "5": (255, 176, 86, 70),
              "6": (120, 150, 170, 90), "7": (200, 225, 240, 80),          # shower water
              "8": (52, 92, 46, 170), "9": (40, 74, 38, 170)}               # filthy turf
-    pal = dict(PALETTE, **extra)
+    pal = dict(PALETTE, **extra, **GOALPOST_COLOURS)
     props = {name: v for name, v in decor_props().items() if name in DECOR_KEPT}
     widths = [len(rows[0]) for rows, _, _ in props.values()]
     height = max(len(rows) for rows, _, _ in props.values())
@@ -1297,20 +1378,28 @@ END_ZONE_W, END_ZONE_H = 80, 40
 
 
 def end_zone_paint():
-    """The End Zone floor marking: translucent blue/green diagonal stripes in a white border.
-    Translucent so the room's own floor shows through the paint."""
+    """The End Zone floor marking: faded, scuffed paint on the basement floor. Desaturated
+    stripes, a chipped bone-white border and dirt, translucent so the floor shows through."""
+    import random
     from PIL import Image
+    rnd = random.Random(7)
     img = Image.new("RGBA", (END_ZONE_W, END_ZONE_H), (0, 0, 0, 0))
     px = img.load()
     for y in range(END_ZONE_H):
         for x in range(END_ZONE_W):
             border = x < 2 or y < 2 or x >= END_ZONE_W - 2 or y >= END_ZONE_H - 2
+            r = rnd.random()
             if border:
-                px[x, y] = (245, 245, 238, 220)
+                if r > 0.18:                                     # chipped
+                    px[x, y] = (214, 204, 182, 170 if r > 0.5 else 110)
+            elif r < 0.05:
+                px[x, y] = (70, 46, 30, 120)                     # dirt
+            elif r < 0.07:
+                px[x, y] = (110, 20, 22, 120)                    # dried blood
             elif ((x + y) // 6) % 2 == 0:
-                px[x, y] = (40, 74, 170, 120)       # team blue stripe
+                px[x, y] = (62, 74, 110, 95 if r > 0.2 else 50)  # faded team blue
             else:
-                px[x, y] = (64, 140, 58, 70)        # turf green
+                px[x, y] = (70, 92, 58, 60 if r > 0.2 else 30)   # dead turf green
     return img
 
 

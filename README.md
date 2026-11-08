@@ -79,7 +79,7 @@ Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats
 Hold **any 3 Gridiron items** (passives, actives, familiars, Q4s: anything from this mod) to become **All-Pro**, for the rest of the run like a vanilla transformation: **+0.5 Damage**, **every 4th shot is a homing golden spiral**, and your eye black turns to **gold war paint** (it shows through the facemask).
 
 ### Football fields
-About one plain room in twelve has a faded **football field painted on the floor**: yard lines with their numbers counting up to midfield and back, end zone stripes at both ends, and a torn patch of turf or two. It's paint only (nothing stands in the room) and only in ordinary rectangular rooms, never L-shaped or narrow ones. Turn **football fields** off in *visuals*.
+About one plain room in twelve has a faded **football field painted on the floor**: yard lines with their numbers counting up to midfield and back, end zone stripes at both ends, a torn patch of turf or two, and an **old iron goalpost** at each end (rusted mustard pipe on a filthy padded base wrapped in caution tape). Everything is drawn the way Isaac draws its rooms: three-quarter view, grimy and desaturated, dark outlines and a shadow on the floor. Only in ordinary rectangular rooms, never L-shaped or narrow ones, and never on top of a rock. Turn **football fields** off in *visuals*.
 
 ### Pro Shop
 A quarter of shops (adjustable in the menu) are **team stores**: the first time you walk in, one item for sale is a **Gridiron item you don't have yet**, at the shop's price.

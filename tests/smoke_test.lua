@@ -536,6 +536,7 @@ local room = {
         return (x == 0 or y == 0 or x == 14 or y == 8) and 1 or 0
     end,
     IsPositionInRoom = function() return true end,
+    GetGridCollisionAtPos = function(_, pos) return world.blockedAt and world.blockedAt(pos) and 1 or 0 end,
     GetRoomShape = function() return world.roomShape or RoomShape.ROOMSHAPE_1x1 end,
     FindFreePickupSpawnPosition = function(_, pos) world.freeSpawnCalls = (world.freeSpawnCalls or 0) + 1; return pos end,
     GetRenderMode = function() return 0 end,
@@ -2358,20 +2359,37 @@ end)()
     end
     check(fields > 10 and fields < 70, "fields are rare (about one room in twelve)")
     check(kinds.Yardline and kinds.EndStripes and kinds.Num10, "a field has yard lines, numbers and end zones")
-    local allowed = { Yardline = 1, EndStripes = 1, TurfSmall = 1, Num10 = 1, Num20 = 1, Num30 = 1, Num40 = 1, Num50 = 1 }
-    local onlyPaint = true
-    for n in pairs(kinds) do if not allowed[n] then onlyPaint = false end end
-    check(onlyPaint, "fields are paint only: no goalposts, lockers or junk")
+    check(kinds.Goalpost, "and a goalpost at each end")
+    local allowed = { Yardline = 1, EndStripes = 1, TurfSmall = 1, Goalpost = 1, Num10 = 1, Num20 = 1, Num30 = 1,
+        Num40 = 1, Num50 = 1 }
+    local onlyField = true
+    for n in pairs(kinds) do if not allowed[n] then onlyField = false end end
+    check(onlyField, "only the field itself: no lockers, benches or junk")
+    local posts = 0
+    for _, n in ipairs(propsIn(seed)) do if n == "Goalpost" then posts = posts + 1 end end
+    check(posts == 2, "two goalposts")
+    world.blockedAt = function(pos) return pos.X < 200 end              -- a rock where the left post would stand
+    posts = 0
+    for _, n in ipairs(propsIn(seed)) do if n == "Goalpost" then posts = posts + 1 end end
+    check(posts == 1, "no goalpost on top of a rock")
+    world.blockedAt = nil
     for _, name in ipairs(propsIn(seed)) do
         check(true, "field prop: " .. name)
     end
     local flat = true
     world.spawned = {}
     propsIn(seed)
+    local postsStand = true
     for _, e in ipairs(world.spawned) do
-        if e.Variant == mod.DecorVariant and not e:HasEntityFlags(EntityFlag.FLAG_RENDER_FLOOR) then flat = false end
+        if e.Variant == mod.DecorVariant then
+            local upright = e.data.GridironDecor == "Goalpost"
+            if upright == e:HasEntityFlags(EntityFlag.FLAG_RENDER_FLOOR) then
+                if upright then postsStand = false else flat = false end
+            end
+        end
     end
     check(flat, "field paint lies flat on the floor")
+    check(postsStand, "goalposts stand up (sorted with the room, not under it)")
     check(#propsIn(seed, RoomShape.ROOMSHAPE_LTL) == 0, "never in an L-shaped room")
     check(#propsIn(seed, RoomShape.ROOMSHAPE_IH) == 0, "never in a narrow room")
     check(#propsIn(seed, RoomShape.ROOMSHAPE_2x1) > 0, "long rooms can be fields")
