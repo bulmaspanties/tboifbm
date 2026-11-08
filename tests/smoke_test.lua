@@ -667,7 +667,6 @@ local Items, Trinkets, Cfg = mod.Items, mod.Trinkets, mod.Cfg
 -- (it gets its own scenario near the end).
 Cfg.ALLPRO_ITEMS = 999
 Cfg.HALFTIME_CHANCE = 0   -- the mock rng rolls low; halftime gets its own scenario
-mod.Settings.decor = "off"  -- decor gets its own scenario too
 
 for key, id in pairs(Items) do check(id > 0, "item name not found in items.xml: " .. key) end
 for key, id in pairs(Trinkets) do check(id > 0, "trinket name not found in items.xml: " .. key) end
@@ -2043,121 +2042,6 @@ end
     Cfg.ALLPRO_ITEMS = 999
 end)()
 
--- Field decor ----------------------------------------------------------------------------------
-local function decorScenario() -- its own function: the main chunk is capped at 200 locals
-    local dp = newPlayer()
-    players = { dp }
-    world.entities = { dp }
-    mod.Settings.decor = "full"
-    local function propsIn(seed, roomType)
-        world.decorSeed = seed
-        world.spawned = {}
-        newRoom(false, roomType)
-        local list = {}
-        for _, e in ipairs(world.spawned) do
-            if e.Type == EntityType.ENTITY_EFFECT and e.Variant == mod.DecorVariant then list[#list + 1] = e end
-        end
-        return list
-    end
-    local seed, props = nil, {}
-    for sd = 1, 200 do
-        props = propsIn(sd)
-        if #props >= 3 then seed = sd break end
-    end
-    check(seed ~= nil, "some rooms get football props")
-    local floorOK, wallOK = true, true
-    for _, e in ipairs(props) do
-        local name = e.data.GridironDecor
-        if ({ Yardline = 1, Hash = 1, Logo = 1, Cups = 1, Stain = 1, Tape = 1, Clipboard = 1, Mouthguard = 1, Blood = 1 })[name] then
-            floorOK = floorOK and e:HasEntityFlags(EntityFlag.FLAG_RENDER_FLOOR)
-        end
-        check(e.sprite.anims[name] ~= nil, "decor animation exists: " .. tostring(name))
-        if name ~= "Banner" and name ~= "Goalpost" and name ~= "Bench" and name ~= "Yardline" and name ~= "Hash" then
-            wallOK = wallOK and e.Position.X > 60 and e.Position.X < 580 and e.Position.Y > 140 and e.Position.Y < 420
-        end
-    end
-    check(floorOK, "paint, cups and stains lie flat on the floor")
-    check(wallOK, "props stay off the walls")
-    local again = propsIn(seed)
-    local same = #again == #props
-    for i = 1, math.min(#again, #props) do
-        same = same and again[i].data.GridironDecor == props[i].data.GridironDecor and again[i].Position.X == props[i].Position.X
-    end
-    check(same, "a room looks the same every time you come back")
-    local empty = 0
-    for sd = 1, 200 do if #propsIn(sd) == 0 then empty = empty + 1 end end
-    check(empty > 150, "most rooms stay plain (about one in eight is dressed)")
-    local looks = {}
-    for sd = 1, 600 do
-        local names = {}
-        for _, e in ipairs(propsIn(sd)) do
-            local n = e.data.GridironDecor
-            if n == "Yardline" or n == "Sideline" or n == "EndStripes" or n:sub(1, 3) == "Num" or n == "Logo" then
-                names[n:sub(1, 3) == "Num" and "Num" or n] = true
-            end
-        end
-        local key = {}
-        for n in pairs(names) do key[#key + 1] = n end
-        table.sort(key)
-        looks[table.concat(key, "+")] = true
-    end
-    local variety = 0
-    for _ in pairs(looks) do variety = variety + 1 end
-    check(variety >= 4, "dressed rooms use several different layouts")
-    -- every themed room, called directly
-    local function layout(name, doors)
-        world.spawned = {}
-        world.doors = doors
-        local rng = RNG()
-        rng:SetSeed(77, 35)
-        local tiles = {}
-        for i = 16, 118 do
-            if i % 15 > 1 and i % 15 < 13 then tiles[#tiles + 1] = Vector((i % 15) * 40, (i // 15) * 40) end
-        end
-        local themed = mod.DECOR_LAYOUTS[name](room, rng, tiles)
-        local got = {}
-        for _, e in ipairs(world.spawned) do
-            local n = e.data.GridironDecor
-            if n then got[n] = (got[n] or 0) + 1 end
-        end
-        world.doors = nil
-        return got, themed
-    end
-    local field, themed = layout("gamefield")
-    check(themed and field.Goalpost == 2 and field.EndStripes == 2 and (field.Yardline or 0) >= 2, "game field: goalposts at both ends")
-    local lockers = layout("lockerroom")
-    check((lockers.Locker or 0) + (lockers.LockerOpen or 0) >= 5 and lockers.Drain == 1 and lockers.Bench == 1,
-        "locker room: a row of lockers, a bench and the shower drain")
-    local blocked = layout("lockerroom", { [1] = { Position = Vector(320, 186) } })
-    local nearDoor = false
-    for _, e in ipairs(world.spawned) do
-        local n = e.data.GridironDecor
-        if (n == "Locker" or n == "LockerOpen") and math.abs(e.Position.X - 320) < 60 then nearDoor = true end
-    end
-    check(not nearDoor, "lockers leave the doorway clear")
-    local drills = layout("practice")
-    check((drills.Cone or 0) >= 4 and drills.Ladder == 1 and drills.Tire == 6, "practice field: cones, ladder, tires")
-    local turf = layout("turffield")
-    check((turf.Turf or 0) + (turf.TurfSmall or 0) >= 3, "turf field: torn turf laid over the floor")
-
-    mod.Settings.decor = "off"
-    check(#propsIn(seed) == 0, "decor can be turned off")
-    mod.Settings.decor = "full"
-    world.decorSeed = seed
-    world.spawned = {}
-    world.entities = { dp }
-    world.roomType = RoomType.ROOM_BOSS
-    mod.spawnMonster(MV.LINEBACKER, Vector(320, 200))
-    world.spawned = {}
-    dispatch(ModCallbacks.MC_POST_NEW_ROOM)
-    local banners = 0
-    for _, e in ipairs(world.spawned) do if e.data.GridironDecor == "Banner" then banners = banners + 1 end end
-    check(banners >= 2, "the linebacker's room gets stadium banners")
-    world.roomType = RoomType.ROOM_DEFAULT
-    mod.Settings.decor = "off"
-    newRoom(false)
-end
-decorScenario()
 
 -- Halftime show --------------------------------------------------------------------------------
 ;(function()  -- own function: the main chunk is capped at 200 locals
@@ -2447,6 +2331,20 @@ end)()
     cp2.coins, cp2.bombs, cp2.keys = 5, 3, 1
     dispatch(ModCallbacks.MC_USE_PILL, mod.Pills.TWO_POINT, mod.Pills.TWO_POINT, cp2, 0)
     check(cp2.keys == 3 and cp2.coins == 5, "two-point conversion: +2 keys when keys are lowest")
+end)()
+
+;(function()
+    -- Rooms are never dressed with football props (only the Pylon trinket places a marker)
+    for _, rt in ipairs({ RoomType.ROOM_DEFAULT, RoomType.ROOM_BOSS }) do
+        world.spawned = {}
+        newRoom(false, rt)
+        local props = 0
+        for _, e in ipairs(world.spawned) do
+            if e.Type == EntityType.ENTITY_EFFECT and e.Variant == mod.DecorVariant then props = props + 1 end
+        end
+        check(props == 0, "no football props in rooms: " .. rt)
+    end
+    newRoom(true)
 end)()
 
 -- Pro Shop ---------------------------------------------------------------------------------------

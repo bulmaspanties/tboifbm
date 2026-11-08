@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.12.2
+- **Removed the football room decor.** The props (yard lines, lockers, whiteboards, coolers, goalposts, banners) looked out of place in Isaac's rooms, and in L-shaped rooms they could land outside the walls. Floors are the game's own again. The Pro Shop still stocks a Gridiron item, and the Pylon trinket still marks its spot.
+
 ## 0.12.1
 - **Every football player is suited up.** The Lineman, Huddle, Punter and Sacker now wear full kits: shoulder pads under the jersey, striped sleeves, a chest number, belted game pants with a side stripe, high socks and cleats. The Blitzer squeezes into a jersey, and The Franchise gets shoulder pads, gold game pants and socks.
 - **Team Captains wear the captain's kit**: gold trim and the gold "C" patch, instead of a gold wash.

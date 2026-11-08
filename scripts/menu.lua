@@ -184,14 +184,6 @@ return function(mod)
                 toggle("popup text", "popups", { "callouts like", "tackle! and", "it's good!" }),
                 toggle("crowd sounds", "crowd", { "cheers, boos,", "the stadium horn", "and fanfare" }),
                 toggle("boss music", "bossMusic", { "themes for the", "linebacker and", "the franchise" }),
-                {
-                    str = "field decor", choices = { "off", "light", "full" }, setting = 3, variable = "Gridiron_decor",
-                    load = function()
-                        return ({ off = 1, light = 2, full = 3 })[mod.Settings.decor] or 3
-                    end,
-                    store = function(v) mod.SetSetting("decor", ({ "off", "light", "full" })[v]) end,
-                    tooltip = { strset = { "football props", "in rooms: paint,", "cups, goalposts" } },
-                },
             },
         },
         uniform = {

@@ -1244,6 +1244,9 @@ def outline_soft(g):
     return g
 
 
+DECOR_KEPT = ("Pylon",)   # rooms aren't dressed any more; the Pylon trinket's marker stays
+
+
 def decor_sheet():
     """Pack every prop into one strip and write a matching anm2 (one animation per prop)."""
     from PIL import Image
@@ -1252,7 +1255,7 @@ def decor_sheet():
              "6": (120, 150, 170, 90), "7": (200, 225, 240, 80),          # shower water
              "8": (52, 92, 46, 170), "9": (40, 74, 38, 170)}               # filthy turf
     pal = dict(PALETTE, **extra)
-    props = decor_props()
+    props = {name: v for name, v in decor_props().items() if name in DECOR_KEPT}
     widths = [len(rows[0]) for rows, _, _ in props.values()]
     height = max(len(rows) for rows, _, _ in props.values())
     sheet = Image.new("RGBA", (sum(widths) + 2 * len(widths), height), (0, 0, 0, 0))
@@ -1280,7 +1283,7 @@ def decor_sheet():
 \t\t<Layers><Layer Name="prop" Id="0" SpritesheetId="0"/></Layers>
 \t\t<Nulls/><Events/>
 \t</Content>
-\t<Animations DefaultAnimation="Cups">
+\t<Animations DefaultAnimation="Pylon">
 ''' + "\n".join(anims) + '''
 \t</Animations>
 </AnimatedActor>

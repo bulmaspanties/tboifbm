@@ -242,10 +242,6 @@ return function(mod)
         HAIL_MARY_DMG_MULT    = 8,     -- x player damage, plus a flat 30
         HAIL_MARY_BURST       = 10,
 
-        -- Field decor
-        DECOR_CHANCE_LIGHT    = 0.05,  -- share of normal rooms with football props
-        DECOR_CHANCE_FULL     = 0.12,
-
         -- Pro Shop
         PROSHOP_CHANCE        = 0.25,  -- (menu) share of shops that are team stores
 
@@ -315,7 +311,6 @@ return function(mod)
         hud = true,            -- small text readouts under the player
         popups = true,         -- floating callouts ("TACKLE!", "IT'S GOOD!")
         crowd = true,          -- crowd cheers/boos, horn and fanfare
-        decor = "full",        -- football props in rooms: "off", "light" or "full"
         drugTests = true,      -- referees and the coach go after juiced players
         bossMusic = true,      -- the Linebacker and The Franchise get their own themes
         gridironItems = true,  -- Gridiron items and trinkets can show up in runs

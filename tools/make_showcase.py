@@ -191,82 +191,6 @@ def uniforms_sheet():
     return stack(header(body.width, "PICK YOUR TEAM COLOURS", "Helmet, jersey and pants: 11 colours each, from the settings menu"), body)
 
 
-# --- field decor ------------------------------------------------------------------------------
-def decor_scene():
-    """Four themed rooms on a basement floor, laid out the way decor.lua dresses them."""
-    anm2 = (GFX / "effects/gridiron_decor.anm2").read_text()
-    sheet = Image.open(GFX / "effects/gridiron_decor.png").convert("RGBA")
-    crops = {}
-    for name, x, w, h, pxv, pyv in re.findall(
-            r'<Animation Name="(\w+)".*?XPivot="(?:\d+)".*?XCrop="(\d+)" YCrop="0" Width="(\d+)" Height="(\d+)"()()', anm2, re.S):
-        crops[name] = sheet.crop((int(x), 0, int(x) + int(w), int(h)))
-    W, H = 440, 250
-
-    def room():
-        floor = Image.new("RGBA", (W, H), (82, 62, 52, 255))
-        d = ImageDraw.Draw(floor)
-        for x in range(0, W, 26):
-            for y in range(0, H, 26):
-                shade = 6 if (x // 26 + y // 26) % 2 else 0
-                d.rectangle((x, y, x + 25, y + 25), fill=(82 - shade, 62 - shade, 52 - shade, 255))
-        return floor
-
-    def put(floor, name, cx, cy, flip=False, base=False):
-        img = crops[name].transpose(Image.FLIP_LEFT_RIGHT) if flip else crops[name]
-        y = cy - img.height if base else cy - img.height // 2
-        floor.alpha_composite(img, (cx - img.width // 2, y))
-
-    field = room()
-    put(field, "EndStripes", 34, 125)
-    put(field, "EndStripes", W - 34, 125, True)
-    for x, n in ((120, "Num10"), (220, "Num20"), (320, "Num10")):
-        put(field, "Yardline", x, 125)
-        put(field, n, x, 22)
-        put(field, n, x, H - 22)
-    put(field, "Goalpost", 18, 150, base=True)
-    put(field, "Goalpost", W - 18, 150, True, base=True)
-    put(field, "TurfSmall", 260, 190)
-    lockers = room()
-    for i, x in enumerate(range(24, 400, 21)):
-        if 190 < x < 250:
-            continue
-        put(lockers, "LockerOpen" if i in (3, 11) else "Locker", x, 46, base=True)
-    put(lockers, "Whiteboard", 220, 40, base=True)
-    put(lockers, "Bench", 220, 92, base=True)
-    put(lockers, "Drain", 220, 160)
-    for x, y in ((180, 150), (260, 175), (220, 195)):
-        put(lockers, "Puddle", x, y)
-    for name, x, y in (("Towel", 90, 160), ("JerseyFloor", 330, 140), ("Helmet", 360, 200), ("Tape", 120, 210)):
-        put(lockers, name, x, y)
-    put(lockers, "Trash", 410, 240, base=True)
-    drills = room()
-    for i in range(6):
-        put(drills, "Cone", 130 + i * 36, 70, base=True)
-    put(drills, "Ladder", 60, 125)
-    for row in range(2):
-        for col in range(3):
-            put(drills, "Tire", 230 + col * 26 + row * 13, 160 + row * 18, base=True)
-    put(drills, "BallBag", 380, 120, base=True)
-    put(drills, "Sled", 380, 220, base=True)
-    turf = room()
-    for name, x, y in (("Turf", 120, 90), ("Turf", 300, 170), ("TurfSmall", 330, 60), ("TurfSmall", 90, 200)):
-        put(turf, name, x, y)
-    put(turf, "Yardline", 210, 125)
-    put(turf, "Pylon", 160, 150, base=True)
-    put(turf, "Cups", 360, 210)
-
-    body = Image.new("RGBA", (W * 2 * 2 + 36, (H * 2 + 40) * 2 + 12), NAVY + (255,))
-    bd = ImageDraw.Draw(body)
-    for i, (img, label) in enumerate(((field, "GAME FIELD"), (lockers, "LOCKER ROOM"), (drills, "PRACTICE FIELD"),
-                                      (turf, "TURF FIELD"))):
-        x, y = 12 + (i % 2) * (W * 2 + 12), 12 + (i // 2) * (H * 2 + 40)
-        body.alpha_composite(px(img, 2), (x, y + 30))
-        bd.text((x + 4, y + 4), label, font=font(20), fill=GOLD)
-    return stack(header(body.width, "FOOTBALL IN THE BASEMENT",
-                        "About one room in eight is dressed: game fields, locker rooms, practice fields, torn turf, sidelines"), body)
-
-
-# --- banner -------------------------------------------------------------------------------
 def banner():
     w, h = 1280, 420
     img = turf(w, h)
@@ -300,7 +224,6 @@ def main():
         "enemies.png": enemies_sheet(),
         "bosses.png": bosses_sheet(),
         "uniforms.png": uniforms_sheet(),
-        "decor.png": decor_scene(),
     }
     for name, img in out.items():
         img.convert("RGB").save(DOCS / name, optimize=True)
