@@ -13,7 +13,9 @@ Suit up! Football gear with its own mechanics: no reskins, no stat-only items.
 [*][b]3 trinkets, a card and a pill[/b]: Referee Flag, Concussion Protocol, Turf Burn, Coin Toss, Timeout!
 [*][b]Wear 3+ pieces to get Suited Up[/b]: bonus damage, faster tackles, gold glow
 [*][b]Worn costumes[/b]: modern helmet with facemask, jersey over pads, pants and cleats, eye black, fitted per character
-[*][b]Football in the basement[/b]: rooms dressed with field paint, sideline junk and goalposts
+[*][b]Football in the basement[/b]: game fields with goalposts, locker rooms, practice fields and torn turf
+[*][b]Every character in their own colours[/b] (or pick your team colours)
+[*][b]Boss themes[/b], a [b]Pro Shop[/b], six more trinkets, two more cards and a pill
 [*][b]Stadium sounds[/b]: crowd cheers and boos, helmet clacks, the air horn and a scoring fanfare
 [*][b]Pick your team colours[/b]: helmet, jersey and pants, 11 colours each (yes, pink too), from the settings menu
 [*][b]Two new bosses and 10 football enemies[/b]: The Linebacker, The Franchise (a two-phase final boss), the Coach miniboss, plus Mascot, Referee, Lineman, Blitzer, Punter, Huddle, Gatorade Cooler, Chain Gang and Sacker
@@ -42,7 +44,7 @@ Debug console: [b]gridiron give[/b] drops all the gear as pedestals, [b]gridiron
 
 Requires Repentance+. REPENTOGON is not required.
 Source and bug reports: github.com/bulmaspanties/tboifbm</description>
-    <version>0.10.0</version>
+    <version>0.11.0</version>
     <visibility>Private</visibility>
     <tag id="Items"/>
     <tag id="Characters"/>

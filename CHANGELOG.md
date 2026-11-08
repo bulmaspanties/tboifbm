@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.0
+- **Each character wears their own colours.** Uniform colours default to *auto*: Magdalene suits up in pink and white, Judas in black and red, Cain in green and gold, Keeper in gold and green, the tainted characters in darker versions, and so on. Picking a colour in the menu still overrides it.
+- **Themed football rooms**, rarer (about one room in eight) and varied: a **game field** with goalposts at both ends, end zones and painted numbers; a **locker room** with dented lockers, a whiteboard of plays, a bench, the shower drain and bloody towels; a **practice field** with cones, an agility ladder and a tire drill; a **turf field** of torn old artificial turf; plus sidelines, end zone corners and sideline junk.
+- **Pro Shop**: a quarter of shops are team stores that stock a Gridiron item.
+- **Six trinkets**: Lucky Patch, Chin Strap Buckle, Pylon, Game Coin, Mouth Tape, Hand Warmer.
+- **Audible** and **Fair Catch** cards, and the **Two-Point Conversion** pill.
+- **Boss music** for the Linebacker and The Franchise (can be turned off).
+
 ## 0.10.0
 - **Football in the basement**: about a third of normal rooms are dressed with faded yard lines and hash marks, a scrubbed team logo, and sideline junk (cups, Gatorade stains, a tipped cooler, a ball bag, a busted pylon, a dented helmet, tape, a clipboard, a bloody mouthguard), with the odd goalpost, bench or tackling sled. Football boss rooms get stadium banners. Never in the way; *field decor* off / light / full in the menu.
 - **Juiced**: Roid Rage, Growth Hormones, Synthoil and Experimental Treatment make tackles hit 50% harder and send enemies pinballing into each other. Referees and the Chain Gang run **drug tests** on juiced players (can be turned off).
