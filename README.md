@@ -6,6 +6,8 @@
   <img alt="No REPENTOGON needed" src="https://img.shields.io/badge/REPENTOGON-not%20needed-2a7d3a?style=for-the-badge">
 </p>
 
+<p align="center"><img src="docs/preview.gif" alt="Gridiron in motion: the characters, the bosses and the gear" width="640"></p>
+
 **Gridiron** suits Isaac up for football. Every item is real gear with its own mechanic: no reskins, no stat-only filler, nothing replaced.
 Tackle with the helmet, deflect with the pads, catch with the gloves, punt with the tee, and when you're wearing three pieces you're **Suited Up**.
 Then take on a rival Linebacker, a giant Mascot, a stadium full of grotesque football enemies, and **The Franchise**.
@@ -243,6 +245,8 @@ the files the game loads. No build tools or tests ship in it.
 4. After the first upload the uploader writes the Workshop `<id>` into `mods/gridiron/metadata.xml`.
    **Copy that `<id>` line into the repo's `metadata.xml`**: every later upload then updates the same Workshop page instead of making a new one.
 5. If the uploader rejects a tag, delete that `<tag>` line and upload again.
+6. Optional: on the Workshop page, **Add/edit images & videos** and upload `docs/preview.gif` plus the
+   `docs/*.png` sheets as extra screenshots. The GIF animates on the Workshop page.
 
 To update: bump `<version>`, build the zip, unzip it over `mods/gridiron` (keep the `<id>`), and run the uploader again.
 
@@ -352,7 +356,7 @@ scripts/dssmenucore.lua         Dead Sea Scrolls library (public domain, unmodif
 content/                        items, pools, costumes, entities, players, sounds, menu art
 resources/                      sprites, costumes, sounds
 tests/smoke_test.lua            runs the mod against a mock of the Isaac API (2000+ checks)
-tools/                          generators for every sprite, costume, sound, the boss music and the README images
+tools/                          generators for every sprite, costume, sound, the boss music, the README images and the preview GIF
 reference/                      vanilla character/boss sprites used as art reference (not shipped)
 ```
 

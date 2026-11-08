@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.12.0
+- **The Coach** and **Tainted Coach**. The Coach starts with BFFS!, the Cheerleader and the Water Boy; his familiars are 25% stronger but his own damage is lower. Tainted Coach can't shoot: he fields a squad of friendly Linemen that sub in every new room (more with Birthright). Both carry the Coach's Whistle as a pocket active.
+- **The Mascot**, a new boss for floors 2–6 (may replace Peep, The Dark One or Polycephalus). He fires a T-shirt cannon, belly-flops across the room and sheds smaller Mascots at 75/50/25% health. Boss chance slider in the menu.
+- **Two new challenges**: **Special Teams** (no tears; kicks hit 1.5x harder and the tee recharges every clear) and **Sudden Death** (suited up on one heart; football bosses take every room they can).
+- **More interactions**: Holy Mantle, Mom's Contacts, Lucky Foot, Mega Mush, Old Bandage and Super Bandage.
+- **Content toggles**: keep Gridiron items, or just the Q4 legends, out of the item pools.
+- **Gridiron API** for other mods: read the Suited Up / All-Pro / juiced state, add EID synergy notes, register football-enemy swaps and character team colours, and listen for tackles, field goals and touchdowns.
+- Fixed a few stray pixels on the Linebacker's sprite.
+- Animated preview (docs/preview.gif).
+
 ## 0.11.0
 - **Each character wears their own colours.** Uniform colours default to *auto*: Magdalene suits up in pink and white, Judas in black and red, Cain in green and gold, Keeper in gold and green, the tainted characters in darker versions, and so on. Picking a colour in the menu still overrides it.
 - **Themed football rooms**, rarer (about one room in eight) and varied: a **game field** with goalposts at both ends, end zones and painted numbers; a **locker room** with dented lockers, a whiteboard of plays, a bench, the shower drain and bloody towels; a **practice field** with cones, an agility ladder and a tire drill; a **turf field** of torn old artificial turf; plus sidelines, end zone corners and sideline junk.
