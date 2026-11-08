@@ -2250,6 +2250,77 @@ do
         "EID lists the new synergies")
 end
 
+-- Trinket batch two -----------------------------------------------------------------------------
+do
+    local tp = newPlayer()
+    players = { tp }
+    world.entities = { tp }
+    newRoom(true)
+    tp:EvaluateItems()
+    local luck0, delay0, speed0, dmg0 = tp.Luck, tp.MaxFireDelay, tp.MoveSpeed, tp.Damage
+
+    tp.trinkets[Trinkets.LUCKY_PATCH] = true
+    tp:EvaluateItems()
+    check(tp.Luck == luck0 + Cfg.PATCH_LUCK, "lucky patch: +1 luck")
+    tp.items[Items.HELMET], tp.items[Items.PADS], tp.items[Items.CLEATS] = 1, 1, 1
+    tick()
+    tp:EvaluateItems()
+    check(tp.Luck == luck0 + Cfg.PATCH_LUCK + Cfg.PATCH_SUITED_LUCK, "and +2 more while suited up")
+    tp.items[Items.HELMET], tp.items[Items.PADS], tp.items[Items.CLEATS] = nil, nil, nil
+    tp.trinkets[Trinkets.LUCKY_PATCH] = nil
+
+    check(mod.buckleWindup(tp) == 1 and mod.bossPushMult(tp) < 1, "no buckle: normal tackles")
+    tp.trinkets[Trinkets.BUCKLE] = true
+    check(mod.buckleWindup(tp) < 1 and mod.bossPushMult(tp) == 1, "chin strap buckle: faster tackles, full boss shove")
+    tp.trinkets[Trinkets.BUCKLE] = nil
+
+    tp.trinkets[Trinkets.MOUTH_TAPE] = true
+    tp:EvaluateItems()
+    check(tp.MaxFireDelay < delay0, "mouth tape: faster tears")
+    tp.flags = EntityFlag.FLAG_CONFUSION
+    tick()
+    check(not tp:HasEntityFlags(EntityFlag.FLAG_CONFUSION), "and no confusion")
+    tp.trinkets[Trinkets.MOUTH_TAPE] = nil
+
+    tp.trinkets[Trinkets.GAME_COIN] = true
+    tick()
+    tp:EvaluateItems()
+    local d = mod.pdata(tp)
+    check(d.gameCoin == "heads" or d.gameCoin == "tails", "game coin: flipped on pickup")
+    check((d.gameCoin == "heads" and tp.Damage > dmg0) or (d.gameCoin == "tails" and tp.MoveSpeed > speed0),
+        "and the side it lands on pays off")
+    tp.trinkets[Trinkets.GAME_COIN] = nil
+    tick()
+    tp:EvaluateItems()
+    check(d.gameCoin == nil and math.abs(tp.MoveSpeed - speed0) < 1e-6, "dropping the coin ends it")
+
+    -- Pylon: planted far away; touch it before the room is clear
+    tp.trinkets[Trinkets.PYLON] = true
+    tp.Position = Vector(80, 180)
+    newRoom(false)
+    check(d.pylonPos and (d.pylonPos - tp.Position):Length() > 200, "pylon: planted at the far end")
+    tp.Position = d.pylonPos
+    tick()
+    tp:EvaluateItems()
+    check(d.pylonScored and tp.Damage > dmg0, "touch it: +1 damage for the room")
+    newRoom(true)
+    tp:EvaluateItems()
+    check(not d.pylonScored and d.pylonPos == nil, "no pylon in a cleared room, and the bonus is gone")
+    tp.trinkets[Trinkets.PYLON] = nil
+
+    -- Hand Warmer
+    tp.trinkets[Trinkets.HAND_WARMER] = true
+    tp.Velocity = Vector(0, 0)
+    tick(Cfg.WARMER_FRAMES + 1)
+    local warm = tp:FireTear(tp.Position, Vector(10, 0))
+    dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, warm)
+    check(warm.data.GridironFootball and warm.CollisionDamage >= 3.5 * Cfg.WARMER_DAMAGE, "hand warmer: a warm football")
+    local cold = tp:FireTear(tp.Position, Vector(10, 0))
+    dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, cold)
+    check(not cold.data.GridironFootball, "only the one shot")
+    tp.trinkets[Trinkets.HAND_WARMER] = nil
+end
+
 -- Settings survive a restart (fresh load reads the stored blob)
 findButton("gameplay", "kick damage").store(70)
 mod.StoreSaveData()

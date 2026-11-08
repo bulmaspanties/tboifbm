@@ -61,6 +61,12 @@ Click a section to expand it.
 | **Hail Mary** | Active (**Q4**), 6 charges | Treasure, Angel | Heaves a **giant golden football** across the room (8x damage + 30, piercing). Where it lands: a **beam of holy light** and a ring of 10 footballs. |
 | **Concussion Protocol** | Trinket | Trinket pool | Taking damage **confuses every enemy** in the room for 2 seconds. |
 | **Turf Burn** | Trinket | Trinket pool | **Sprinting scorches the turf** behind you: the burning creep damages enemies. Tackled enemies get a big scorch mark. |
+| **Lucky Patch** | Trinket | Trinket pool | +1 Luck, and +2 more while **Suited Up**. |
+| **Chin Strap Buckle** | Trinket | Trinket pool | Tackles go live **25% faster** and shove **bosses at full force**. |
+| **Pylon** | Trinket | Trinket pool | Entering a room with enemies plants a **pylon at the far end**. Touch it before the room is clear: **+1 Damage** for the room. |
+| **Game Coin** | Trinket | Trinket pool | Flips every floor. **Heads:** +0.5 Damage for the floor. **Tails:** +0.2 Speed for the floor. |
+| **Mouth Tape** | Trinket | Trinket pool | Immune to **fear and confusion**, slightly faster tears. |
+| **Hand Warmer** | Trinket | Trinket pool | **Stand still** a moment to warm up: your next shot is a **football that deals double damage**. |
 | **Referee Flag** | Trinket | Trinket pool | **Flag on the play:** when an enemy or its shot hits you, that enemy takes 10 + 3× floor-number damage and is slowed. |
 
 Every item also appears in the matching **Greed mode** pools, and every passive works with **Lemegeton**.

@@ -23,6 +23,12 @@
     <passive id="23" name="Golden Arm" description="Every throw a dime" gfx="golden_arm.png" quality="4" cache="shotspeed" tags="summonable offensive" />
     <active id="24" name="Hail Mary" description="Throw it up and pray" gfx="hail_mary.png" quality="4" maxcharges="6" tags="offensive" />
     <active id="20" name="End Zone" description="Six points" gfx="end_zone.png" quality="2" maxcharges="4" />
+    <trinket id="4" name="Lucky Patch" description="Good luck charm" gfx="lucky_patch.png" cache="luck" />
+    <trinket id="5" name="Chin Strap Buckle" description="Snap it tight" gfx="chin_strap_buckle.png" />
+    <trinket id="6" name="Pylon" description="Break the plane" gfx="pylon.png" cache="damage" />
+    <trinket id="7" name="Game Coin" description="You won the toss" gfx="game_coin.png" cache="damage speed" />
+    <trinket id="8" name="Mouth Tape" description="No talking" gfx="mouth_tape.png" cache="firedelay" />
+    <trinket id="9" name="Hand Warmer" description="Warm hands, soft passes" gfx="hand_warmer.png" />
     <trinket id="1" name="Turf Burn" description="Leave a mark" gfx="turf_burn.png" />
     <trinket id="3" name="Concussion Protocol" description="Ring their bell" gfx="concussion_protocol.png" />
     <trinket id="2" name="Referee Flag" description="Flag on the play" gfx="referee_flag.png" />

@@ -92,6 +92,12 @@ return function(mod)
             "With Gatorade Bucket: clean rooms fill it twice as fast")
         addCollectible(Items.DUMMY,
             "Orbits you and blocks enemy shots#Pulls nearby enemies toward itself")
+        EID:addTrinket(Trinkets.LUCKY_PATCH, "↑ +1 Luck#↑ +2 more Luck while Suited Up")
+        EID:addTrinket(Trinkets.BUCKLE, "Tackles go live 25% faster#Tackles shove bosses at full force")
+        EID:addTrinket(Trinkets.PYLON, "Entering a room with enemies plants a pylon at the far end#Touch it before the room is clear: +1 Damage for the room")
+        EID:addTrinket(Trinkets.GAME_COIN, "Flips every floor:#Heads: +0.5 Damage for the floor#Tails: +0.2 Speed for the floor")
+        EID:addTrinket(Trinkets.MOUTH_TAPE, "Immune to fear and confusion#↑ Slightly faster tears")
+        EID:addTrinket(Trinkets.HAND_WARMER, "Stand still for a moment to warm up your hands:#your next shot is a football that deals double damage")
         EID:addTrinket(Trinkets.TURF_BURN,
             "Sprinting scorches the turf behind you: the burn damages enemies#Tackled enemies get a big scorch mark")
         EID:addTrinket(Trinkets.PROTOCOL,

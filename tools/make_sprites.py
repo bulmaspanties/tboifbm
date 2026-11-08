@@ -697,7 +697,89 @@ def hail_mary():
     return rows_of(outline(g))
 
 
+def lucky_patch():
+    """An embroidered jersey patch: gold border, team blue, a white star."""
+    g = blank()
+    for y in range(7, 26):                                  # shield shape
+        half = 9 if y < 18 else 9 - (y - 17)
+        rect(g, 16 - half, y, 15 + half, y, "Y")
+    for y in range(9, 24):
+        half = 7 if y < 18 else 7 - (y - 17)
+        if half > 0:
+            rect(g, 16 - half, y, 15 + half, y, "B")
+    put(g, [(15, 11), (16, 11), (15, 12), (16, 12), (12, 14), (13, 14), (14, 14), (15, 14), (16, 14), (17, 14),
+            (18, 14), (19, 14), (13, 15), (14, 15), (15, 15), (16, 15), (17, 15), (18, 15), (14, 16), (15, 16),
+            (16, 16), (17, 16), (13, 17), (14, 17), (17, 17), (18, 17), (13, 18), (18, 18)], "W")   # star
+    put(g, [(9, 9), (22, 9), (8, 12)], "U")                # stitching catches the light
+    return rows_of(outline(g))
+
+
+def chin_strap_buckle():
+    """A chin strap snap: a metal buckle with two cut strap ends."""
+    g = blank()
+    rect(g, 2, 13, 11, 18, "W")                            # strap ends
+    rect(g, 20, 13, 29, 18, "W")
+    rect(g, 2, 18, 11, 18, "w")
+    rect(g, 20, 18, 29, 18, "w")
+    ellipse(g, 15.5, 15.5, 6, 5, "N")                       # the snap
+    ellipse(g, 15.5, 15.5, 3.5, 3, "G")
+    ellipse(g, 15.5, 15.5, 1.5, 1.2, "v")
+    put(g, [(13, 12), (14, 11)], "W")
+    return rows_of(outline(g))
+
+
+def pylon_icon():
+    """An end zone pylon, standing proud."""
+    g = blank()
+    rect(g, 11, 6, 20, 25, "O")
+    rect(g, 11, 6, 13, 25, "P")
+    rect(g, 18, 6, 20, 25, "o")
+    rect(g, 11, 12, 20, 13, "W")                           # reflective band
+    rect(g, 9, 25, 22, 27, "o")                            # weighted base
+    put(g, [(14, 17), (15, 18), (16, 17), (15, 16)], "W")  # tiny logo
+    return rows_of(outline(g))
+
+
+def game_coin():
+    """The coin from the opening toss: a big gold coin stamped with a helmet."""
+    g = blank()
+    ellipse(g, 15.5, 15.5, 11, 11, "a")
+    ellipse(g, 15.5, 15.5, 9.5, 9.5, "A")
+    ellipse(g, 15.5, 14.5, 5, 4.5, "a")                     # stamped helmet
+    rect(g, 18, 15, 21, 18, "a")                           # its facemask
+    put(g, [(19, 16), (20, 17)], "A")
+    ellipse(g, 11, 10, 2.5, 1.5, "U")
+    return rows_of(outline(g))
+
+
+def mouth_tape():
+    """Two strips of athletic tape in an X."""
+    g = blank()
+    for i in range(-10, 11):
+        for w in range(-2, 3):
+            put(g, [(16 + i, 16 + i + w)], "W")
+            put(g, [(16 + i, 16 - i + w)], "W")
+    put(g, [(9, 7), (23, 7), (8, 24), (24, 24)], "w")
+    put(g, [(16, 16), (15, 15), (17, 17)], "w")
+    return rows_of(outline(g))
+
+
+def hand_warmer():
+    """A quarterback's hand warmer: a blue pouch with a red stripe."""
+    g = blank()
+    ellipse(g, 15.5, 16, 12, 8, "B")
+    ellipse(g, 12, 13, 6, 3, "L")
+    ellipse(g, 15.5, 19, 10, 4, "B")
+    rect(g, 4, 15, 27, 16, "R")
+    ellipse(g, 15.5, 8.5, 6, 2.5, "n")                     # the belt clip
+    put(g, [(9, 21), (21, 22), (15, 23)], "L")             # fleecy texture
+    return rows_of(outline(g))
+
+
 SPRITES["items/collectibles/eye_black.png"] = dict(rows=eye_black())
+for _name, _fn in (("lucky_patch", lucky_patch), ("chin_strap_buckle", chin_strap_buckle), ("pylon", pylon_icon),
+                  ("game_coin", game_coin), ("mouth_tape", mouth_tape), ("hand_warmer", hand_warmer)):
+    SPRITES[f"items/trinkets/{_name}.png"] = dict(rows=_fn())
 SPRITES["items/collectibles/championship_ring.png"] = dict(rows=championship_ring())
 SPRITES["items/collectibles/hall_of_fame_jacket.png"] = dict(rows=hall_of_fame_jacket())
 SPRITES["items/collectibles/golden_arm.png"] = dict(rows=golden_arm())

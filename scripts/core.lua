@@ -34,6 +34,12 @@ return function(mod)
         FLAG  = Isaac.GetTrinketIdByName("Referee Flag"),
         PROTOCOL = Isaac.GetTrinketIdByName("Concussion Protocol"),
         TURF_BURN = Isaac.GetTrinketIdByName("Turf Burn"),
+        LUCKY_PATCH = Isaac.GetTrinketIdByName("Lucky Patch"),
+        BUCKLE = Isaac.GetTrinketIdByName("Chin Strap Buckle"),
+        PYLON = Isaac.GetTrinketIdByName("Pylon"),
+        GAME_COIN = Isaac.GetTrinketIdByName("Game Coin"),
+        MOUTH_TAPE = Isaac.GetTrinketIdByName("Mouth Tape"),
+        HAND_WARMER = Isaac.GetTrinketIdByName("Hand Warmer"),
     }
     mod.Cards = {
         COIN_TOSS = Isaac.GetCardIdByName("Coin Toss"),
@@ -167,6 +173,17 @@ return function(mod)
         -- Super Bowl Ring
         RING_DAMAGE           = 0.35,
         RING_LUCK             = 1,
+
+        -- Trinket batch two (scripts/trinkets.lua)
+        PATCH_LUCK            = 1,
+        PATCH_SUITED_LUCK     = 2,
+        BUCKLE_WINDUP         = 0.75,
+        PYLON_DAMAGE          = 1,
+        COIN_TRINKET_DAMAGE   = 0.5,
+        COIN_TRINKET_SPEED    = 0.2,
+        TAPE_FIRE_DELAY_MULT  = 0.92,
+        WARMER_FRAMES         = 45,
+        WARMER_DAMAGE         = 2,
 
         -- Concussion Protocol
         PROTOCOL_DAZE         = 60,
@@ -320,6 +337,8 @@ return function(mod)
     function mod.inEndZone() return false end
     function mod.enemyDamageTakenMult() return 1 end
     function mod.kickAlwaysGood() return false end
+    function mod.buckleWindup() return 1 end
+    function mod.bossPushMult() return 0.25 end
     function mod.isJuiced() return false end
     function mod.tackleStunMult() return 1 end
     function mod.throwRangeMult() return 1 end

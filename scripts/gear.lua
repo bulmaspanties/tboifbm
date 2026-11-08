@@ -60,7 +60,7 @@ return function(mod)
         end
 
         local synWindup, synDamage, synKnock = mod.tackleSynergy(player)
-        local windup = Cfg.TACKLE_WINDUP * mod.tackleWindupMult() * synWindup
+        local windup = Cfg.TACKLE_WINDUP * mod.tackleWindupMult() * synWindup * mod.buckleWindup(player)
         if mod.isSuitedUp(player) then windup = windup / 2 end
         if player:HasCollectible(Items.HOF_JACKET) then windup = windup / 2 end   -- Hall of Famer: quarter windup
         windup = math.floor(windup)
@@ -95,7 +95,7 @@ return function(mod)
                     local dmg = (player.Damage * Cfg.TACKLE_DMG_MULT + Cfg.TACKLE_DMG_FLAT) * mod.tackleDamageMult() * synDamage
                     e:TakeDamage(dmg, 0, EntityRef(player), 0)
                     local push = d.runDir * (Cfg.TACKLE_KNOCKBACK * synKnock)
-                    if e:IsBoss() then push = push * 0.25 end
+                    if e:IsBoss() then push = push * mod.bossPushMult(player) end
                     e:AddVelocity(push)
                     e:AddConfusion(EntityRef(player), Cfg.TACKLE_CONFUSE, true)
                     local stun = math.floor((e:IsBoss() and 10 or Cfg.TACKLE_STUN) * mod.tackleStunMult(player))
