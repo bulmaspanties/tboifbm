@@ -115,6 +115,7 @@ return function(mod)
                     game:ShakeScreen(5)
                     Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.IMPACT, 0, e.Position, Vector.Zero, player)
                     mod.popOn(e, "TACKLE!", mod.Colors.orange)
+                    mod.fire("TACKLE", player, e, dmg)
                     if player:HasCollectible(Items.PADS) then
                         padPop(player, e.Position, 0.6)
                     end
@@ -153,6 +154,7 @@ return function(mod)
                 sfx:Play(SoundEffect.SOUND_POWERUP_SPEWER)
                 mod.playSound("CHEER", 0.7)
                 if mod.OnSuitedUp then mod.OnSuitedUp(player) end
+                mod.fire("SUITED_UP", player)
             end
             d.lastGearCount = count
             mod.refreshCache(player)
@@ -166,6 +168,7 @@ return function(mod)
             mod.playSound("FANFARE", 0.9)
             mod.playSound("CHEER", 0.8)
             mod.popOn(player, "ALL-PRO!", mod.Colors.gold, 1.4)
+            mod.fire("ALL_PRO", player)
             player:SetColor(Color(1, 1, 1, 1, 0.5, 0.4, 0), 30, 1, true, false)
             mod.refreshCache(player)
         end

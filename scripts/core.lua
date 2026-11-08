@@ -308,6 +308,8 @@ return function(mod)
         decor = "full",        -- football props in rooms: "off", "light" or "full"
         drugTests = true,      -- referees and the coach go after juiced players
         bossMusic = true,      -- the Linebacker and The Franchise get their own themes
+        gridironItems = true,  -- Gridiron items and trinkets can show up in runs
+        q4Items = true,        -- ...including the Q4 legends
         helmetColor = "auto",  -- uniform colours (menu: uniform); "auto" = the character's own colours
         jerseyColor = "auto",
         pantsColor = "auto",
@@ -348,6 +350,15 @@ return function(mod)
     function mod.turfBurnFrames() return 1 end
     function mod.inEndZone() return false end
     function mod.enemyDamageTakenMult() return 1 end
+    -- Events other mods can listen to through the Gridiron API (scripts/api.lua).
+    mod.Listeners = {}
+    function mod.fire(event, ...)
+        for _, fn in ipairs(mod.Listeners[event] or {}) do
+            local ok, err = pcall(fn, ...)
+            if not ok then Isaac.DebugString("Gridiron: a " .. event .. " listener failed: " .. tostring(err)) end
+        end
+    end
+
     function mod.kickAlwaysGood() return false end
     function mod.buckleWindup() return 1 end
     function mod.bossPushMult() return 0.25 end

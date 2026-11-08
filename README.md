@@ -251,7 +251,7 @@ If **External Item Descriptions** is installed, every item shows its description
 
 ## Settings menu
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
-- **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, drug tests, Franchise boss chance, Pro Shop chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
+- **gameplay:** Gridiron items on/off and Q4 legends on/off (for new runs), tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, drug tests, Franchise boss chance, Pro Shop chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
 - **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare), boss music, field decor (off / light / full)
 - **uniform:** by default (**auto**) every character suits up in **their own colours**: Magdalene in pink and white, Judas in black and red, Cain in green and gold, Keeper in gold and money green, Blue Baby in blues, the tainted characters in darker, meaner versions, and so on. Or pick your team colours yourself: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colours each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts everything back on auto. Helmet and Team Jersey **pedestals** show your colours too (except where the item could be hidden: Curse of the Blind and the alt-floor "?" treasure items)
 - **completion notes:** the marks each Gridiron character has earned
@@ -289,6 +289,26 @@ They're drawn on Isaac's body shape, with fixes per character, sized from each c
 - **No legs** (The Lost, The Soul, Azazel and their tainted versions): no pants or cleats.
 
 If a piece still looks wrong on a character, hide it from **costume fit** in the menu (or `gridiron hide <slot>`).
+
+</details>
+
+<details>
+<summary><b>For modders: the Gridiron API</b></summary>
+
+## For modders: the Gridiron API
+Gridiron publishes a global `Gridiron` table (check `if Gridiron then ... end`):
+
+```lua
+Gridiron.Items / .Trinkets / .Cards / .Pills / .MonsterType / .MonsterVariants / .PlayerTypes
+Gridiron.IsSuitedUp(player)   Gridiron.IsAllPro(player)   Gridiron.IsJuiced(player)
+Gridiron.GearCount(player)    Gridiron.UniformColor(player, "helmet" | "jersey" | "pants")
+
+Gridiron.AddSynergyNote(itemId, "Your item: what it does with this one")   -- shows in EID
+Gridiron.AddFootballSwap(EntityType.ENTITY_X, Gridiron.MonsterVariants.LINEMAN)
+Gridiron.SetCharacterColors(yourPlayerType, { "purple", "gold", "white" })  -- auto uniform
+Gridiron.AddCallback("TACKLE", function(player, enemy, damage) end)
+-- also "FIELD_GOAL" (player, position), "TOUCHDOWN" (player), "SUITED_UP" (player), "ALL_PRO" (player)
+```
 
 </details>
 

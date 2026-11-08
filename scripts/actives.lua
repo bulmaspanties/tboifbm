@@ -59,6 +59,7 @@ return function(mod)
 
         if good then
             mod.onFieldGoal(player)
+            mod.fire("FIELD_GOAL", player, ball.pos)
             local rng = mod.rngFor(player, Items.KICKING_TEE)
             for _ = 1, Cfg.FIELD_GOAL_COINS do
                 local vel = Vector.FromAngle(rng:RandomInt(360)) * (2 + rng:RandomFloat() * 2)
@@ -81,6 +82,7 @@ return function(mod)
     end
 
     local function scoreTouchdown(player)
+        mod.fire("TOUCHDOWN", player)
         local d = pdata(player)
         local doubled = mod.inEndZone(player.Position)   -- scored in the End Zone: counts double
         local value = doubled and 2 or 1

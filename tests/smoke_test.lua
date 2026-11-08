@@ -546,7 +546,9 @@ function Game()
             GetCurrentRoomIndex = function() return world.roomIndex or 84 end,
             GetStageType = function() return world.stageType or 0 end,
             GetCurrentRoomDesc = function() return { Data = { Type = world.roomType } } end } end,
-        GetItemPool = function() return { ForceAddPillEffect = function(_, effect) return 7 end } end,
+        GetItemPool = function() return { ForceAddPillEffect = function(_, effect) return 7 end,
+            RemoveCollectible = function(_, id) world.removedItems = world.removedItems or {}; world.removedItems[id] = true end,
+            RemoveTrinket = function(_, id) world.removedTrinkets = world.removedTrinkets or {}; world.removedTrinkets[id] = true end } end,
         GetSeeds = function() return { GetStartSeed = function() return 123456 end } end,
         GetFrameCount = function() return world.frame end,
         ShakeScreen = function() end,
@@ -616,6 +618,7 @@ Isaac = {
     GetScreenWidth = function() return 480 end,
     GetCardIdByName = function(name) return cardIds[name] or -1 end,
     GetMusicIdByName = function(name) return musicIds[name] or -1 end,
+    DebugString = function() end,
     GetEntityVariantByName = function(name) return entityByName[name] and entityByName[name].variant or -1 end,
     GetPlayerTypeByName = function(name, tainted) return playerTypes[name .. (tainted and "#b" or "")] or -1 end,
     GetEntityTypeByName = function(name) return entityByName[name] and entityByName[name].type or 0 end,
@@ -2509,6 +2512,40 @@ end)()
     ip.items[C.COLLECTIBLE_OLD_BANDAGE] = 1
     local _, heart = mod.waterBoyBoost(ip)
     check(heart == HeartSubType.HEART_FULL, "old bandage: the water boy gives whole hearts")
+end)()
+
+-- API and content switches ----------------------------------------------------------------------
+;(function()
+    check(Gridiron and Gridiron.Items.HELMET == Items.HELMET, "the Gridiron API is published")
+    local ap2 = newPlayer()
+    players = { ap2 }
+    world.entities = { ap2 }
+    check(Gridiron.IsSuitedUp(ap2) == false and Gridiron.GearCount(ap2) == 0, "api: suited up and gear count")
+    check(Gridiron.UniformColor(ap2, "helmet") == "red", "api: uniform colour")
+    local heard = {}
+    Gridiron.AddCallback("TOUCHDOWN", function(p) heard[#heard + 1] = p end)
+    Gridiron.AddCallback("TOUCHDOWN", function() error("a broken listener") end)
+    mod.fire("TOUCHDOWN", ap2)
+    check(heard[1] == ap2, "api: events reach listeners (and a broken one can't break the mod)")
+    Gridiron.AddSynergyNote(Items.HELMET, "Another mod's synergy")
+    check(eidText[Items.HELMET]:find("Another mod's synergy", 1, true), "api: synergy notes show in EID")
+    Gridiron.AddFootballSwap(999, MV.LINEMAN)
+    check(mod.FoeSwaps[999][1] == MV.LINEMAN, "api: football swaps")
+    Gridiron.SetCharacterColors(4242, { "pink", "pink", "pink" })
+    check(mod.CharacterTeamColors[4242][1] == "pink", "api: character colours")
+    -- content switches
+    world.removedItems, world.removedTrinkets = {}, {}
+    mod.Settings.q4Items = false
+    dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
+    check(world.removedItems[Items.CHAMP_RING] and not world.removedItems[Items.HELMET], "q4 off: only the legends leave the pools")
+    mod.Settings.gridironItems = false
+    world.removedItems = {}
+    dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
+    check(world.removedItems[Items.HELMET] and world.removedTrinkets[Trinkets.PYLON], "items off: no gridiron items or trinkets")
+    world.removedItems = {}
+    dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, true)
+    check(next(world.removedItems) == nil, "a continued run is left alone")
+    mod.Settings.gridironItems, mod.Settings.q4Items = true, true
 end)()
 
 -- Settings survive a restart (fresh load reads the stored blob)

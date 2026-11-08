@@ -158,6 +158,8 @@ return function(mod)
                 percent("linebacker boss", "LINEBACKER_CHANCE", 5, { "chance he replaces", "an early boss", "(floors 2-6)" }),
                 toggle("drug tests", "drugTests", { "referees go after", "players on", "steroids" }),
                 percent("franchise boss", "FRANCHISE_CHANCE", 5, { "chance he replaces", "a floor 7-8 boss" }),
+                toggle("gridiron items", "gridironItems", { "gridiron items", "and trinkets in", "new runs" }),
+                toggle("q4 legends", "q4Items", { "championship ring,", "jacket, golden arm,", "hail mary" }),
                 percent("pro shops", "PROSHOP_CHANCE", 5, { "chance a shop is", "a team store with", "gridiron gear" }),
                 percent("halftime show", "HALFTIME_CHANCE", 2, { "chance a cleared", "room starts a", "halftime show", "(once a floor)" }),
                 percent("football foes", "FOOTBALL_ENEMY_CHANCE", 2, { "chance a vanilla", "enemy is swapped", "for a football", "enemy" }),

@@ -25,12 +25,14 @@
 -- scripts/halftime.lua   Halftime show room event
 -- scripts/decor.lua      football props in rooms
 -- scripts/music.lua      boss themes
+-- scripts/pools.lua      content switches (keep Gridiron / Q4 items out of new runs)
+-- scripts/api.lua        the global Gridiron API for other mods
 -- scripts/legends.lua    Q4 items: Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary
 -- scripts/synergies.lua  interactions with base-game items
 -- scripts/completion.lua completion notes for the Gridiron characters
 
 local mod = RegisterMod("Gridiron", 1)
 
-for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "franchise", "quarterback", "kicker", "endzone", "legends", "trinkets", "pocket", "halftime", "decor", "music", "synergies", "completion" }) do
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "franchise", "quarterback", "kicker", "endzone", "legends", "trinkets", "pocket", "halftime", "decor", "music", "synergies", "completion", "pools", "api" }) do
     include("scripts." .. name)(mod)
 end
