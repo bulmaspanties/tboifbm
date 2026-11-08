@@ -21,6 +21,7 @@
 -- scripts/kicker.lua     The Kicker + Tainted Kicker
 -- scripts/endzone.lua    End Zone active and its floor paint
 -- scripts/trinkets.lua   Lucky Patch, Chin Strap Buckle, Pylon, Game Coin, Mouth Tape, Hand Warmer
+-- scripts/pocket.lua     Audible and Fair Catch cards, Two-Point Conversion pill
 -- scripts/halftime.lua   Halftime show room event
 -- scripts/decor.lua      football props in rooms
 -- scripts/legends.lua    Q4 items: Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary
@@ -29,6 +30,6 @@
 
 local mod = RegisterMod("Gridiron", 1)
 
-for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "franchise", "quarterback", "kicker", "endzone", "legends", "trinkets", "halftime", "decor", "synergies", "completion" }) do
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "franchise", "quarterback", "kicker", "endzone", "legends", "trinkets", "pocket", "halftime", "decor", "synergies", "completion" }) do
     include("scripts." .. name)(mod)
 end

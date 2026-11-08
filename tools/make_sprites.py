@@ -532,6 +532,37 @@ def coin_toss_front():
     return rows_of(outline(g))
 
 
+def audible_front():
+    """Audible: the QB changing the play at the line: a shout bubble over X's and O's."""
+    g = blank()
+    rect(g, 9, 4, 22, 27, "W")
+    rect(g, 22, 4, 22, 27, "w")
+    ellipse(g, 15.5, 11, 5, 4, "Y")                  # shout bubble
+    put(g, [(13, 15), (12, 16)], "Y")
+    rect(g, 15, 8, 16, 11, "R")                      # "!"
+    put(g, [(15, 13), (16, 13)], "R")
+    for x in (11, 15, 19):                           # the line: O's...
+        ellipse(g, x + 0.5, 20, 1.4, 1.4, "B")
+    for x in (11, 15, 19):                           # ...and X's
+        put(g, [(x, 24), (x + 1, 25), (x + 1, 24), (x, 25)], "R")
+    return rows_of(outline(g))
+
+
+def fair_catch_front():
+    """Fair Catch: a gloved hand waving high."""
+    g = blank()
+    rect(g, 9, 4, 22, 27, "W")
+    rect(g, 22, 4, 22, 27, "w")
+    rect(g, 14, 16, 17, 25, "B")                     # sleeve
+    rect(g, 13, 9, 18, 16, "G")                      # glove
+    for x in (13, 15, 17):
+        rect(g, x, 6, x, 9, "G")                     # fingers
+    rect(g, 19, 10, 20, 12, "G")                     # thumb
+    put(g, [(11, 8), (10, 10), (21, 7), (22, 9)], "v")   # wave lines
+    rect(g, 13, 15, 18, 15, "Y")                     # wristband
+    return rows_of(outline(g))
+
+
 def eye_black():
     """An open tin of eye black: dark grease with a finger swipe, the lid leaning behind."""
     g = blank()
@@ -790,7 +821,9 @@ SPRITES["items/trinkets/turf_burn.png"] = dict(rows=turf_burn())
 SPRITES["items/collectibles/foam_finger.png"] = dict(rows=foam_finger())
 SPRITES["items/collectibles/super_bowl_ring.png"] = dict(rows=super_bowl_ring())
 SPRITES["items/trinkets/concussion_protocol.png"] = dict(rows=concussion_protocol())
-SPRITES["content:gridiron_cardfronts.png"] = dict(rows=coin_toss_front())
+# card fronts: one 32px frame each, in the order of CARD_FRONTS (ui_cardfronts.anm2 is written to match)
+CARD_FRONTS = ["Coin Toss", "Audible", "Fair Catch"]
+SPRITES["content:gridiron_cardfronts.png"] = dict(frames=[coin_toss_front(), audible_front(), fair_catch_front()])
 SPRITES["items/collectibles/playbook.png"] = dict(rows=playbook())
 SPRITES["items/collectibles/coachs_whistle.png"] = dict(rows=coachs_whistle())
 SPRITES["items/collectibles/gatorade_bucket.png"] = dict(rows=gatorade_bucket())
@@ -923,7 +956,34 @@ def jersey_colourways():
     PALETTE.update(saved)
 
 
+def card_fronts_anm2():
+    frame = ('<Frame XPosition="0" YPosition="0" XPivot="16" YPivot="16" XCrop="{x}" YCrop="0" Width="32" Height="32" '
+             'XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" GreenTint="255" BlueTint="255" '
+             'AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" Rotation="0" Interpolated="false"/>')
+    root = ('<Frame XPosition="0" YPosition="0" XScale="100" YScale="100" Delay="1" Visible="true" RedTint="255" '
+            'GreenTint="255" BlueTint="255" AlphaTint="255" RedOffset="0" GreenOffset="0" BlueOffset="0" '
+            'Rotation="0" Interpolated="false"/>')
+    anims = "".join(f'''
+\t\t<Animation Name="{name}" FrameNum="1" Loop="true">
+\t\t\t<RootAnimation>{root}</RootAnimation>
+\t\t\t<LayerAnimations><LayerAnimation LayerId="0" Visible="true">{frame.format(x=i * 32)}</LayerAnimation></LayerAnimations>
+\t\t\t<NullAnimations/><Triggers/>
+\t\t</Animation>''' for i, name in enumerate(CARD_FRONTS))
+    return ('''<AnimatedActor>
+\t<Info CreatedBy="Gridiron tools/make_sprites.py" CreatedOn="11/08/2026 12:00:00 PM" Version="1" Fps="30"/>
+\t<Content>
+\t\t<Spritesheets><Spritesheet Path="gridiron_cardfronts.png" Id="0"/></Spritesheets>
+\t\t<Layers><Layer Name="card" Id="0" SpritesheetId="0"/></Layers>
+\t\t<Nulls/><Events/>
+\t</Content>
+\t<Animations DefaultAnimation="Coin Toss">''' + anims + '''
+\t</Animations>
+</AnimatedActor>
+''')
+
+
 def main():
+    (ROOT / "content/gfx/ui_cardfronts.anm2").write_text(card_fronts_anm2())
     jersey_colourways()
     for rel, spec in SPRITES.items():
         # "content:" sprites (card fronts) live next to content/gfx/ui_cardfronts.anm2

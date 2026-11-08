@@ -396,6 +396,13 @@ local function newPlayer(ptype)
     function p:GetActiveCharge(slot) return (self.charges or {})[slot or 0] or 0 end
     function p:SetActiveCharge(n, slot) self.charges = self.charges or {}; self.charges[slot or 0] = n end
     function p:GetCardRNG() return self.rng end
+    p.coins, p.bombs, p.keys = 0, 0, 0
+    function p:GetNumCoins() return self.coins end
+    function p:GetNumBombs() return self.bombs end
+    function p:GetNumKeys() return self.keys end
+    function p:AddCoins(n) self.coins = self.coins + n end
+    function p:AddBombs(n) self.bombs = self.bombs + n end
+    function p:AddKeys(n) self.keys = self.keys + n end
     function p:SetPocketActiveItem(id) self.pocket = id end
     function p:AddCard(id) self.card = id end
     function p:FullCharge() self.charged = true; return true end
@@ -2361,6 +2368,32 @@ do
     dispatch(ModCallbacks.MC_POST_FIRE_TEAR, nil, cold)
     check(not cold.data.GridironFootball, "only the one shot")
     tp.trinkets[Trinkets.HAND_WARMER] = nil
+end
+
+-- Cards and pills, batch two -------------------------------------------------------------------
+do
+    local cp2 = newPlayer()
+    players = { cp2 }
+    world.entities = { cp2 }
+    newRoom(false)
+    -- Audible: gapers become football enemies
+    local gaper = newEnemy(Vector(200, 200), 10)
+    gaper.Variant = 0
+    world.spawned = {}
+    dispatch(ModCallbacks.MC_USE_CARD, mod.Cards.AUDIBLE, mod.Cards.AUDIBLE, cp2, 0)
+    local swapped = nil
+    for _, e in ipairs(world.spawned) do if e.Type == mod.MonsterType then swapped = e end end
+    check(not gaper.exists and swapped and swapped.confused, "audible: the gaper is now a confused football enemy")
+    -- Fair Catch: shots drop dead; gloves catch them
+    cp2.items[Items.GLOVES] = 1
+    local s1, s2 = newProjectile(Vector(50, 0)), newProjectile(Vector(80, 0))
+    dispatch(ModCallbacks.MC_USE_CARD, mod.Cards.FAIR_CATCH, mod.Cards.FAIR_CATCH, cp2, 0)
+    check(not s1.exists and not s2.exists, "fair catch: every shot drops")
+    check(mod.pdata(cp2).caught == 2, "with gloves, you caught them")
+    -- Two-Point Conversion: +2 of the lowest
+    cp2.coins, cp2.bombs, cp2.keys = 5, 3, 1
+    dispatch(ModCallbacks.MC_USE_PILL, mod.Pills.TWO_POINT, mod.Pills.TWO_POINT, cp2, 0)
+    check(cp2.keys == 3 and cp2.coins == 5, "two-point conversion: +2 keys when keys are lowest")
 end
 
 -- Settings survive a restart (fresh load reads the stored blob)

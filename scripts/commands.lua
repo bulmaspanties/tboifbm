@@ -87,9 +87,13 @@ return function(mod)
             for _, id in pairs(mod.Trinkets) do
                 if id > 0 then queue[#queue + 1] = { PickupVariant.PICKUP_TRINKET, id } end
             end
-            if mod.Cards.COIN_TOSS > 0 then queue[#queue + 1] = { PickupVariant.PICKUP_TAROTCARD, mod.Cards.COIN_TOSS } end
-            if mod.Pills.TIMEOUT >= 0 then
-                queue[#queue + 1] = { PickupVariant.PICKUP_PILL, Game():GetItemPool():ForceAddPillEffect(mod.Pills.TIMEOUT) }
+            for _, card in pairs(mod.Cards) do
+                if card > 0 then queue[#queue + 1] = { PickupVariant.PICKUP_TAROTCARD, card } end
+            end
+            for _, effect in pairs(mod.Pills) do
+                if effect >= 0 then
+                    queue[#queue + 1] = { PickupVariant.PICKUP_PILL, Game():GetItemPool():ForceAddPillEffect(effect) }
+                end
             end
             mod.queueDrops(queue, player)
             if quick then return "gave all Gridiron passives; actives and trinkets are dropping around you" end

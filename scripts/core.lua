@@ -43,9 +43,12 @@ return function(mod)
     }
     mod.Cards = {
         COIN_TOSS = Isaac.GetCardIdByName("Coin Toss"),
+        AUDIBLE = Isaac.GetCardIdByName("Audible"),
+        FAIR_CATCH = Isaac.GetCardIdByName("Fair Catch"),
     }
     mod.Pills = {
         TIMEOUT = Isaac.GetPillEffectByName("Timeout!"),
+        TWO_POINT = Isaac.GetPillEffectByName("Two-Point Conversion"),
     }
     mod.Sounds = {
         WHISTLE = Isaac.GetSoundIdByName("Gridiron Whistle"),
@@ -191,6 +194,10 @@ return function(mod)
         -- Coin Toss
         COIN_HEADS_DAMAGE     = 1.5,
         COIN_TAILS_SLOW       = 150,
+
+        -- Audible / Fair Catch
+        AUDIBLE_CONFUSE       = 60,
+        FAIR_CATCH_FRAMES     = 60,
 
         -- Timeout!
         TIMEOUT_FREEZE        = 90,

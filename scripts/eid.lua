@@ -106,6 +106,15 @@ return function(mod)
             EID:addCard(mod.Cards.COIN_TOSS,
                 "Flip a coin:#Heads: +1.5 Damage for the room#Tails: fully recharges your active item and slows all enemies")
         end
+        if mod.Cards.AUDIBLE and mod.Cards.AUDIBLE > 0 then
+            EID:addCard(mod.Cards.AUDIBLE, "Every regular enemy in the room is swapped for a football enemy (briefly confused)")
+        end
+        if mod.Cards.FAIR_CATCH and mod.Cards.FAIR_CATCH > 0 then
+            EID:addCard(mod.Cards.FAIR_CATCH, "Every enemy shot in the air drops dead#2 seconds of safety#With Receiver Gloves: you catch them")
+        end
+        if mod.Pills.TWO_POINT and mod.Pills.TWO_POINT >= 0 then
+            EID:addPill(mod.Pills.TWO_POINT, "+2 of whatever you have least of: coins, bombs or keys")
+        end
         if mod.Pills.TIMEOUT and mod.Pills.TIMEOUT >= 0 then
             EID:addPill(mod.Pills.TIMEOUT, "Freezes all enemies for 3 seconds, clears enemy shots and heals half a heart")
         end

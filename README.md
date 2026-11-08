@@ -101,6 +101,9 @@ Clearing a normal room has a **6% chance** (once per floor, adjustable in the me
 | Item | Type | What it does |
 |---|---|---|
 | **Coin Toss** | Card | Flip a coin. **Heads:** +1.5 Damage for the room. **Tails:** fully recharges your active item and slows every enemy. |
+| **Audible** | Card | Every regular enemy in the room is **swapped for a football enemy** (confused for a moment). |
+| **Fair Catch** | Card | Every enemy shot in the air **drops dead**, and you're safe for 2 seconds. With **Receiver Gloves**, you catch them all. |
+| **Two-Point Conversion** | Pill | **+2** of whatever you have least of: coins, bombs or keys. |
 | **Timeout!** | Pill | Freezes every enemy for 3 seconds, clears enemy shots, and heals half a heart. |
 
 </details>
