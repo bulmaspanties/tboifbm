@@ -1244,7 +1244,9 @@ def outline_soft(g):
     return g
 
 
-DECOR_KEPT = ("Pylon",)   # rooms aren't dressed any more; the Pylon trinket's marker stays
+# Only floor paint for the football fields, plus the Pylon trinket's marker. The standing props
+# (lockers, goalposts, benches, junk) are gone: they never fit Isaac's rooms.
+DECOR_KEPT = ("Pylon", "Yardline", "EndStripes", "TurfSmall", "Num10", "Num20", "Num30", "Num40", "Num50")
 
 
 def decor_sheet():

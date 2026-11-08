@@ -184,6 +184,7 @@ return function(mod)
                 toggle("popup text", "popups", { "callouts like", "tackle! and", "it's good!" }),
                 toggle("crowd sounds", "crowd", { "cheers, boos,", "the stadium horn", "and fanfare" }),
                 toggle("boss music", "bossMusic", { "themes for the", "linebacker and", "the franchise" }),
+                toggle("football fields", "fields", { "yard lines and", "end zones painted", "on some floors" }),
             },
         },
         uniform = {

@@ -78,6 +78,9 @@ Hold **3 or more** of the nine wearable gear items (Helmet, Pads, Jersey, Cleats
 ### Transformation: All-Pro
 Hold **any 3 Gridiron items** (passives, actives, familiars, Q4s: anything from this mod) to become **All-Pro**, for the rest of the run like a vanilla transformation: **+0.5 Damage**, **every 4th shot is a homing golden spiral**, and your eye black turns to **gold war paint** (it shows through the facemask).
 
+### Football fields
+About one plain room in twelve has a faded **football field painted on the floor**: yard lines with their numbers counting up to midfield and back, end zone stripes at both ends, and a torn patch of turf or two. It's paint only (nothing stands in the room) and only in ordinary rectangular rooms, never L-shaped or narrow ones. Turn **football fields** off in *visuals*.
+
 ### Pro Shop
 A quarter of shops (adjustable in the menu) are **team stores**: the first time you walk in, one item for sale is a **Gridiron item you don't have yet**, at the shop's price.
 
@@ -250,7 +253,7 @@ If **External Item Descriptions** is installed, every item shows its description
 ## Settings menu
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
 - **gameplay:** Gridiron items on/off and Q4 legends on/off (for new runs), tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, drug tests, Franchise boss chance, Mascot boss chance, Pro Shop chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
-- **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare), boss music
+- **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare), boss music, football fields
 - **uniform:** by default (**auto**) every character suits up in **their own colours**: Magdalene in pink and white, Judas in black and red, Cain in green and gold, Keeper in gold and money green, Blue Baby in blues, the tainted characters in darker, meaner versions, and so on. Or pick your team colours yourself: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colours each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts everything back on auto. Helmet and Team Jersey **pedestals** show your colours too (except where the item could be hidden: Curse of the Blind and the alt-floor "?" treasure items)
 - **completion notes:** the marks each Gridiron character has earned
 - **costume fit:** hide the helmet, eye black, jersey/pads or pants/cleats for the character you're playing right now

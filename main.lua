@@ -25,7 +25,7 @@
 -- scripts/trinkets.lua   Lucky Patch, Chin Strap Buckle, Pylon, Game Coin, Mouth Tape, Hand Warmer
 -- scripts/pocket.lua     Audible and Fair Catch cards, Two-Point Conversion pill
 -- scripts/halftime.lua   Halftime show room event
--- scripts/decor.lua      Pro Shop (team stores) and the Pylon marker
+-- scripts/decor.lua      football fields on some floors, Pro Shop, the Pylon marker
 -- scripts/music.lua      boss themes
 -- scripts/pools.lua      content switches (keep Gridiron / Q4 items out of new runs)
 -- scripts/api.lua        the global Gridiron API for other mods

@@ -154,6 +154,7 @@ CoinSubType = enum()
 DamageFlag = enum()
 RenderMode = enum()
 RoomType = { ROOM_DEFAULT = 1, ROOM_SHOP = 2, ROOM_BOSS = 5, ROOM_BOSSRUSH = 17 }
+RoomShape = { ROOMSHAPE_1x1 = 1, ROOMSHAPE_IH = 2, ROOMSHAPE_2x1 = 6, ROOMSHAPE_2x2 = 8, ROOMSHAPE_LTL = 9 }
 CollectibleType = enum({ COLLECTIBLE_BIRTHRIGHT = 619 })
 WeaponType = enum()
 PillEffect = enum()
@@ -535,6 +536,7 @@ local room = {
         return (x == 0 or y == 0 or x == 14 or y == 8) and 1 or 0
     end,
     IsPositionInRoom = function() return true end,
+    GetRoomShape = function() return world.roomShape or RoomShape.ROOMSHAPE_1x1 end,
     FindFreePickupSpawnPosition = function(_, pos) world.freeSpawnCalls = (world.freeSpawnCalls or 0) + 1; return pos end,
     GetRenderMode = function() return 0 end,
 }
@@ -2334,16 +2336,50 @@ end)()
 end)()
 
 ;(function()
-    -- Rooms are never dressed with football props (only the Pylon trinket places a marker)
-    for _, rt in ipairs({ RoomType.ROOM_DEFAULT, RoomType.ROOM_BOSS }) do
+    -- Football fields: paint only, no goalposts or junk, never in L-shaped rooms
+    local function propsIn(seed, shape, rt)
+        world.decorSeed, world.roomShape = seed, shape
         world.spawned = {}
-        newRoom(false, rt)
-        local props = 0
+        newRoom(false, rt or RoomType.ROOM_DEFAULT)
+        local names = {}
         for _, e in ipairs(world.spawned) do
-            if e.Type == EntityType.ENTITY_EFFECT and e.Variant == mod.DecorVariant then props = props + 1 end
+            if e.Type == EntityType.ENTITY_EFFECT and e.Variant == mod.DecorVariant then names[#names + 1] = e.data.GridironDecor end
         end
-        check(props == 0, "no football props in rooms: " .. rt)
+        return names
     end
+    local seed
+    for sd = 1, 400 do if #propsIn(sd) > 0 then seed = sd break end end
+    check(seed ~= nil, "some rooms are football fields")
+    local fields, kinds, allFlat = 0, {}, true
+    for sd = 1, 400 do
+        local names = propsIn(sd)
+        if #names > 0 then fields = fields + 1 end
+        for _, n in ipairs(names) do kinds[n] = true end
+    end
+    check(fields > 10 and fields < 70, "fields are rare (about one room in twelve)")
+    check(kinds.Yardline and kinds.EndStripes and kinds.Num10, "a field has yard lines, numbers and end zones")
+    local allowed = { Yardline = 1, EndStripes = 1, TurfSmall = 1, Num10 = 1, Num20 = 1, Num30 = 1, Num40 = 1, Num50 = 1 }
+    local onlyPaint = true
+    for n in pairs(kinds) do if not allowed[n] then onlyPaint = false end end
+    check(onlyPaint, "fields are paint only: no goalposts, lockers or junk")
+    for _, name in ipairs(propsIn(seed)) do
+        check(true, "field prop: " .. name)
+    end
+    local flat = true
+    world.spawned = {}
+    propsIn(seed)
+    for _, e in ipairs(world.spawned) do
+        if e.Variant == mod.DecorVariant and not e:HasEntityFlags(EntityFlag.FLAG_RENDER_FLOOR) then flat = false end
+    end
+    check(flat, "field paint lies flat on the floor")
+    check(#propsIn(seed, RoomShape.ROOMSHAPE_LTL) == 0, "never in an L-shaped room")
+    check(#propsIn(seed, RoomShape.ROOMSHAPE_IH) == 0, "never in a narrow room")
+    check(#propsIn(seed, RoomShape.ROOMSHAPE_2x1) > 0, "long rooms can be fields")
+    check(#propsIn(seed, nil, RoomType.ROOM_BOSS) == 0, "no paint in boss rooms")
+    mod.Settings.fields = false
+    check(#propsIn(seed) == 0, "football fields can be turned off")
+    mod.Settings.fields = true
+    world.decorSeed, world.roomShape = nil, nil
     newRoom(true)
 end)()
 

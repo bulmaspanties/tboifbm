@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.12.3
+- **The painted football field is back, without the goalposts**: about one plain room in twelve gets yard lines, numbers, end zones and a turf patch painted on the floor. Paint only, only in ordinary rectangular rooms (never L-shaped or narrow), with a *football fields* toggle in the menu.
+
 ## 0.12.2
 - **Removed the football room decor.** The props (yard lines, lockers, whiteboards, coolers, goalposts, banners) looked out of place in Isaac's rooms, and in L-shaped rooms they could land outside the walls. Floors are the game's own again. The Pro Shop still stocks a Gridiron item, and the Pylon trinket still marks its spot.
 

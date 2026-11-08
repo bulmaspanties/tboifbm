@@ -242,6 +242,9 @@ return function(mod)
         HAIL_MARY_DMG_MULT    = 8,     -- x player damage, plus a flat 30
         HAIL_MARY_BURST       = 10,
 
+        -- Football fields painted on some room floors
+        FIELD_CHANCE          = 0.08,
+
         -- Pro Shop
         PROSHOP_CHANCE        = 0.25,  -- (menu) share of shops that are team stores
 
@@ -312,6 +315,7 @@ return function(mod)
         popups = true,         -- floating callouts ("TACKLE!", "IT'S GOOD!")
         crowd = true,          -- crowd cheers/boos, horn and fanfare
         drugTests = true,      -- referees and the coach go after juiced players
+        fields = true,         -- a faded football field painted on some room floors
         bossMusic = true,      -- the Linebacker and The Franchise get their own themes
         gridironItems = true,  -- Gridiron items and trinkets can show up in runs
         q4Items = true,        -- ...including the Q4 legends
