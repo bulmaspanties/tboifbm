@@ -14,4 +14,11 @@
     <player name="Kicker" skin="character_kicker_b.png" skinColor="-1" hp="4" armor="2" bombs="2"
             nameimage="playername_kicker_b.png" portrait="playerportrait_kicker_b.png"
             bSkinParent="Kicker" birthright="Fair catch: every other shank explodes" />
+    <!-- The Coach (scripts/coach.lua): animations named "Coach" in the same menu files -->
+    <player name="Coach" skin="character_coach.png" skinColor="-1" hp="6" bombs="1" coins="5" keys="1"
+            nameimage="playername_coach.png" portrait="playerportrait_coach.png"
+            birthright="Full staff: the Tackling Dummy joins the sideline" />
+    <player name="Coach" skin="character_coach_b.png" skinColor="-1" hp="4" armor="2" bombs="1" canShoot="false"
+            nameimage="playername_coach_b.png" portrait="playerportrait_coach_b.png"
+            bSkinParent="Coach" birthright="Deep bench: a bigger squad, every sub a Team Captain" />
 </players>

@@ -161,7 +161,7 @@ return function(mod)
 
     -- Familiars: BFFS! makes the sideline crew better at their jobs.
     function mod.familiarBoost(player)
-        return player:HasCollectible(C.COLLECTIBLE_BFFS) and Cfg.BFFS_FAMILIAR_BOOST or 1
+        return (player:HasCollectible(C.COLLECTIBLE_BFFS) and Cfg.BFFS_FAMILIAR_BOOST or 1) * mod.coachFamiliarBoost(player)
     end
 
     -- Gatorade Bucket: what's in the bucket ends up on the floor.

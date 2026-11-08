@@ -14,7 +14,7 @@ Then take on a rival Linebacker, a stadium full of grotesque football enemies, a
 
 ## Highlights
 - **27 items and trinkets**: wearable gear, actives, familiars, and four **Q4 legends** (Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary)
-- **Four characters**: The Quarterback and The Kicker, plus tainted versions that play completely differently
+- **Six characters**: The Quarterback, The Kicker and The Coach, plus tainted versions that play completely differently
 - **Two bosses, a miniboss and 10 football enemies** in Isaac's own grotesque style, with gold **Team Captain** champions
 - **Worn costumes** fitted per character (roomy helmets for big hair, horn holes for horns), in **11 team colours**, pink included
 - **All-Pro** transformation, a **Halftime show** event, **completion notes**, and dozens of **base-game synergies**
@@ -160,7 +160,7 @@ These also appear in External Item Descriptions.
 <details>
 <summary><b>Playable characters: The Quarterback and The Kicker</b></summary>
 
-## Playable characters: The Quarterback and The Kicker
+## Playable characters: The Quarterback, The Kicker and The Coach
 | Version | Health | Starts with | Play style |
 |---|---|---|---|
 | **The Quarterback** | 3 red hearts | Football Helmet, Team Jersey, **Playbook** (pocket active) | Every 3rd shot is a football, and all his footballs fly 25% faster and hit 25% harder. +0.2 shot speed. **Birthright:** every other shot is a football. |
@@ -169,10 +169,13 @@ These also appear in External Item Descriptions.
 | **The Kicker** | 2 red + 1 soul | Football Cleats, **Kicking Tee** (pocket active), a white headband | Quick (+0.15 speed) with long range, but 10% less damage. **Special Teams:** every field goal refunds 2 Tee charges and puts points on the board (+0.3 damage for the floor, up to 5). **Birthright:** every kick is good, and the blast is 50% bigger. |
 | **Tainted Kicker** | 2 red + 1 soul | Padded Pants, **Pigskin** (pocket active), a filthy torn headband | **Shanks:** his tears are slow, heavy lobs that clear rocks (+1 damage, slower fire rate), and every 4th one blows up like a mini field goal (it never hurts him). **Birthright:** every other shank explodes. |
 
-All four appear on the character select screen with their own page, portrait, co-op and death-screen art.
+| **The Coach** | 3 red hearts | **BFFS!**, Cheerleader, Water Boy, **Coach's Whistle** (pocket active), a navy cap and headset | A familiar build: 75% damage himself, but his sideline crew works overtime (familiars +25% on top of BFFS!). **Birthright:** the Tackling Dummy joins the staff. |
+| **Tainted Coach** | 2 red + 1 soul | Tackling Dummy, **Coach's Whistle** (pocket active), a torn cap and busted headset | **Can't shoot.** He fields a team: **friendly Linemen sub in** whenever he enters a room with enemies, and his Whistle calls in more (2 at a time). **Birthright:** a deeper bench (4), every sub a gold Team Captain. |
+
+All six appear on the character select screen with their own page, portrait, co-op and death-screen art.
 
 ### Completion notes
-Every Gridiron character tracks the vanilla marks: **Mom's Heart, Isaac, Satan, ???, The Lamb, Boss Rush, Hush, Mega Satan, Delirium, Mother, The Beast, Ultra Greed and Ultra Greedier**, each as normal or hard. You get a callout when you earn one, and each character has a **completion notes** page in the settings menu. The game doesn't let mods draw marks on the character-select paper, so they live in the menu. They're bragging rights: nothing is locked behind them.
+Every Gridiron character (all six) tracks the vanilla marks: **Mom's Heart, Isaac, Satan, ???, The Lamb, Boss Rush, Hush, Mega Satan, Delirium, Mother, The Beast, Ultra Greed and Ultra Greedier**, each as normal or hard. You get a callout when you earn one, and each character has a **completion notes** page in the settings menu. The game doesn't let mods draw marks on the character-select paper, so they live in the menu. They're bragging rights: nothing is locked behind them.
 
 </details>
 

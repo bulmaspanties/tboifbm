@@ -364,6 +364,7 @@ local function newEntity(t)
     function e:AddConfusion() self.confused = true end
     function e:AddFreeze() self.frozen = true end
     function e:AddSlowing() self.slowed = true end
+    function e:AddCharmed() self.charmed = true end
     function e:SetColor() end
     function e:HasEntityFlags(f) return self.flags & f ~= 0 end
     function e:ClearEntityFlags(f) self.flags = self.flags & ~f end
@@ -2546,6 +2547,49 @@ end)()
     dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, true)
     check(next(world.removedItems) == nil, "a continued run is left alone")
     mod.Settings.gridironItems, mod.Settings.q4Items = true, true
+end)()
+
+-- The Coach -------------------------------------------------------------------------------------
+;(function()
+    local PT2 = mod.PlayerTypes
+    check(PT2.COACH and PT2.COACH > 0 and PT2.COACH_B and PT2.COACH_B > 0, "coach player types registered")
+    local co2 = newPlayer(PT2.COACH)
+    players = { co2 }
+    world.entities = { co2 }
+    newRoom(true)
+    dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
+    check(co2:HasCollectible(CollectibleType.COLLECTIBLE_BFFS) and co2:HasCollectible(Items.CHEERLEADER)
+        and co2:HasCollectible(Items.WATER_BOY) and co2.pocket == Items.WHISTLE, "the coach starts with his staff and whistle")
+    check(co2.nullCostumes[costumePaths["gfx/characters/gridiron_coach_cap.anm2"]], "and his cap and headset")
+    co2:EvaluateItems()
+    check(co2.Damage < 3.5, "he doesn't hit hard himself")
+    check(mod.familiarBoost(co2) > Cfg.BFFS_FAMILIAR_BOOST, "his familiars work overtime")
+    co2.items[CollectibleType.COLLECTIBLE_BIRTHRIGHT] = 1
+    tick()
+    check(co2:HasCollectible(Items.DUMMY), "birthright: the dummy joins the staff")
+
+    local tc = newPlayer(PT2.COACH_B)
+    players = { tc }
+    world.entities = { tc }
+    dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, false)
+    check(tc:HasCollectible(Items.DUMMY) and tc.pocket == Items.WHISTLE, "tainted coach starts with the dummy and the whistle")
+    newRoom(false)
+    local squad = {}
+    for _, e in ipairs(Isaac.FindByType(MT, MV.LINEMAN)) do if e.exists and e.charmed then squad[#squad + 1] = e end end
+    check(#squad == Cfg.TCOACH_SQUAD and squad[1]:HasEntityFlags(EntityFlag.FLAG_FRIENDLY), "entering a room: his linemen sub in, on his side")
+    dispatch(ModCallbacks.MC_USE_ITEM, Items.WHISTLE, Items.WHISTLE, tc.rng, tc)
+    local after = 0
+    for _, e in ipairs(Isaac.FindByType(MT, MV.LINEMAN)) do if e.exists and e.charmed then after = after + 1 end end
+    check(after == Cfg.TCOACH_SQUAD, "the squad is capped")
+    tc.items[CollectibleType.COLLECTIBLE_BIRTHRIGHT] = 1
+    dispatch(ModCallbacks.MC_USE_ITEM, Items.WHISTLE, Items.WHISTLE, tc.rng, tc)
+    local captains = 0
+    for _, e in ipairs(Isaac.FindByType(MT, MV.LINEMAN)) do
+        if e.exists and e.charmed and e:GetData().captain then captains = captains + 1 end
+    end
+    check(captains == 2, "birthright: a deeper bench of gold captains")
+    for _, e in ipairs(Isaac.FindByType(MT, MV.LINEMAN)) do e.exists = false end
+    newRoom(true)
 end)()
 
 -- Settings survive a restart (fresh load reads the stored blob)

@@ -268,6 +268,14 @@ return function(mod)
         TKICK_EVERY           = 4,     -- every Nth shank explodes (2 with Birthright)
         TKICK_BLAST_MULT      = 2.5,   -- x player damage
 
+        -- The Coach
+        COACH_DAMAGE_MULT     = 0.75,
+        COACH_FAMILIAR_BOOST  = 1.25,  -- on top of BFFS!
+        TCOACH_SQUAD          = 2,     -- friendly Linemen at once (Birthright: 4)
+        TCOACH_SQUAD_BR       = 4,
+        TCOACH_ROOM_SUBS      = 2,
+        TCOACH_WHISTLE_SUBS   = 2,
+
         -- Set bonus
         SUITED_UP_PIECES      = 3,
         SUITED_UP_DAMAGE      = 1.0,
@@ -363,6 +371,7 @@ return function(mod)
     function mod.buckleWindup() return 1 end
     function mod.bossPushMult() return 0.25 end
     function mod.isJuiced() return false end
+    function mod.coachFamiliarBoost() return 1 end
     function mod.eyeBlackMult() return 1 end
     function mod.tackleStunMult() return 1 end
     function mod.throwRangeMult() return 1 end

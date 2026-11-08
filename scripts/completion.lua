@@ -34,10 +34,13 @@ return function(mod)
         if P.QUARTERBACK_B and t == P.QUARTERBACK_B then return "qb_b" end
         if P.KICKER and t == P.KICKER then return "kicker" end
         if P.KICKER_B and t == P.KICKER_B then return "kicker_b" end
+        if P.COACH and t == P.COACH then return "coach" end
+        if P.COACH_B and t == P.COACH_B then return "coach_b" end
     end
     mod.CHARACTER_PAGES = {
         { key = "qb", title = "quarterback" }, { key = "qb_b", title = "tainted qb" },
         { key = "kicker", title = "kicker" }, { key = "kicker_b", title = "tainted kicker" },
+        { key = "coach", title = "coach" }, { key = "coach_b", title = "tainted coach" },
     }
 
     local function marks()

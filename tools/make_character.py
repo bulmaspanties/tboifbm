@@ -94,7 +94,12 @@ def figure(costume_templates, tainted=False, kind="qb"):
 
     b = body.copy()
     h = head.copy()
-    if kind == "kicker":
+    if kind == "coach":
+        # the Coach: cap and headset over a polo (navy; tainted: black over orange)
+        layer(b, "gridiron_torso_jersey_orange" if tainted else "gridiron_torso_jersey_navy", (0, 64, 32, 96))
+        layer(b, "gridiron_legs_pants_black" if tainted else "gridiron_legs_pants_silver", (0, 64, 32, 96))
+        layer(h, "gridiron_coach_cap_b" if tainted else "gridiron_coach_cap", (0, 0, 32, 32))
+    elif kind == "kicker":
         layer(b, "gridiron_legs_pantscleats" if tainted else "gridiron_legs_cleats", (0, 64, 32, 96))
         layer(h, "gridiron_kicker_headband_b" if tainted else "gridiron_kicker_headband", (0, 0, 32, 32))
     elif tainted:
@@ -197,6 +202,14 @@ def add_animation(path, name, crop_moves):
     Path(path).write_text(text[:end] + "\n    " + anim + text[end:])
 
 
+# Where the Coach's menu art lives: the menu sheets are extended to 1536px tall for his pages.
+COACH = {
+    "page": (0, 1100), "page_alt": (0, 1100),
+    "name": (200, 360), "portrait": (380, 300), "name_alt": (200, 360), "portrait_alt": (380, 300),
+    "coop": (0, 80), "death": (360, 180), "death_alt": (360, 210),
+}
+SHEET_HEIGHT = 1536
+
 # Where the Kicker's menu art lives (free space on the Quarterback's sheets).
 KICKER = {
     "page": (0, 560), "page_alt": (0, 548),
@@ -227,6 +240,11 @@ def main(template_dir, costume_templates):
     kick_b = figure(costume_templates, tainted=True, kind="kicker")
     recolor_skin(sheet, SKIN_NORMAL).save(COSTUMES / "character_kicker.png")
     recolor_skin(sheet, SKIN_TAINTED).save(COSTUMES / "character_kicker_b.png")
+    coach = figure(costume_templates, kind="coach")
+    coach_b = figure(costume_templates, tainted=True, kind="coach")
+    recolor_skin(sheet, SKIN_NORMAL).save(COSTUMES / "character_coach.png")
+    recolor_skin(sheet, SKIN_TAINTED).save(COSTUMES / "character_coach_b.png")
+    CO = COACH
 
     # character select pages (sheet names match what the anm2 files reference)
     K = KICKER
@@ -235,10 +253,17 @@ def main(template_dir, costume_templates):
              K["page"], box(*K["name"], 57, 31), box(*K["portrait"], 38, 57)),
             ("charactermenualt.png", "CharacterMenuAlt.png", INK_TAINTED, fig_b, kick_b, box(136, 817, 74, 29),
              box(10, 924, 45, 65), K["page_alt"], box(*K["name_alt"], 74, 29), box(*K["portrait_alt"], 45, 65))):
-        sheet_img = Image.open(T / "content/gfx" / tpl).convert("RGBA")
+        small = Image.open(T / "content/gfx" / tpl).convert("RGBA")
+        sheet_img = Image.new("RGBA", (small.width, SHEET_HEIGHT), (0, 0, 0, 0))
+        sheet_img.paste(small, (0, 0))
         template_page = sheet_img.crop((0, 0) + PAGE)
         draw_page(template_page, NAME, "QB", ink, f, sheet_img, (0, 0), nb, pb)
         draw_page(template_page, "Kicker", "PK", ink, kf, sheet_img, page_at, knb, kpb)
+        alt = out.endswith("Alt.png")
+        cf = coach_b if alt else coach
+        cnb = box(*CO["name_alt" if alt else "name"], *((74, 29) if alt else (57, 31)))
+        cpb = box(*CO["portrait_alt" if alt else "portrait"], *((45, 65) if alt else (38, 57)))
+        draw_page(template_page, "Coach", "HC", ink, cf, sheet_img, CO["page_alt" if alt else "page"], cnb, cpb)
         sheet_img.save(CONTENT / out)
 
     # co-op select heads
@@ -249,12 +274,16 @@ def main(template_dir, costume_templates):
         cx, cy = K["coop"]
         clear(img, (cx, cy, cx + 33, cy + 31))
         img.alpha_composite(kf.crop((4, 0, 36, 28)), (cx + 1, cy + 2))
+        cx, cy = CO["coop"]
+        clear(img, (cx, cy, cx + 33, cy + 31))
+        img.alpha_composite((coach_b if "b.png" in src else coach).crop((4, 0, 36, 28)), (cx + 1, cy + 2))
         img.save(CONTENT / dst)
 
     # death screen names
     death = Image.open(T / "content/gfx/death portraits.png").convert("RGBA")
     for b, ink, tag in ((box(450, 125, 51, 22), INK, "QB"), (box(443, 148, 67, 27), INK_TAINTED, "QB"),
-                        (box(*K["death"], 51, 22), INK, "PK"), (box(*K["death_alt"], 67, 27), INK_TAINTED, "PK")):
+                        (box(*K["death"], 51, 22), INK, "PK"), (box(*K["death_alt"], 67, 27), INK_TAINTED, "PK"),
+                        (box(*CO["death"], 51, 22), INK, "HC"), (box(*CO["death_alt"], 67, 27), INK_TAINTED, "HC")):
         clear(death, b)
         paste_center(death, text_image(tag, 18, ink), b)
     death.save(CONTENT / "death portraits.png")
@@ -271,12 +300,22 @@ def main(template_dir, costume_templates):
     add_animation(G / "coop menu alt.anm2", "Kicker", [((0, 0, 32, 32), K["coop"])])
     add_animation(G / "death screen.anm2", "Kicker", [((450, 125, 51, 22), K["death"])])
     add_animation(G / "death screen alt.anm2", "Kicker", [((443, 148, 67, 27), K["death_alt"])])
+    add_animation(G / "charactermenu.anm2", "Coach", [((0, 0, 480, 270), CO["page"]), ((16, 913, 57, 31), CO["name"])])
+    add_animation(G / "charactermenualt.anm2", "Coach", [((0, 0, 480, 270), CO["page_alt"]), ((136, 817, 74, 29), CO["name_alt"])])
+    add_animation(G / "characterportraits.anm2", "Coach", [((8, 940, 38, 57), CO["portrait"])])
+    add_animation(G / "characterportraitsalt.anm2", "Coach", [((10, 924, 45, 65), CO["portrait_alt"])])
+    add_animation(G / "coop menu.anm2", "Coach", [((0, 0, 32, 32), CO["coop"])])
+    add_animation(G / "coop menu alt.anm2", "Coach", [((0, 0, 32, 32), CO["coop"])])
+    add_animation(G / "death screen.anm2", "Coach", [((450, 125, 51, 22), CO["death"])])
+    add_animation(G / "death screen alt.anm2", "Coach", [((443, 148, 67, 27), CO["death_alt"])])
 
     # VS screen name + stage portrait
     for who, title, suffix, ink, f in (("quarterback", NAME, "", NAME_TAG, fig),
                                        ("quarterback", NAME, "_b", (196, 150, 150, 255), fig_b),
                                        ("kicker", "Kicker", "", NAME_TAG, kick),
-                                       ("kicker", "Kicker", "_b", (196, 150, 150, 255), kick_b)):
+                                       ("kicker", "Kicker", "_b", (196, 150, 150, 255), kick_b),
+                                       ("coach", "Coach", "", NAME_TAG, coach),
+                                       ("coach", "Coach", "_b", (196, 150, 150, 255), coach_b)):
         tag = Image.new("RGBA", (192, 64), (0, 0, 0, 0))
         paste_center(tag, text_image(title.upper(), 24, ink, outline=(40, 30, 30, 255)), (0, 0, 191, 63))
         tag.save(RES / f"ui/boss/playername_{who}{suffix}.png")

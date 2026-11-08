@@ -19,6 +19,7 @@
 -- scripts/franchise.lua  The Franchise, two-phase final boss for floors 7-8
 -- scripts/quarterback.lua playable character + tainted version
 -- scripts/kicker.lua     The Kicker + Tainted Kicker
+-- scripts/coach.lua      The Coach + Tainted Coach
 -- scripts/endzone.lua    End Zone active and its floor paint
 -- scripts/trinkets.lua   Lucky Patch, Chin Strap Buckle, Pylon, Game Coin, Mouth Tape, Hand Warmer
 -- scripts/pocket.lua     Audible and Fair Catch cards, Two-Point Conversion pill
@@ -33,6 +34,6 @@
 
 local mod = RegisterMod("Gridiron", 1)
 
-for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "franchise", "quarterback", "kicker", "endzone", "legends", "trinkets", "pocket", "halftime", "decor", "music", "synergies", "completion", "pools", "api" }) do
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "franchise", "quarterback", "kicker", "coach", "endzone", "legends", "trinkets", "pocket", "halftime", "decor", "music", "synergies", "completion", "pools", "api" }) do
     include("scripts." .. name)(mod)
 end

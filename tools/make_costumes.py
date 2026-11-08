@@ -469,6 +469,63 @@ def paint_headband_b(src, view):
     return paint_headband(src, view, tainted=True)
 
 
+CAP = [(26, 38, 84, 255), (46, 62, 120, 255), (70, 90, 150, 255)]   # navy coach's cap: shade, mid, lit
+CAP_B = [(22, 22, 28, 255), (40, 40, 48, 255), (64, 64, 76, 255)]
+HEADSET = (52, 52, 60, 255)
+MIC = (150, 150, 158, 255)
+
+
+def paint_coach_cap(src, view, tainted=False):
+    """The Coach's cap and headset: a ball cap on the crown, the brim out front, a headset
+    band down one side with the mic toward the mouth. Tainted: torn cap, mic dangling."""
+    out = Image.new("RGBA", (CELL, CELL), CLEAR)
+    o = out.load()
+    mask, rows = silhouette(src)
+    cap = CAP_B if tainted else CAP
+    crown = {(x, y) for (x, y) in mask if y <= 8}
+    for (x, y) in crown:
+        o[x, y] = cap[2] if y <= 3 else cap[1] if y <= 6 else cap[0]
+    for (x, y) in outline_mask(crown, CELL, CELL):
+        if (x, y) in mask or y < 9:
+            o[x, y] = OUTLINE
+    if view == "down":
+        lo, hi = rows[8]
+        for x in range(lo + 3, hi - 2):                 # brim, seen from the front
+            o[x, 9] = cap[0]
+        for x in range(lo + 2, hi - 1):
+            o[x, 10] = OUTLINE
+        o[15, 4] = (190, 32, 42, 255)                   # team logo
+        o[16, 4] = (190, 32, 42, 255)
+    elif view == "right":
+        lo, hi = rows[8]
+        for x in range(hi - 2, min(CELL, hi + 5)):      # brim pointing forward
+            o[x, 8] = cap[1]
+            o[x, 9] = OUTLINE
+    else:
+        o[15, 7], o[16, 7] = OUTLINE, OUTLINE           # snapback strap
+    # headset: band over the ear on the left, the mic swinging round to the mouth
+    side = rows.get(14, (6, 25))[0] + 1                   # just inside the edge, so it reads
+    for y in range(9, 17):
+        if 0 <= side < CELL:
+            o[side, y] = HEADSET
+    if view != "up":
+        mic = [(side + 1, 18), (side + 2, 19), (side + 3, 20), (side + 4, 20)]
+        if tainted:
+            mic = [(side, 18), (side, 19), (side - 1, 20), (side - 1, 21)]   # snapped, dangling
+        for x, y in mic:
+            if 0 <= x < CELL:
+                o[x, y] = MIC
+    if tainted:
+        for x, y in ((12, 2), (13, 3), (19, 5)):
+            o[x, y] = CLEAR                              # torn
+        o[20, 6] = (130, 12, 18, 255)
+    return out
+
+
+def paint_coach_cap_b(src, view):
+    return paint_coach_cap(src, view, tainted=True)
+
+
 ALLPRO_GOLD = (236, 186, 58, 255)
 ALLPRO_SHINE = (255, 240, 170, 255)
 
@@ -634,6 +691,8 @@ def main(template_root):
     head_sheet("gridiron_allpro", paint_allpro, "head1")
     head_sheet("gridiron_kicker_headband", paint_headband, "head2")
     head_sheet("gridiron_kicker_headband_b", paint_headband_b, "head2")
+    head_sheet("gridiron_coach_cap", paint_coach_cap, "head2")
+    head_sheet("gridiron_coach_cap_b", paint_coach_cap_b, "head2")
     for color in HELMET_COLORS:
         use_helmet_color(color)
         head_sheet("gridiron_helmet" + suffix(color, HELMET_COLORS[0]), paint_helmet, "head5")
@@ -662,7 +721,8 @@ def main(template_root):
              '         (each uniform colour is its own costume). Pieces sharing a body layer come combined. -->']
     names = ["helmet" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS]
     names += ["helmet_roomy" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS]
-    names += ["helmet_horns" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS] + ["eyeblack", "allpro", "kicker_headband", "kicker_headband_b", "torso_pads"]
+    names += ["helmet_horns" + suffix(c, HELMET_COLORS[0]) for c in HELMET_COLORS] + ["eyeblack", "allpro", "kicker_headband", "kicker_headband_b", "coach_cap", "coach_cap_b",
+                                                                   "torso_pads"]
     names += [n + suffix(c, JERSEY_COLORS[0]) for c in JERSEY_COLORS for n in ("torso_jersey", "torso_jerseypads")]
     names += ["legs_cleats"] + [n + suffix(c, PANTS_COLORS[0]) for c in PANTS_COLORS
                                 for n in ("legs_pants", "legs_pantscleats")]

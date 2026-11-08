@@ -233,6 +233,8 @@ return function(mod)
                 { str = "tainted qb", dest = "marks_qb_b" },
                 { str = "kicker", dest = "marks_kicker" },
                 { str = "tainted kicker", dest = "marks_kicker_b" },
+                { str = "coach", dest = "marks_coach" },
+                { str = "tainted coach", dest = "marks_coach_b" },
                 { str = "", fsize = 1, nosel = true },
                 { str = "just for bragging", fsize = 1, nosel = true },
                 { str = "rights: they don't", fsize = 1, nosel = true },

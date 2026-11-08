@@ -112,7 +112,9 @@ def characters_sheet():
     chars = [("THE QUARTERBACK", "playerportrait_quarterback.png", "Every 3rd shot is a football"),
              ("TAINTED QB", "playerportrait_quarterback_b.png", "One Ball: a boomerang bomb"),
              ("THE KICKER", "playerportrait_kicker.png", "Special Teams field goals"),
-             ("TAINTED KICKER", "playerportrait_kicker_b.png", "Shanks: lobbed, exploding")]
+             ("TAINTED KICKER", "playerportrait_kicker_b.png", "Shanks: lobbed, exploding"),
+             ("THE COACH", "playerportrait_coach.png", "His staff does the work"),
+             ("TAINTED COACH", "playerportrait_coach_b.png", "Can't shoot: fields a team")]
     cw = 300
     body = turf(cw * len(chars) + 24, 330)
     d = ImageDraw.Draw(body)
@@ -123,7 +125,7 @@ def characters_sheet():
         body.alpha_composite(px(portrait.crop(portrait.getbbox()), 2), (x + 40, 26))
         d.text((x + cw // 2, 250), name, font=font(20), fill=INK, anchor="ma")
         d.text((x + cw // 2, 280), blurb, font=font(14, False), fill=(80, 60, 60), anchor="ma")
-    return stack(header(body.width, "FOUR NEW CHARACTERS", "Each with a full character-select page, co-op and death-screen art"), body)
+    return stack(header(body.width, "SIX NEW CHARACTERS", "Each with a full character-select page, co-op and death-screen art"), body)
 
 
 # --- enemies + bosses ---------------------------------------------------------------
