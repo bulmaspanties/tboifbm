@@ -429,7 +429,7 @@ return function(mod)
 
     -- Team Captains: a gold champion version of any football enemy, with a twist each ----------
     local CAPTAIN_GOLD = Color(1, 0.9, 0.55, 1, 0.22, 0.16, 0)
-    local NO_CAPTAIN = { [V.LINEBACKER] = true, [V.COACH] = true, [V.FRANCHISE] = true }
+    local NO_CAPTAIN = { [V.LINEBACKER] = true, [V.COACH] = true, [V.FRANCHISE] = true, [V.MASCOT_BOSS] = true }
 
     function mod.makeCaptain(npc)
         local d = npc:GetData()

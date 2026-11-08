@@ -17,6 +17,7 @@
 -- scripts/monsters.lua  The Linebacker (boss), Mascot and Referee, enemy spawn swaps
 -- scripts/foes.lua      Lineman, Blitzer, Punter, Huddle, Cooler, Chain Gang, Sacker, the Coach
 -- scripts/franchise.lua  The Franchise, two-phase final boss for floors 7-8
+-- scripts/mascotboss.lua The Mascot, a mid-game boss that sheds smaller Mascots
 -- scripts/quarterback.lua playable character + tainted version
 -- scripts/kicker.lua     The Kicker + Tainted Kicker
 -- scripts/coach.lua      The Coach + Tainted Coach
@@ -34,6 +35,6 @@
 
 local mod = RegisterMod("Gridiron", 1)
 
-for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "franchise", "quarterback", "kicker", "coach", "endzone", "legends", "trinkets", "pocket", "halftime", "decor", "music", "synergies", "completion", "pools", "api" }) do
+for _, name in ipairs({ "core", "fx", "gear", "actives", "costumes", "hud", "save", "eid", "menu", "commands", "challenges", "extras", "familiars", "monsters", "foes", "franchise", "mascotboss", "quarterback", "kicker", "coach", "endzone", "legends", "trinkets", "pocket", "halftime", "decor", "music", "synergies", "completion", "pools", "api" }) do
     include("scripts." .. name)(mod)
 end

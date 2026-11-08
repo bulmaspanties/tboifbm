@@ -2592,6 +2592,60 @@ end)()
     newRoom(true)
 end)()
 
+-- The Mascot (boss): t-shirt cannon, belly flop, sheds minis at thresholds
+;(function()
+    newRoom(false, RoomType.ROOM_BOSS)
+    check(dispatch(ModCallbacks.MC_EXECUTE_CMD, nil, "gridiron", "spawn mascotboss") ~= nil, "spawn mascotboss")
+    local mb
+    for _, e in ipairs(Isaac.FindByType(MT, MV.MASCOT_BOSS)) do mb = e end
+    check(mb ~= nil, "the mascot boss takes the field")
+    mb.Position = Vector(300, 0)
+    local realRandom = math.random
+    math.random = function(a) if a then return 1 end return 0.9 end      -- 0.9 -> cannon
+    npcTick(mb, 40 + 50)
+    check(mb:GetData().mode == "shoot", "he raises the t-shirt cannon")
+    local before = #world.spawned
+    npcTick(mb, 30)
+    check(#projectilesSince(before) == 6, "two volleys of three shirts")
+    local hud = false
+    for _, t in ipairs(world.hudText) do if t == "The Mascot" then hud = true end end
+    check(hud, "the mascot introduces himself")
+    math.random = function(a) if a then return 1 end return 0.1 end      -- 0.1 -> belly flop
+    for _ = 1, 200 do if mb:GetData().mode == "jump" then break end npcTick(mb, 1) end
+    check(mb:GetData().mode == "jump" and mb:GetData().timer == 26, "belly flop")
+    before = #world.spawned
+    npcTick(mb, 27)
+    check(#projectilesSince(before) == 8 and mb:GetData().mode == "land", "the landing fires a ring")
+    mb.HitPoints = mb.MaxHitPoints * 0.7
+    npcTick(mb, 1)
+    check(mb:GetData().splits == 1 and #Isaac.FindByType(MT, MV.MASCOT) >= 2, "at 75% the costume sheds two mascots")
+    check(mb.sprite.anim == "Hurt", "and he reels")
+    mb.HitPoints = mb.MaxHitPoints * 0.1
+    npcTick(mb, 20)
+    check(mb:GetData().splits == 3, "every threshold sheds once")
+    local minis = 0
+    for _, e in ipairs(Isaac.FindByType(MT, MV.MASCOT)) do if e.exists ~= false then minis = minis + 1 end end
+    check(minis <= Cfg.MASCOT_BOSS_MAX_MINIS, "the minis are capped")
+    math.random = realRandom
+    local fw0 = #world.spawned
+    dispatch(ModCallbacks.MC_POST_NPC_DEATH, MT, mb)
+    local fireworks = 0
+    for i = fw0 + 1, #world.spawned do if world.spawned[i].Variant == EffectVariant.FIREWORKS then fireworks = fireworks + 1 end end
+    check(fireworks == 4, "unmasked: fireworks")
+    -- spawn swaps
+    world.roomType, world.stage = RoomType.ROOM_BOSS, 4
+    dispatch(ModCallbacks.MC_POST_NEW_ROOM)
+    local swap = dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 68, 0, 0, 0, 100)
+    check(swap and swap[2] == MV.MASCOT_BOSS, "peep can become the mascot")
+    world.stage = 8
+    dispatch(ModCallbacks.MC_POST_NEW_ROOM)
+    check(dispatch(ModCallbacks.MC_PRE_ROOM_ENTITY_SPAWN, nil, 68, 0, 0, 0, 100) == nil, "no mascot boss past floor 6")
+    world.roomType, world.stage = RoomType.ROOM_DEFAULT, 2
+    for _, e in ipairs(Isaac.FindByType(MT, MV.MASCOT)) do e.exists = false end
+    for _, e in ipairs(Isaac.FindByType(MT, MV.MASCOT_BOSS)) do e.exists = false end
+    newRoom(true)
+end)()
+
 -- Settings survive a restart (fresh load reads the stored blob)
 findButton("gameplay", "kick damage").store(70)
 mod.StoreSaveData()

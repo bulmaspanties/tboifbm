@@ -567,6 +567,67 @@ def franchise(pose, frame=0):
     return rows_of(outline(g))
 
 
+# --- The Mascot (boss, 64x64): a giant mascot costume, the gaper inside staring out of its mouth ---
+def mascot_boss(pose, frame=0):
+    g = blank(64)
+    bob = frame % 2
+    squash = {"land": 6, "jump": -6}.get(pose, 0)
+    lift = 8 if pose == "jump" else 0
+    by = 40 + bob + squash - lift
+    # big orange feet
+    if pose != "jump":
+        ellipse(g, 22, 58, 7, 3.5, "O")
+        ellipse(g, 42, 58, 7, 3.5, "O")
+        ellipse(g, 20, 57, 4, 1.5, "P")
+    # furry, mangy body
+    ellipse(g, 32, by + 4, 21, 15, "Y")
+    ellipse(g, 36, by + 9, 16, 9, "y")                                    # shade (no ink)
+    for x, y in ((14, by), (49, by + 2), (18, by + 12), (46, by + 13), (30, by + 17)):
+        put(g, [(x, y), (x + 1, y + 1)], "y")                                # fur tufts
+    ellipse(g, 32, by + 7, 9, 6, "W")                                     # belly patch with a number
+    put(g, [(31, by + 4), (32, by + 4), (32, by + 5), (32, by + 6), (32, by + 7), (32, by + 8), (31, by + 9),
+            (32, by + 9), (33, by + 9)], "B")
+    # torn seam on the side: flesh and blood inside
+    put(g, [(48, by - 2), (49, by - 1), (48, by), (49, by + 1), (48, by + 2)], "q")
+    put(g, [(48, by + 3), (48, by + 4), (49, by + 5)], "i")
+    # arms: pom-pom paws, or the t-shirt cannon raised
+    if pose == "shoot":
+        rect(g, 46, by - 16, 58, by - 11, "m")                            # cannon held high
+        rect(g, 56, by - 18, 60, by - 9, "N")
+        ellipse(g, 46, by - 8, 4, 4, "Y")
+        put(g, [(62, by - 16), (63, by - 14), (62, by - 12)], "W")         # puff
+    else:
+        up = 10 if pose in ("jump", "land") else 0
+        ellipse(g, 11, by + 2 - up, 5, 5, "Y")
+        ellipse(g, 53, by + 2 - up, 5, 5, "Y")
+    # the huge costume head
+    hy = by - 20
+    ellipse(g, 32, hy, 20, 16, "Y")
+    ellipse(g, 36, hy + 6, 15, 8, "y")
+    rect(g, 18, hy - 15, 46, hy - 13, "B")                                # team headband
+    # googly eyes: one fine, one hanging off by a thread
+    ellipse(g, 24, hy - 5, 5.5, 6, "W")
+    put(g, [(25, hy - 3), (26, hy - 3), (25, hy - 2)], "e")
+    ellipse(g, 43, hy + 3 + bob, 4.5, 4.5, "W")                           # dangling
+    put(g, [(44, hy + 4 + bob), (43, hy + 5 + bob)], "e")
+    put(g, [(41, hy - 5), (42, hy - 3), (42, hy - 1)], "k")               # the thread
+    ellipse(g, 40, hy - 6, 3, 3, "D")                                     # the empty socket
+    # the costume's mouth gapes open: the gaper inside stares out
+    ellipse(g, 32, hy + 6, 9, 6, "D")
+    ellipse(g, 32, hy + 7, 6.5, 4.5, "q")
+    ellipse(g, 29.5, hy + 6, 1.6, 2, "e")
+    ellipse(g, 34.5, hy + 6, 1.6, 2, "e")
+    put(g, [(29, hy + 5), (34, hy + 5)], "W")
+    ellipse(g, 32, hy + 9.5, 1.4, 1, "e")
+    put(g, [(30, hy + 8), (30, hy + 9)], "i")
+    rect(g, 26, hy + 1, 38, hy + 1, "O")                                  # the beak, split open
+    rect(g, 27, hy + 12, 37, hy + 12, "O")
+    if pose == "hurt":
+        for x, y in ((10, hy - 10), (54, hy - 6), (8, by + 6), (56, by + 10)):
+            put(g, [(x, y), (x + 1, y), (x, y + 1)], "Y")                   # fur flying off
+    return rows_of(outline(g))
+
+
 # --- The Linebacker (boss, 64x64) -----------------------------------------------
 def linebacker(pose, frame=0):
     """Rival-team linebacker: silver helmet, black #99 jersey, huge pads."""
@@ -690,6 +751,13 @@ ENTITIES = {
         anims={"Idle": ([0, 1], 10, True), "Wind": ([2], 1, True), "Throw": ([3], 1, True),
                "Audible": ([4], 1, True), "Slam": ([5], 1, True), "Rage": ([6, 7], 6, True),
                "RageWind": ([8], 1, True), "RageThrow": ([9], 1, True)},
+    ),
+    "bosses/gridiron_mascot_boss": dict(
+        size=64, pivot=(32, 60),
+        frames=[mascot_boss("idle", 0), mascot_boss("idle", 1), mascot_boss("shoot", 0), mascot_boss("shoot", 1),
+                mascot_boss("jump", 0), mascot_boss("land", 0), mascot_boss("hurt", 0)],
+        anims={"Idle": ([0, 1], 10, True), "Shoot": ([2, 3], 6, True), "Jump": ([4], 1, True),
+               "Land": ([5], 1, True), "Hurt": ([6, 0], 4, False)},
     ),
     "bosses/gridiron_linebacker": dict(
         size=64,

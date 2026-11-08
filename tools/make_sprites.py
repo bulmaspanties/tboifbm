@@ -392,7 +392,9 @@ def ellipse(g, cx, cy, rx, ry, ch):
 
 def put(g, points, ch):
     for x, y in points:
-        g[round(y)][round(x)] = ch
+        x, y = round(x), round(y)
+        if 0 <= y < len(g) and 0 <= x < len(g[0]):        # quietly skip pixels off the canvas
+            g[y][x] = ch
 
 
 def outline(g, ch="K"):

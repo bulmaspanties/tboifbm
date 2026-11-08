@@ -258,7 +258,7 @@ return function(mod)
     -- The football bosses' rooms get banners along the top wall.
     local function bossBanners(room)
         local V, T = mod.MonsterVariants, mod.MonsterType
-        if #Isaac.FindByType(T, V.LINEBACKER) + #Isaac.FindByType(T, V.FRANCHISE) == 0 then return end
+        if #Isaac.FindByType(T, V.LINEBACKER) + #Isaac.FindByType(T, V.FRANCHISE) + #Isaac.FindByType(T, V.MASCOT_BOSS) == 0 then return end
         local tl, br = room:GetTopLeftPos(), room:GetBottomRightPos()
         for x = tl.X + 80, br.X - 80, 160 do prop("Banner", Vector(x, tl.Y + 14)) end
         for _, x in ipairs({ tl.X + 40, br.X - 40 }) do prop("Goalpost", Vector(x, tl.Y + 70), x > tl.X + 40) end

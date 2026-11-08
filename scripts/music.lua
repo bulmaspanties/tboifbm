@@ -1,10 +1,11 @@
--- Boss themes: the Linebacker and The Franchise get their own music while they're on the field.
+-- Boss themes: the Linebacker, The Mascot and The Franchise get their own music while they're on the field.
 -- Once the room is clear we stop overriding, so the game plays its own boss-defeated jingle.
 return function(mod)
     local game = mod.game
     local TRACKS = {
         { variant = "FRANCHISE", music = Isaac.GetMusicIdByName("Gridiron Franchise") },
         { variant = "LINEBACKER", music = Isaac.GetMusicIdByName("Gridiron Linebacker") },
+        { variant = "MASCOT_BOSS", music = Isaac.GetMusicIdByName("Gridiron Linebacker") },
     }
 
     function mod.bossTheme()

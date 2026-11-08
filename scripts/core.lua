@@ -213,6 +213,8 @@ return function(mod)
         -- Boss / enemies
         LINEBACKER_CHANCE     = 0.25,  -- (menu) chance to replace an early boss
         FRANCHISE_CHANCE      = 0.2,   -- (menu) chance to replace a floor 7-8 boss
+        MASCOT_BOSS_CHANCE    = 0.25,  -- (menu) chance The Mascot replaces Peep / Dark One / Polycephalus
+        MASCOT_BOSS_MAX_MINIS = 4,     -- he stops shedding minis past this many
         FRANCHISE_MAX_LINEMEN = 4,     -- audibles stop calling Linemen past this
         FRANCHISE_CAM_DAMAGE  = 40,    -- Kiss Cam blast
         FOOTBALL_ENEMY_CHANCE = 0.1,   -- (menu) chance a matching vanilla enemy is a football enemy

@@ -112,10 +112,11 @@ return function(mod)
             local V = mod.MonsterVariants
             local names = { mascot = V.MASCOT, referee = V.REFEREE, lineman = V.LINEMAN, blitzer = V.BLITZER,
                 punter = V.PUNTER, huddle = V.HUDDLE, cooler = V.COOLER, chaingang = V.CHAIN_GANG,
-                sacker = V.SACKER, coach = V.COACH, linebacker = V.LINEBACKER, franchise = V.FRANCHISE }
+                sacker = V.SACKER, coach = V.COACH, linebacker = V.LINEBACKER, franchise = V.FRANCHISE,
+                mascotboss = V.MASCOT_BOSS }
             local variant = names[args[2] or ""]
             if not variant then
-                return "spawn what? mascot referee lineman blitzer punter huddle cooler chaingang sacker coach linebacker franchise"
+                return "spawn what? mascot referee lineman blitzer punter huddle cooler chaingang sacker coach linebacker mascotboss franchise"
             end
             local player = Isaac.GetPlayer(0)
             local pos = Game():GetRoom():FindFreePickupSpawnPosition(player.Position + Vector(0, -120), 0, true)

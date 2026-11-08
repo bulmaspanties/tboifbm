@@ -18,6 +18,7 @@ return function(mod)
         SACKER     = Isaac.GetEntityVariantByName("Gridiron Sacker"),
         COACH      = Isaac.GetEntityVariantByName("Gridiron Coach"),
         FRANCHISE  = Isaac.GetEntityVariantByName("Gridiron Franchise"),
+        MASCOT_BOSS = Isaac.GetEntityVariantByName("Gridiron Mascot Boss"),
     }
     mod.MonsterType, mod.MonsterVariants = TYPE, V
 
@@ -292,6 +293,10 @@ return function(mod)
     -- Loki, Blastocyst, Daddy Long Legs, Mama Gurdy.
     local REPLACEABLE_FINAL = { [69] = true, [74] = true, [101] = true, [266] = true }
 
+    -- Single-entity mid bosses The Mascot can take the place of (floors 2-6):
+    -- Peep, The Dark One, Polycephalus.
+    local REPLACEABLE_MID = { [68] = true, [267] = true, [269] = true }
+
     local bossSwappedThisRoom = false
 
     local function currentRoomType()
@@ -308,6 +313,11 @@ return function(mod)
                 and not bossSwappedThisRoom and roll < Cfg.FRANCHISE_CHANCE then
                 bossSwappedThisRoom = true
                 return { TYPE, V.FRANCHISE, 0 }
+            end
+            if REPLACEABLE_MID[type] and variant == 0 and stage >= 2 and stage <= 6
+                and not bossSwappedThisRoom and roll < Cfg.MASCOT_BOSS_CHANCE then
+                bossSwappedThisRoom = true
+                return { TYPE, V.MASCOT_BOSS, 0 }
             end
             if REPLACEABLE_BOSSES[type] and variant == 0 and stage >= 2 and stage <= 6
                 and not bossSwappedThisRoom and roll < Cfg.LINEBACKER_CHANCE then

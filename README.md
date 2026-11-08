@@ -8,7 +8,7 @@
 
 **Gridiron** suits Isaac up for football. Every item is real gear with its own mechanic: no reskins, no stat-only filler, nothing replaced.
 Tackle with the helmet, deflect with the pads, catch with the gloves, punt with the tee, and when you're wearing three pieces you're **Suited Up**.
-Then take on a rival Linebacker, a stadium full of grotesque football enemies, and **The Franchise**.
+Then take on a rival Linebacker, a giant Mascot, a stadium full of grotesque football enemies, and **The Franchise**.
 
 **[⬇ Download the latest release](https://github.com/bulmaspanties/tboifbm/releases/latest)**, unzip it into your `mods` folder, and enable **Gridiron**.
 
@@ -20,13 +20,13 @@ Then take on a rival Linebacker, a stadium full of grotesque football enemies, a
 - **All-Pro** transformation, a **Halftime show** event, **completion notes**, and dozens of **base-game synergies**
 - **Football in the basement**: some rooms are dressed with faded field paint, sideline junk, goalposts and benches
 - **Juiced**: steroids make tackles brutal (enemies pinball into each other), but the referees run drug tests
-- **Boss themes** for the Linebacker and The Franchise: marching drumlines, brass, organ and a dark choir
+- **Boss themes** for the Linebacker, The Mascot and The Franchise: marching drumlines, brass, organ and a dark choir
 - **Stadium sounds**, a settings menu (press **C**), External Item Descriptions support, and save & continue
 
 <p align="center"><img src="docs/characters.png" alt="The Quarterback, Tainted QB, The Kicker and Tainted Kicker"></p>
 <p align="center"><img src="docs/items.png" alt="Every item and trinket"></p>
 <p align="center"><img src="docs/enemies.png" alt="The football enemies"></p>
-<p align="center"><img src="docs/bosses.png" alt="The Linebacker, the Coach and The Franchise"></p>
+<p align="center"><img src="docs/bosses.png" alt="The Linebacker, The Mascot, the Coach and The Franchise"></p>
 <p align="center"><img src="docs/uniforms.png" alt="Uniform colours"></p>
 <p align="center"><img src="docs/decor.png" alt="Football props in a basement room"></p>
 
@@ -186,6 +186,7 @@ Every Gridiron character (all six) tracks the vanilla marks: **Mom's Heart, Isaa
 | Entity | Where | What it does |
 |---|---|---|
 | **The Linebacker** (boss) | May replace Monstro, Gurdy, Gurdy Jr., Duke of Flies or Dingle on floors 2–6 (25%) | Walks you down, then either **telegraphs a charge** (crouches and flashes) and blitzes across the room, getting **stunned** if he hits a wall, or **spikes a football** that bursts into shots. Below half health he enrages: faster, plus a **pile-up jump** that lands with a ring of shots. |
+| **The Mascot** (boss) | May replace Peep, The Dark One or Polycephalus on floors 2–6 (25%) | The team's giant costumed hype-man. Waddles after you, fires the **T-shirt cannon** (two volleys, the second fanned wider) and **belly-flops** across the room, landing with a ring of shots. At 75%, 50% and 25% health the costume **sheds smaller Mascots** (the Spirit Squad). Beat him and he's **unmasked**. |
 | **The Franchise** (final boss) | May replace Loki, Blastocyst, Daddy Long Legs or Mama Gurdy on floors 7–8 (20%) | A bloated giant quarterback with one monstrous throwing arm. **Phase 1** runs a route tree: **slants** (curving balls), the **go route** (a fast bomb and its wake), a **screen pass** (a short fan), a **Hail Mary** (a bursting lob at your feet) and **audibles** that bring in Linemen. **Phase 2, the Stadium** (below half health): he holds the far end of the field while the crowd does **the wave** (a sweeping line of shots with one gap), the **Kiss Cam** locks onto you and explodes, and **goalposts** come crashing down along marked columns. |
 | **Mascot** | Gaper | A costume coming apart at the seams. Waddles toward you and fires big, slow **T-shirt cannon** shots. |
 | **Referee** | Horf | Wide-eyed and unhinged. Keeps his distance, blows his whistle and **throws yellow flags** at you. |
@@ -254,7 +255,7 @@ If **External Item Descriptions** is installed, every item shows its description
 
 ## Settings menu
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
-- **gameplay:** Gridiron items on/off and Q4 legends on/off (for new runs), tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, drug tests, Franchise boss chance, Pro Shop chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
+- **gameplay:** Gridiron items on/off and Q4 legends on/off (for new runs), tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, drug tests, Franchise boss chance, Mascot boss chance, Pro Shop chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
 - **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare), boss music, field decor (off / light / full)
 - **uniform:** by default (**auto**) every character suits up in **their own colours**: Magdalene in pink and white, Judas in black and red, Cain in green and gold, Keeper in gold and money green, Blue Baby in blues, the tainted characters in darker, meaner versions, and so on. Or pick your team colours yourself: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colours each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts everything back on auto. Helmet and Team Jersey **pedestals** show your colours too (except where the item could be hidden: Curse of the Blind and the alt-floor "?" treasure items)
 - **completion notes:** the marks each Gridiron character has earned
@@ -274,7 +275,7 @@ Open the debug console with `~`:
 | `gridiron give` | Drops every item as a pedestal on the open floor around you, one every couple of frames. Walk over them: picking an item up is what adds it to your collection and the pause screen's *My Stuff* list |
 | `gridiron give quick` | Gives every passive instantly (they show as "?" in *My Stuff* until you find them for real); drops actives and trinkets |
 | `gridiron boss` / `gridiron enemies` | Spawn the Linebacker, or a Mascot and a Referee, next to you |
-| `gridiron spawn <name>` | Spawn one football enemy: `mascot referee lineman blitzer punter huddle cooler chaingang sacker coach linebacker franchise` |
+| `gridiron spawn <name>` | Spawn one football enemy: `mascot referee lineman blitzer punter huddle cooler chaingang sacker coach linebacker mascotboss franchise` |
 | `gridiron hide <slot>` / `gridiron show <slot>` | Hide/show a costume piece for your current character (`helmet`, `eyeblack`, `torso`, `legs`) |
 | `gridiron reset` | Reset all settings to defaults |
 
@@ -339,6 +340,7 @@ scripts/familiars.lua           Cheerleader, Water Boy, Tackling Dummy
 scripts/monsters.lua            the Linebacker, Mascot, Referee, enemy spawn swaps
 scripts/foes.lua                Lineman, Blitzer, Punter, Huddle, Cooler, Chain Gang, Sacker, Coach, Team Captains
 scripts/franchise.lua           The Franchise (two-phase final boss)
+scripts/mascotboss.lua          The Mascot (boss)
 scripts/quarterback.lua         The Quarterback + Tainted
 scripts/kicker.lua              The Kicker + Tainted
 scripts/halftime.lua            the Halftime show event

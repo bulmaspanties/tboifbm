@@ -159,15 +159,17 @@ def enemies_sheet():
 
 
 def bosses_sheet():
-    lb = px(frame(GFX / "bosses/gridiron_linebacker.png", 0, 64), 4)
+    lb = px(frame(GFX / "bosses/gridiron_linebacker.png", 0, 64), 3)
+    mb = px(frame(GFX / "bosses/gridiron_mascot_boss.png", 2, 64), 3)
     fr1 = px(frame(GFX / "bosses/gridiron_franchise.png", 2, 80), 3)
     fr2 = px(frame(GFX / "bosses/gridiron_franchise.png", 8, 80), 3)
-    coach = px(frame(GFX / "monsters/gridiron_coach.png", 2, 48), 4)
+    coach = px(frame(GFX / "monsters/gridiron_coach.png", 2, 48), 3)
     body = turf(1280, 330)
     d = ImageDraw.Draw(body)
-    for img, x, name, blurb in ((lb, 30, "THE LINEBACKER", "floors 2-6"), (coach, 330, "THE COACH", "miniboss"),
-                                (fr1, 600, "THE FRANCHISE", "phase 1: the route tree"),
-                                (fr2, 950, "THE STADIUM", "phase 2: the wave, kiss cam, goalposts")):
+    for img, x, name, blurb in ((lb, 20, "THE LINEBACKER", "floors 2-6"), (mb, 250, "THE MASCOT", "floors 2-6"),
+                                (coach, 480, "THE COACH", "miniboss"),
+                                (fr1, 680, "THE FRANCHISE", "phase 1: the route tree"),
+                                (fr2, 990, "THE STADIUM", "phase 2: wave, kiss cam, goalposts")):
         body.alpha_composite(img, (x, 280 - img.height))
         d.text((x + img.width // 2, 286), name, font=font(18), fill=GOLD, anchor="ma")
         d.text((x + img.width // 2, 308), blurb, font=font(13, False), fill=(240, 240, 230), anchor="ma")

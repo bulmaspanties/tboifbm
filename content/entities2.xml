@@ -43,6 +43,12 @@
             numGridCollisionPoints="12" shadowSize="12" stageHP="3" shutdoors="true">
         <gibs amount="8" blood="1" bone="0" eye="0" gut="0" large="0" />
     </entity>
+    <!-- The Mascot: mid boss for floors 2-6 (scripts/mascotboss.lua) -->
+    <entity anm2path="bosses/gridiron_mascot_boss.anm2" baseHP="380" boss="1" champion="0" collisionDamage="1"
+            collisionMass="40" collisionRadius="24" friction="1" id="643" variant="12" name="Gridiron Mascot Boss"
+            numGridCollisionPoints="24" shadowSize="40" stageHP="30" shutdoors="true" tags="nodelirium">
+        <gibs amount="20" blood="1" bone="0" eye="0" gut="1" large="1" />
+    </entity>
     <!-- The Franchise: final boss for floors 7-8 (scripts/franchise.lua) -->
     <entity anm2path="bosses/gridiron_franchise.anm2" baseHP="700" boss="1" champion="0" collisionDamage="2"
             collisionMass="60" collisionRadius="28" friction="1" id="643" variant="11" name="Gridiron Franchise"
