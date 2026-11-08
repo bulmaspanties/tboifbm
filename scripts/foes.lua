@@ -431,13 +431,35 @@ return function(mod)
     local CAPTAIN_GOLD = Color(1, 0.9, 0.55, 1, 0.22, 0.16, 0)
     local NO_CAPTAIN = { [V.LINEBACKER] = true, [V.COACH] = true, [V.FRANCHISE] = true, [V.MASCOT_BOSS] = true }
 
+    -- Football players wear real kits: a captain swaps to his captain's sheet (gold trim and
+    -- the "C" patch) instead of being washed gold, and the Tainted Coach's squad wears your colours.
+    local KIT_SHEETS = {
+        [V.LINEMAN] = "gfx/monsters/gridiron_lineman", [V.HUDDLE] = "gfx/monsters/gridiron_huddle",
+        [V.PUNTER] = "gfx/monsters/gridiron_punter", [V.SACKER] = "gfx/monsters/gridiron_sacker",
+        [V.BLITZER] = "gfx/monsters/gridiron_blitzer",
+    }
+    local CAPTAIN_SHINE = Color(1, 1, 1, 1, 0.06, 0.05, 0)
+
+    function mod.dressFoe(npc)
+        local base = KIT_SHEETS[npc.Variant]
+        if not base then return false end
+        local d = npc:GetData()
+        local sheet = base
+        if d.teamColor and npc.Variant == V.LINEMAN then sheet = sheet .. "_team_" .. d.teamColor end
+        if d.captain then sheet = sheet .. "_captain" end
+        local s = npc:GetSprite()
+        s:ReplaceSpritesheet(0, sheet .. ".png")
+        s:LoadGraphics()
+        return true
+    end
+
     function mod.makeCaptain(npc)
         local d = npc:GetData()
         if d.captain then return end
         d.captain = true
         npc.MaxHitPoints = npc.MaxHitPoints * Cfg.CAPTAIN_HP_MULT
         npc.HitPoints = npc.MaxHitPoints
-        npc.Color = CAPTAIN_GOLD
+        npc.Color = mod.dressFoe(npc) and CAPTAIN_SHINE or CAPTAIN_GOLD
         if npc.SubType == 0 then mod.popOn(npc, "CAPTAIN!", mod.Colors.gold, 1.0) end
     end
 

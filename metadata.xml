@@ -46,7 +46,7 @@ Debug console: [b]gridiron give[/b] drops all the gear as pedestals, [b]gridiron
 
 Requires Repentance+. REPENTOGON is not required.
 Source and bug reports: github.com/bulmaspanties/tboifbm</description>
-    <version>0.12.0</version>
+    <version>0.12.1</version>
     <visibility>Private</visibility>
     <tag id="Items"/>
     <tag id="Characters"/>

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.1
+- **Every football player is suited up.** The Lineman, Huddle, Punter and Sacker now wear full kits: shoulder pads under the jersey, striped sleeves, a chest number, belted game pants with a side stripe, high socks and cleats. The Blitzer squeezes into a jersey, and The Franchise gets shoulder pads, gold game pants and socks.
+- **Team Captains wear the captain's kit**: gold trim and the gold "C" patch, instead of a gold wash.
+- **The Tainted Coach's linemen suit up in your team colours** (the jersey colour from the uniform settings, or your character's own colours on *auto*).
+
 ## 0.12.0
 - **The Coach** and **Tainted Coach**. The Coach starts with BFFS!, the Cheerleader and the Water Boy; his familiars are 25% stronger but his own damage is lower. Tainted Coach can't shoot: he fields a squad of friendly Linemen that sub in every new room (more with Birthright). Both carry the Coach's Whistle as a pocket active.
 - **The Mascot**, a new boss for floors 2–6 (may replace Peep, The Dark One or Polycephalus). He fires a T-shirt cannon, belly-flops across the room and sheds smaller Mascots at 75/50/25% health. Boss chance slider in the menu.

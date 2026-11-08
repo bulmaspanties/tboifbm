@@ -91,6 +91,11 @@ return function(mod)
             guy:AddCharmed(EntityRef(player), -1)        -- on his side for good
             guy:AddEntityFlags(EntityFlag.FLAG_FRIENDLY)
             guy:GetData().GridironCoach = GetPtrHash(player)
+            local colour = mod.uniformColor(player, "jersey")              -- your team's kit
+            for _, known in ipairs(mod.UNIFORM_COLORS.jersey) do
+                if known == colour then guy:GetData().teamColor = colour end
+            end
+            if mod.dressFoe then mod.dressFoe(guy) end
             if player:HasCollectible(C.COLLECTIBLE_BIRTHRIGHT) and mod.makeCaptain then mod.makeCaptain(guy) end
             spawned = spawned + 1
         end

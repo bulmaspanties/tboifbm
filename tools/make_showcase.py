@@ -143,16 +143,15 @@ def enemies_sheet():
         x = 12 + i * cw
         body.alpha_composite(sprite, (x + (cw - sprite.width) // 2, 20))
         d.text((x + cw // 2, 160), name.upper(), font=font(15), fill=(250, 250, 240), anchor="ma")
-    # a gold Team Captain, for flavour
-    cap = frame(GFX / "monsters/gridiron_lineman.png", 3)
-    tint = Image.new("RGBA", cap.size, (255, 210, 90, 0))
-    capd = Image.blend(cap, Image.composite(Image.new("RGBA", cap.size, (255, 215, 90, 255)), tint, cap.split()[3]), 0.35)
-    capd.putalpha(cap.split()[3])
+    # Team Captains wear gold trim and the "C" patch; the Tainted Coach's squad wears your colours
     banner = Image.new("RGBA", (body.width, 120), (30, 34, 56, 255))
     bd = ImageDraw.Draw(banner)
-    banner.alpha_composite(px(capd, 3), (24, 10))
-    text(bd, (150, 26), "TEAM CAPTAINS", 26, GOLD)
-    bd.text((152, 64), "15% of football enemies are gold champions: more health and a twist each", font=font(17, False),
+    for i, sheet in enumerate(("lineman_captain", "huddle_captain", "lineman_team_blue", "lineman_team_pink")):
+        banner.alpha_composite(px(frame(GFX / f"monsters/gridiron_{sheet}.png", 0), 3), (12 + i * 100, 10))
+    text(bd, (430, 22), "TEAM CAPTAINS", 26, GOLD)
+    bd.text((432, 58), "15% of football enemies are captains: gold trim, the C patch, more health and a twist each.",
+            font=font(16, False), fill=(220, 220, 230))
+    bd.text((432, 82), "The Tainted Coach's linemen suit up in your team colours.", font=font(16, False),
             fill=(220, 220, 230))
     return stack(header(body.width, "10 FOOTBALL ENEMIES", "Built on Isaac's rules: giant black eyes, gore, coloured shading"),
                  body, banner)

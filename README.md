@@ -17,7 +17,7 @@ Then take on a rival Linebacker, a giant Mascot, a stadium full of grotesque foo
 ## Highlights
 - **27 items and trinkets**: wearable gear, actives, familiars, and four **Q4 legends** (Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary)
 - **Six characters**: The Quarterback, The Kicker and The Coach, plus tainted versions that play completely differently
-- **Two bosses, a miniboss and 10 football enemies** in Isaac's own grotesque style, with gold **Team Captain** champions
+- **Three bosses, a miniboss and 10 football enemies** in Isaac's own grotesque style, every player in full kit (pads under the jersey, pants, socks, cleats), with **Team Captain** champions
 - **Worn costumes** fitted per character (roomy helmets for big hair, horn holes for horns), in **11 team colours**, pink included
 - **All-Pro** transformation, a **Halftime show** event, **completion notes**, and dozens of **base-game synergies**
 - **Football in the basement**: some rooms are dressed with faded field paint, sideline junk, goalposts and benches
@@ -172,7 +172,7 @@ These also appear in External Item Descriptions.
 | **Tainted Kicker** | 2 red + 1 soul | Padded Pants, **Pigskin** (pocket active), a filthy torn headband | **Shanks:** his tears are slow, heavy lobs that clear rocks (+1 damage, slower fire rate), and every 4th one blows up like a mini field goal (it never hurts him). **Birthright:** every other shank explodes. |
 
 | **The Coach** | 3 red hearts | **BFFS!**, Cheerleader, Water Boy, **Coach's Whistle** (pocket active), a navy cap and headset | A familiar build: 75% damage himself, but his sideline crew works overtime (familiars +25% on top of BFFS!). **Birthright:** the Tackling Dummy joins the staff. |
-| **Tainted Coach** | 2 red + 1 soul | Tackling Dummy, **Coach's Whistle** (pocket active), a torn cap and busted headset | **Can't shoot.** He fields a team: **friendly Linemen sub in** whenever he enters a room with enemies, and his Whistle calls in more (2 at a time). **Birthright:** a deeper bench (4), every sub a gold Team Captain. |
+| **Tainted Coach** | 2 red + 1 soul | Tackling Dummy, **Coach's Whistle** (pocket active), a torn cap and busted headset | **Can't shoot.** He fields a team: **friendly Linemen in your team colours sub in** whenever he enters a room with enemies, and his Whistle calls in more (2 at a time). **Birthright:** a deeper bench (4), every sub a gold Team Captain. |
 
 All six appear on the character select screen with their own page, portrait, co-op and death-screen art.
 
@@ -201,7 +201,7 @@ Every Gridiron character (all six) tracks the vanilla marks: **Mom's Heart, Isaa
 | **Sacker** | Hopper | **Tunnels underground** (can't be hit) toward you, bursts up right underneath you, then swipes shots in four directions before digging back in. |
 | **The Coach** (miniboss) | Fatty (rarer) | Hangs back and **calls plays** for everyone else: **Blitz** (the team speeds up), **Prevent D** (they take half damage), **Pep Talk** (they heal). Short-handed, he **subs in a Lineman**. |
 
-**Team Captains:** any football enemy (not the Linebacker or the Coach) has a 15% chance to be a **gold Captain** with 50% more health and a twist: the Lineman chains three charges, the Blitzer dives twice, the Punter and Mascot fire spreads of three, the Referee throws three flags, the Huddle is six deep, the Cooler leaves a trail and a bigger puddle, the Chain Gang is faster with a wider chain, and the Sacker erupts in a ring of eight. Vanilla champions stay vanilla.
+**Team Captains:** any football enemy (not the bosses or the Coach) has a 15% chance to be a **Captain** with 50% more health and a twist. Players wear the captain's kit (gold trim and the gold "C" patch); the rest glow gold. The twists: the Lineman chains three charges, the Blitzer dives twice, the Punter and Mascot fire spreads of three, the Referee throws three flags, the Huddle is six deep, the Cooler leaves a trail and a bigger puddle, the Chain Gang is faster with a wider chain, and the Sacker erupts in a ring of eight. Vanilla champions stay vanilla.
 
 Each football enemy replaces the vanilla enemy listed, on floors 1–8, at the "football foes" chance (10% by default; the Coach half that).
 Both chances can be changed (or set to 0) in the menu. Use `gridiron spawn <name>` to summon any one of them. When the Linebacker replaces a boss, the intro screen still shows the original boss.

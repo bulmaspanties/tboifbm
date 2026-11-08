@@ -2673,6 +2673,31 @@ end)()
     newRoom(true)
 end)()
 
+;(function()
+    -- Football players wear real kits: captains swap sheets, the Tainted Coach's squad wears your colours
+    newRoom(false)
+    for _, v in ipairs({ MV.LINEMAN, MV.HUDDLE, MV.PUNTER, MV.SACKER, MV.BLITZER }) do
+        local e = mod.spawnMonster(v, Vector(100, 100))
+        mod.makeCaptain(e)
+        check(e.sprite.sheets and e.sprite.sheets[0]:find("_captain%.png$"), "a captain wears the captain's kit: " .. v)
+        e.exists = false
+    end
+    local masc = mod.spawnMonster(MV.MASCOT, Vector(100, 100))
+    mod.makeCaptain(masc)
+    check(not (masc.sprite.sheets and masc.sprite.sheets[0]), "non-players still go gold the old way")
+    masc.exists = false
+    local tc = newPlayer(mod.PlayerTypes.COACH_B)
+    players = { tc }
+    world.entities = { tc }
+    mod.Settings.jerseyColor = "pink"
+    mod.subIn(tc, 1)
+    local guy = Isaac.FindByType(MT, MV.LINEMAN)[1]
+    check(guy and guy.sprite.sheets[0] == "gfx/monsters/gridiron_lineman_team_pink.png", "the squad wears your jersey colour")
+    mod.Settings.jerseyColor = "auto"
+    for _, e in ipairs(Isaac.FindByType(MT, MV.LINEMAN)) do e.exists = false end
+    newRoom(true)
+end)()
+
 -- Settings survive a restart (fresh load reads the stored blob)
 findButton("gameplay", "kick damage").store(70)
 mod.StoreSaveData()

@@ -71,6 +71,73 @@ def body(g, cx, top, shirt, legs_offset=0):
     rect(g, cx + 1, top + 5, cx + 3, top + 7 - legs_offset, "x")
 
 
+# --- Football uniforms ---------------------------------------------------------------
+# Players are drawn with placeholder kit keys, so one drawing renders in any team's colours:
+#   ! jersey   @ jersey shade   # pants   $ pants shade   % trim (stripes, numbers)
+#   ^ helmet   ~ helmet shade   * captain's patch (invisible unless the kit is a captain's)
+from make_costumes import TEAM_COLORS  # noqa: E402
+
+KIT_KEYS = "!@#$%^~*&"
+CAPTAIN_GOLD = (240, 200, 50)
+
+
+def kit(jersey, pants="white", helmet=None, captain=False):
+    """Palette for the kit keys. A captain gets gold trim and the gold 'C' patch."""
+    j, _ = TEAM_COLORS[jersey]
+    p, _ = TEAM_COLORS[pants]
+    h, _ = TEAM_COLORS[helmet or jersey]
+    trim = TEAM_COLORS[jersey][1]
+    if captain:
+        trim = CAPTAIN_GOLD if jersey != "gold" else (246, 246, 242)
+    return {"!": j[1] + (255,), "@": j[0] + (255,), "&": j[2] + (255,), "#": p[2] + (255,), "$": p[1] + (255,),
+            "%": trim + (255,), "^": h[1] + (255,), "~": h[0] + (255,),
+            "*": (CAPTAIN_GOLD if captain else j[1]) + (255,)}
+
+
+def uniform(g, cx, sy, wy, hw, step=0, legs=True, fy=None, sleeves=True, number=True):
+    """A suited-up football body: shoulder pads under the jersey (the shoulders bulge and the
+    pad edge shows), short sleeves with stripes, a numbered chest, a belt, padded pants with a
+    side stripe, high socks and black cleats.
+      cx: centre x   sy: top of the shoulder pads   wy: waist row   hw: half-width at the pads"""
+    cx = round(cx)
+    # torso under the pads, tapering a little to the waist
+    rect(g, cx - hw + 3, sy + 3, cx + hw - 3, wy, "!")
+    rect(g, cx + hw - 4, sy + 4, cx + hw - 3, wy, "@")                     # coloured shade, right side
+    rect(g, cx - hw + 3, wy, cx + hw - 3, wy, "@")
+    # the pads: a broad dome with a cap on each shoulder
+    ellipse(g, cx, sy + 2.5, hw, 3, "!")
+    for sx in (-1, 1):
+        ellipse(g, cx + sx * (hw - 2.6), sy + 2, 2.8, 2.3, "!")
+        put(g, [(cx + sx * (hw - 1), sy + 2), (cx + sx * (hw - 1), sy + 3)], "%")   # sleeve stripe
+        put(g, [(cx + sx * (hw - 3) - 1, sy + 1), (cx + sx * (hw - 3), sy + 1)], "&")   # light on the pad cap
+    rect(g, cx - hw + 1, sy + 5, cx - hw + 3, sy + 5, "@")                 # pad edge under the jersey
+    rect(g, cx + hw - 3, sy + 5, cx + hw - 1, sy + 5, "@")
+    put(g, [(cx - 1, sy + 1), (cx, sy + 1), (cx + 1, sy + 1)], "@")        # collar
+    if sleeves:                                                            # forearms out of the sleeves
+        for sx in (-1, 1):
+            put(g, [(cx + sx * hw, sy + 5), (cx + sx * hw, sy + 6)], "q")
+            put(g, [(cx + sx * hw, sy + 7)], "Q")
+    if number and wy - sy >= 7:                                            # a chunky chest number
+        ny = sy + 4
+        put(g, [(cx - 1, ny), (cx, ny), (cx, ny + 1), (cx, ny + 2), (cx - 1, ny + 2), (cx + 1, ny + 2)], "%")
+    put(g, [(cx - hw + 4, sy + 4), (cx - hw + 5, sy + 4), (cx - hw + 4, sy + 5), (cx - hw + 4, sy + 6),
+            (cx - hw + 5, sy + 6)], "*")                                    # the captain's "C"
+    rect(g, cx - hw + 3, wy + 1, cx + hw - 3, wy + 1, "k")                 # belt
+    if not legs:
+        return
+    fy = fy if fy is not None else wy + 7
+    ky = wy + 2 + (fy - wy - 2) // 2                                       # knee
+    for side, lift in ((-1, step), (1, -step)):
+        x0, x1 = (cx - hw + 3, cx - 1) if side < 0 else (cx + 1, cx + hw - 3)
+        foot = fy - max(0, lift)
+        rect(g, x0, wy + 2, x1, ky, "#")                                   # padded pants
+        put(g, [(x0 if side < 0 else x1, y) for y in range(wy + 2, ky + 1)], "%")   # side stripe
+        put(g, [(x1 if side < 0 else x0, ky)], "$")
+        sx0, sx1 = (x0 + 1, x1) if side < 0 else (x0, x1 - 1)
+        rect(g, sx0, ky + 1, sx1, foot - 1, "!")                           # high socks
+        rect(g, sx0 - (1 if side < 0 else 0), foot, sx1 + (0 if side < 0 else 1), foot, "k")   # cleats
+
+
 # --- Cheerleader: Idle (bob) and Cheer (pom-poms up) ------------------------------
 def cheerleader(frame):
     g = blank()
@@ -209,8 +276,11 @@ def referee(frame):
 
 
 # --- Lineman: Charger-style hunch, helmet pulled low over giant eyes ------------------
-def low_helmet(g, cx, cy, r, shell, shade, stripe="W", mask=True):
-    """A helmet sitting low: only the giant eyes and a grimace show through the gap."""
+def low_helmet(g, cx, cy, r, shell, shade, stripe="W", mask=True, ring=False):
+    """A helmet sitting low: only the giant eyes and a grimace show through the gap.
+    ring: a dark inner line around the shell, so it reads against a jersey of the same colour."""
+    if ring:
+        ellipse(g, cx, cy - 0.5, r + 2, r + 1.2, "K")
     ellipse(g, cx, cy - 1, r + 1, r, shell)
     ellipse(g, cx + 1, cy + 1, r, r * 0.6, shade)               # coloured shading, not ink
     rect(g, round(cx - r * 0.75), round(cy), round(cx + r * 0.75), round(cy + r * 0.75), "q")   # face gap
@@ -227,32 +297,20 @@ def low_helmet(g, cx, cy, r, shell, shade, stripe="W", mask=True):
 
 
 def lineman(frame):
+    """A hulking offensive lineman in full kit, head sunk between his pads."""
     g = blank()
     pose = ["walk", "walk", "dig", "charge", "charge"][frame]
-    step = frame % 2
+    step = frame % 2 if pose != "dig" else 0
     down = 2 if pose == "dig" else 0
     lean = 2 if pose == "charge" else 0
-    # wide stance: legs splayed
-    spread = 1 if step else 0
-    put(g, [(9 - spread, 28), (10 - spread, 27), (10, 26), (11, 25)], "Q")
-    put(g, [(22 + spread, 28), (21 + spread, 27), (21, 26), (20, 25)], "Q")
-    rect(g, 7 - spread, 28, 10 - spread, 28, "h")
-    rect(g, 21 + spread, 28, 24 + spread, 28, "h")
-    # hunched torso, shoulders pushing straight out of the neck
-    ellipse(g, 16 + lean, 21 + down, 10, 5.5, "N")
-    ellipse(g, 16 + lean, 23 + down, 8, 3, "n")
-    rect(g, 7 + lean, 20 + down, 25 + lean, 20 + down, "i")         # dark red stripe
-    put(g, [(11 + lean, 23 + down), (19 + lean, 24 + down)], "q")    # torn jersey, flesh showing
-    ellipse(g, 7 + lean, 15 + down, 5, 3.6, "W")                    # pads hunched up high
-    ellipse(g, 25 + lean, 15 + down, 5, 3.6, "W")
-    ellipse(g, 7 + lean, 16.5 + down, 4, 1.8, "w")
-    ellipse(g, 25 + lean, 16.5 + down, 4, 1.8, "w")
-    low_helmet(g, 16 + lean, 14 + down, 5.5, "R", "r")              # head sunk between the pads
-    put(g, [(14 + lean, 8 + down), (13 + lean, 9 + down)], "r")      # crack in the shell
+    uniform(g, 16 + lean, 13 + down, 21 + down, 10, step=step, fy=30)
+    put(g, [(9 + lean, 22 + down), (21 + lean, 18 + down)], "i")           # blood on the jersey
+    low_helmet(g, 16 + lean, 13 + down, 5.5, "^", "~", stripe="@", ring=True)   # head sunk between the pads
+    put(g, [(14 + lean, 7 + down), (13 + lean, 8 + down)], "~")            # crack in the shell
     if pose == "charge":
-        put(g, [(16 + lean, 21 + down), (16 + lean, 22 + down)], "i")   # drool flying
+        put(g, [(16 + lean, 20 + down), (17 + lean, 21 + down)], "i")      # drool flying
     if pose == "dig":
-        put(g, [(4, 28), (6, 29), (26, 29), (28, 28), (5, 26)], "d")    # dirt clods
+        put(g, [(4, 29), (6, 30), (26, 30), (28, 29), (5, 27)], "d")       # dirt clods
     return rows_of(outline(g))
 
 
@@ -276,7 +334,15 @@ def blitzer(frame):
     g = blank()
     dive = frame == 2
     ellipse(g, 16, 19, 5.5 if not dive else 4.5, 4.5 if not dive else 6, "M")   # fat black body
-    put(g, [(14, 21), (16, 22), (18, 21), (15, 23), (17, 23)], "h")              # belly bands
+    # a too-small jersey pulled over the body, shoulder pads bulging at the top
+    ellipse(g, 16, 18.5, 5 if not dive else 4, 3.4 if not dive else 4.6, "!")
+    ellipse(g, 17.5, 20, 3, 2.2 if not dive else 3.2, "@")
+    for sx in (-1, 1):
+        ellipse(g, 16 + sx * 4, 16.5, 2, 1.5, "!")
+        put(g, [(16 + sx * 5, 16)], "%")                                       # sleeve stripe
+    put(g, [(16, 18), (16, 19), (16, 20)], "%")                                 # number 1
+    put(g, [(13, 18), (13, 19), (14, 18)], "*")                                 # captain's patch
+    put(g, [(14, 23), (16, 23 + (1 if dive else 0)), (18, 23)], "h")             # belly poking out
     ellipse(g, 16, 14, 5.5, 4.2, "M")                                           # head
     for sx in (-1, 1):                                                          # huge glassy compound eyes
         ellipse(g, 16 + sx * 2.6, 15, 2.6, 2.8, "e")
@@ -295,45 +361,45 @@ def blitzer(frame):
 
 # --- Punter: a Gaper ragdoll with one floppy kicking leg ---------------------------
 def punter(frame):
+    """A gaper ragdoll suited up as the punter, with one floppy kicking leg."""
     g = blank()
     kick = frame - 1 if frame >= 2 else 0                           # 0 idle, 1 wind, 2 kick
     bob = frame % 2 if frame < 2 else 0
-    ellipse(g, 15, 21 + bob, 6, 5, "W")                             # round torso, white kicker jersey
-    ellipse(g, 16, 23 + bob, 4.5, 2.5, "w")
-    put(g, [(15, 19 + bob), (16, 20 + bob), (16, 21 + bob), (16, 22 + bob)], "n")   # #1
-    # thin floppy arms
-    put(g, [(9, 20 + bob), (8, 21 + bob), (7, 23 + bob), (7, 24 + bob)], "Q")
-    put(g, [(21, 20 + bob), (22, 22 + bob), (23, 23 + bob), (22, 25 + bob)], "Q")
-    put(g, [(13, 26), (13, 27), (12, 28)], "Q")                     # planted leg
-    rect(g, 10, 28, 13, 28, "h")
+    uniform(g, 15, 15 + bob, 22, 7, legs=False)
+    # planted leg: pants, sock, cleat
+    rect(g, 11, 24, 14, 25, "#")
+    put(g, [(11, 24), (11, 25)], "%")
+    rect(g, 12, 26, 13, 27, "!")
+    rect(g, 10, 28, 13, 28, "k")
     if kick == 0:
-        put(g, [(17, 26), (18, 27), (18, 28)], "Q")
-        rect(g, 18, 28, 21, 28, "h")
+        rect(g, 16, 24, 19, 25, "#")
+        put(g, [(19, 24), (19, 25)], "%")
+        rect(g, 16, 26, 17, 27, "!")
+        rect(g, 16, 28, 19, 28, "k")
     elif kick == 1:                                                 # leg flung back
-        put(g, [(12, 25), (10, 25), (9, 24), (7, 23), (6, 22)], "Q")
-        rect(g, 4, 21, 6, 22, "h")
+        rect(g, 15, 23, 18, 24, "#")
+        put(g, [(8, 22), (9, 22), (10, 23), (11, 23)], "!")
+        put(g, [(12, 23), (13, 23), (14, 23)], "#")
+        rect(g, 5, 21, 7, 22, "k")
     else:                                                           # leg whipped up, way too high
-        put(g, [(18, 24), (20, 22), (21, 21), (22, 19), (23, 17), (24, 15), (19, 23)], "Q")
-        rect(g, 24, 13, 27, 15, "h")
-    gaper_face(g, 15, 11 + bob, 7.2, mouth="o")                     # bulbous gaper head, screaming
+        rect(g, 16, 22, 19, 24, "#")
+        put(g, [(20, 21), (21, 20), (21, 19), (22, 18), (23, 17), (23, 16)], "!")
+        rect(g, 23, 13, 26, 15, "k")
+    gaper_face(g, 15, 10 + bob, 7.2, mouth="o")                     # bulbous gaper head, screaming
     return rows_of(outline(g))
 
 
 # --- Huddle: little Chargers in orange helmets, hunched together ---------------------
 def huddle(frame):
+    """Little chargers in full kit, hunched over and running in a pack."""
     g = blank()
     step = frame % 2
     running = frame >= 2
-    ellipse(g, 16, 21, 6.5, 4, "W")                                 # hunched jersey
-    rect(g, 10, 21, 22, 21, "o")
-    ellipse(g, 11, 17.5, 3, 2.2, "W")                               # pads
-    ellipse(g, 21, 17.5, 3, 2.2, "W")
-    put(g, [(12, 25), (11, 26), (11 - step, 27)], "Q")
-    put(g, [(20, 25), (21, 26), (21 + step, 27)], "Q")
-    low_helmet(g, 16, 14, 4.6, "O", "o", mask=False)
+    uniform(g, 16, 16, 22, 7, step=step, fy=28, number=False)
+    low_helmet(g, 16, 14, 4.6, "^", "~", stripe="%", mask=False, ring=True)
     if running:
         put(g, [(16, 19), (16, 20)], "i")                           # drool
-        put(g, [(6, 14), (5, 16), (26, 14), (27, 16)], "v")        # speed lines
+        put(g, [(5, 14), (4, 16), (27, 14), (28, 16)], "v")        # speed lines
     return rows_of(outline(g))
 
 
@@ -413,19 +479,24 @@ def sacker(frame):
     if state == "rise":
         shake = frame - 2
         dirt_hole(g, 16, 25, 10, 3.8, 1)
-        ellipse(g, 16 + shake, 19, 6, 5, "n")                       # mud-caked helmet breaking through
-        put(g, [(14 + shake, 16), (18 + shake, 17), (16 + shake, 15)], "d")
+        ellipse(g, 16 + shake, 19, 6, 5, "^")                       # mud-caked helmet breaking through
+        ellipse(g, 17 + shake, 20.5, 5, 3, "~")
+        put(g, [(16 + shake, 14), (16 + shake, 15)], "%")
+        put(g, [(14 + shake, 16), (18 + shake, 17), (13 + shake, 19)], "d")
         put(g, [(6, 20), (26, 20), (8 + shake, 15), (24 - shake, 14), (11, 12), (21, 12)], "d")   # dirt spray
         return rows_of(outline(g))
     lift = frame - 4
     dirt_hole(g, 16, 26, 10, 3.4, 0)
-    ellipse(g, 16, 19 - lift, 7, 5.5, "Q")                         # body out of the hole
-    put(g, [(6, 16 - lift), (7, 17 - lift), (8, 18 - lift), (9, 18 - lift)], "q")   # claw arms up
-    put(g, [(26, 16 - lift), (25, 17 - lift), (24, 18 - lift), (23, 18 - lift)], "q")
-    put(g, [(5, 15 - lift), (7, 15 - lift), (25, 15 - lift), (27, 15 - lift)], "W")   # claws
-    low_helmet(g, 16, 12 - lift, 5.6, "n", "N", stripe="d", mask=False)
+    uniform(g, 16, 13 - lift, 22 - lift, 8, legs=False, sleeves=False)   # suited up, climbing out
+    put(g, [(10, 18 - lift), (19, 16 - lift), (21, 20 - lift), (13, 21 - lift)], "d")   # caked in mud
+    put(g, [(6, 15 - lift), (7, 16 - lift), (8, 17 - lift)], "q")      # claw arms up
+    put(g, [(26, 15 - lift), (25, 16 - lift), (24, 17 - lift)], "q")
+    put(g, [(5, 14 - lift), (7, 14 - lift), (25, 14 - lift), (27, 14 - lift)], "W")   # claws
+    low_helmet(g, 16, 12 - lift, 5.6, "^", "~", stripe="%", mask=False, ring=True)
     put(g, [(13, 7 - lift), (18, 8 - lift), (20, 10 - lift), (12, 10 - lift), (15, 6 - lift)], "d")   # heavy with mud
     put(g, [(16, 18 - lift), (16, 19 - lift)], "i")
+    dirt_hole_front = [(x, 25) for x in range(8, 25)]                  # the lip of the hole in front
+    put(g, dirt_hole_front, "d")
     return rows_of(outline(g))
 
 
@@ -485,19 +556,27 @@ def franchise(pose, frame=0):
     rage = pose.startswith("rage")
     squash = 4 if pose == "slam" else 0
     by = 52 + bob + squash
-    # stubby legs and cleats
-    rect(g, 29, 68, 35, 75, "Q")
-    rect(g, 45, 68, 51, 75, "Q")
-    rect(g, 27, 75, 36, 77, "n")
-    rect(g, 44, 75, 53, 77, "n")
-    # the gut hanging out under the jersey
-    ellipse(g, 40, by + 13, 18, 9, "q")
-    ellipse(g, 43, by + 16, 13, 5, "Q")
-    put(g, [(40, by + 14), (41, by + 14)], "h")                    # navel
+    # gold game pants (purple side stripe), purple socks and cleats
+    for x0, x1 in ((25, 38), (42, 55)):
+        rect(g, x0, 64, x1, 73, "A")
+        rect(g, x1 - 3 if x0 < 40 else x0, 64, x1 if x0 < 40 else x0 + 3, 73, "a")   # inner shade
+        rect(g, x0 if x0 < 40 else x1, 64, x0 if x0 < 40 else x1, 73, "p")            # side stripe
+        rect(g, x0 + 3, 74, x1 - 3, 76, "p")
+        rect(g, x0 + 3, 75, x1 - 3, 75, "W")                          # sock stripe
+        rect(g, x0 + 1, 77, x1 - 2, 78, "n")
+    # the gut hanging out under the jersey, over the waistband
+    ellipse(g, 40, by + 11, 17, 7, "q")
+    ellipse(g, 43, by + 14, 12, 4, "Q")
+    put(g, [(40, by + 12), (41, by + 12)], "h")                    # navel
     # bloated body in a stretched purple #1 jersey
     ellipse(g, 40, by, 24, 18, "p")
     ellipse(g, 47, by + 5, 16, 11, "V")                             # shade (purple, not ink)
     ellipse(g, 31, by - 6, 9, 5, "X")                               # lit shoulder
+    # shoulder pads under the jersey: a big dome on the left, the arm hides the right one
+    ellipse(g, 24, by - 12, 10, 7, "p")
+    ellipse(g, 22, by - 15, 6, 3, "X")                              # light on the pad
+    rect(g, 15, by - 6, 30, by - 5, "V")                            # pad edge under the jersey
+    put(g, [(15, by - 13), (15, by - 12), (16, by - 10), (16, by - 9)], "W")   # sleeve stripe
     rect(g, 17, by + 9, 63, by + 10, "X")                           # hem stripe
     rect(g, 37, by - 9, 43, by + 5, "W")                            # a big white #1
     rect(g, 34, by - 9, 37, by - 7, "W")
@@ -705,19 +784,27 @@ ENTITIES = {
     ),
     "monsters/gridiron_lineman": dict(
         frames=[lineman(i) for i in range(5)],
+        kit=kit("red", "white", "silver"),
+        kits={"_captain": kit("red", "white", "silver", captain=True),
+              **{f"_team_{c}": kit(c, "navy" if c == "white" else "white", "silver") for c in TEAM_COLORS},
+              **{f"_team_{c}_captain": kit(c, "navy" if c == "white" else "white", "silver", captain=True)
+                 for c in TEAM_COLORS}},
         anims={"Walk": ([0, 1], 8, True), "Dig": ([2], 1, True), "Charge": ([3, 4], 3, True)},
     ),
     "monsters/gridiron_blitzer": dict(
         frames=[blitzer(i) for i in range(3)],
+        kit=kit("red", "white"), kits={"_captain": kit("red", "white", captain=True)},
         anims={"Fly": ([0, 1], 2, True), "Dive": ([2], 1, True)},
         pivot=(16, 24),
     ),
     "monsters/gridiron_punter": dict(
         frames=[punter(i) for i in range(4)],
+        kit=kit("white", "navy"), kits={"_captain": kit("white", "navy", captain=True)},
         anims={"Idle": ([0, 1], 12, True), "Kick": ([2, 3, 3], 6, False)},
     ),
     "monsters/gridiron_huddle": dict(
         frames=[huddle(i) for i in range(4)],
+        kit=kit("navy", "orange", "orange"), kits={"_captain": kit("navy", "orange", "orange", captain=True)},
         anims={"Walk": ([0, 1], 8, True), "Run": ([2, 3], 4, True)},
     ),
     "monsters/gridiron_cooler": dict(
@@ -735,6 +822,7 @@ ENTITIES = {
     ),
     "monsters/gridiron_sacker": dict(
         frames=[sacker(i) for i in range(6)],
+        kit=kit("green", "gold"), kits={"_captain": kit("green", "gold", captain=True)},
         anims={"Mound": ([0, 1], 6, True), "Rise": ([2, 3], 3, True), "Up": ([4, 5], 8, True),
                "Dig": ([3, 2], 5, False)},
     ),
@@ -744,7 +832,7 @@ ENTITIES = {
         anims={"Idle": ([0, 1], 12, True), "Yell": ([2, 3], 5, True)},
     ),
     "bosses/gridiron_franchise": dict(
-        size=80, pivot=(40, 74),
+        size=80, pivot=(40, 77),
         frames=[franchise("idle", 0), franchise("idle", 1), franchise("wind"), franchise("throw"),
                 franchise("audible"), franchise("slam"), franchise("rage", 0), franchise("rage", 1),
                 franchise("rage_wind"), franchise("rage_throw")],
@@ -1257,12 +1345,17 @@ def main():
     for rel, spec in ENTITIES.items():
         size = spec.get("size", 32)
         frames = spec["frames"]
-        strip = Image.new("RGBA", (size * len(frames), size), (0, 0, 0, 0))
-        for i, rows in enumerate(frames):
-            strip.paste(render_rows(rows, size), (i * size, 0))
         png = GFX / f"{rel}.png"
         png.parent.mkdir(parents=True, exist_ok=True)
-        strip.save(png)
+        # Football players render once per kit: the base sheet, plus alternates (captains, the
+        # Tainted Coach's squad in your colours) that scripts swap in with ReplaceSpritesheet.
+        for suffix, colours in {"": spec.get("kit", {}), **spec.get("kits", {})}.items():
+            PALETTE.update(colours)
+            strip = Image.new("RGBA", (size * len(frames), size), (0, 0, 0, 0))
+            for i, rows in enumerate(frames):
+                strip.paste(render_rows(rows, size), (i * size, 0))
+            strip.save(png.with_name(png.stem + suffix + ".png"))
+        PALETTE.update(kit("red"))
         if "icon" in spec:   # pedestal sprite = the first frame
             finish(render_rows(frames[0], size)).save(GFX / spec["icon"])
         pivot = spec.get("pivot", (size // 2, size - 4))
