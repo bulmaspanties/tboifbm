@@ -244,6 +244,9 @@ return function(mod)
         DECOR_CHANCE_LIGHT    = 0.05,  -- share of normal rooms with football props
         DECOR_CHANCE_FULL     = 0.12,
 
+        -- Pro Shop
+        PROSHOP_CHANCE        = 0.25,  -- (menu) share of shops that are team stores
+
         -- Halftime show
         HALFTIME_CHANCE       = 0.06,  -- (menu) per cleared normal room, once per floor
 

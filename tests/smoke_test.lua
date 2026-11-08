@@ -142,7 +142,7 @@ PickupVariant = enum()
 CoinSubType = enum()
 DamageFlag = enum()
 RenderMode = enum()
-RoomType = { ROOM_DEFAULT = 1, ROOM_BOSS = 5, ROOM_BOSSRUSH = 17 }
+RoomType = { ROOM_DEFAULT = 1, ROOM_SHOP = 2, ROOM_BOSS = 5, ROOM_BOSSRUSH = 17 }
 CollectibleType = enum({ COLLECTIBLE_BIRTHRIGHT = 619 })
 WeaponType = enum()
 PillEffect = enum()
@@ -528,6 +528,7 @@ function Game()
         GetHUD = function() return hud end,
         GetLevel = function() return { GetStage = function() return world.stage or 2 end,
             GetCurses = function() return world.curses or 0 end,
+            GetCurrentRoomIndex = function() return world.roomIndex or 84 end,
             GetStageType = function() return world.stageType or 0 end,
             GetCurrentRoomDesc = function() return { Data = { Type = world.roomType } } end } end,
         GetItemPool = function() return { ForceAddPillEffect = function(_, effect) return 7 end } end,
@@ -2394,6 +2395,37 @@ do
     cp2.coins, cp2.bombs, cp2.keys = 5, 3, 1
     dispatch(ModCallbacks.MC_USE_PILL, mod.Pills.TWO_POINT, mod.Pills.TWO_POINT, cp2, 0)
     check(cp2.keys == 3 and cp2.coins == 5, "two-point conversion: +2 keys when keys are lowest")
+end
+
+-- Pro Shop ---------------------------------------------------------------------------------------
+do
+    local sp2 = newPlayer()
+    players = { sp2 }
+    local seed
+    for sd = 1, 400 do
+        world.decorSeed = sd
+        if mod.isProShop(room) then seed = sd break end
+    end
+    check(seed ~= nil, "some shops are pro shops")
+    local shopItem = newEntity({ Type = EntityType.ENTITY_PICKUP, Variant = PickupVariant.PICKUP_COLLECTIBLE, SubType = 1 })
+    shopItem.Price = 15
+    function shopItem:Morph(_, variant, subtype, keepPrice)
+        self.Variant, self.SubType, self.morphedKeepPrice = variant, subtype, keepPrice
+    end
+    world.roomIndex, world.roomType = 31, RoomType.ROOM_SHOP
+    world.entities = { sp2, shopItem }
+    dispatch(ModCallbacks.MC_POST_NEW_ROOM)
+    local isGridiron = false
+    for _, id in pairs(Items) do if id == shopItem.SubType then isGridiron = true end end
+    check(isGridiron and shopItem.morphedKeepPrice and shopItem.SubType ~= Items.HAIL_MARY,
+        "a pro shop stocks a gridiron item at shop price")
+    local stocked = shopItem.SubType
+    shopItem.SubType = 1
+    world.entities = { sp2, shopItem }
+    dispatch(ModCallbacks.MC_POST_NEW_ROOM)
+    check(shopItem.SubType == 1, "only on the first visit")
+    world.decorSeed, world.roomIndex, world.roomType = nil, nil, RoomType.ROOM_DEFAULT
+    newRoom(false)
 end
 
 -- Settings survive a restart (fresh load reads the stored blob)

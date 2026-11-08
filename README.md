@@ -87,6 +87,9 @@ About one normal room in eight looks like somebody played football in it, and no
 
 The football bosses' rooms get **stadium banners**. Props never collide with anything or block a door, and each room looks the same every time you come back. Set **field decor** to off, light or full in *visuals*.
 
+### Pro Shop
+A quarter of shops (adjustable in the menu) are **team stores**: banners and lockers on the walls, and the first time you walk in, one item for sale is a **Gridiron item you don't have yet**, at the shop's price.
+
 ### Halftime show
 Clearing a normal room has a **6% chance** (once per floor, adjustable in the menu) to start a **halftime show**: the whistle, the stadium horn, fireworks and the crowd. You get to **pick one**: a **Gridiron item you don't have yet** or a **soul heart**. Take one and the other disappears.
 
@@ -242,7 +245,7 @@ If **External Item Descriptions** is installed, every item shows its description
 
 ## Settings menu
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
-- **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, drug tests, Franchise boss chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
+- **gameplay:** tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, drug tests, Franchise boss chance, Pro Shop chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
 - **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare), field decor (off / light / full)
 - **uniform:** by default (**auto**) every character suits up in **their own colours**: Magdalene in pink and white, Judas in black and red, Cain in green and gold, Keeper in gold and money green, Blue Baby in blues, the tainted characters in darker, meaner versions, and so on. Or pick your team colours yourself: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colours each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts everything back on auto. Helmet and Team Jersey **pedestals** show your colours too (except where the item could be hidden: Curse of the Blind and the alt-floor "?" treasure items)
 - **completion notes:** the marks each Gridiron character has earned
