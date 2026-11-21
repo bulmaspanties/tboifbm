@@ -84,7 +84,7 @@ def items_scene(t):
         icon = px(Image.open(p).convert("RGBA"), 2)
         col, row = i % 8, i // 8
         img.alpha_composite(icon, (24 + col * 76, 80 + row * 80 + int(math.sin(t * 0.7 + i) * 3)))
-    text(d, (W // 2, 20), "GEAR UP: 27 ITEMS", 38, GOLD, anchor="ma")
+    text(d, (W // 2, 20), "GEAR UP: 24 ITEMS + 9 TRINKETS", 34, GOLD, anchor="ma")
     text(d, (W // 2, 326), "Suit up, tackle, kick field goals, go All-Pro", 20, (245, 245, 240), anchor="ma")
     return img
 

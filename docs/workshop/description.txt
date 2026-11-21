@@ -1,0 +1,76 @@
+[h1]GRIDIRON: American football for The Binding of Isaac[/h1]
+[b]Suit Isaac up for football.[/b] Every item is real gear with its own mechanic: no reskins, no stat-only filler, nothing from the base game replaced. Tackle with the helmet, deflect shots with the pads, catch them with the gloves, kick field goals over the rocks, and once you're wearing three pieces you're [b]Suited Up[/b].
+
+Then take on a rival Linebacker, a giant Mascot, a stadium full of grotesque football enemies, and [b]The Franchise[/b].
+
+[h2]What's inside[/h2]
+[list]
+[*][b]24 items[/b]: wearable gear, actives and familiars, plus four [b]Q4 legends[/b]
+[*][b]9 trinkets, 3 cards and 2 pills[/b]
+[*][b]6 new characters[/b]: the Quarterback, the Kicker and the Coach, plus tainted versions that play completely differently
+[*][b]3 bosses, a miniboss and 10 football enemies[/b] in Isaac's own grotesque style, every player in full kit
+[*][b]Gear you can see[/b]: helmet, pads, jersey, pants, cleats and eye black show on your character, fitted per character, in [b]11 team colors[/b]
+[*]The [b]Suited Up[/b] set bonus and the [b]All-Pro[/b] transformation
+[*][b]5 challenges[/b], a [b]Halftime show[/b], [b]Pro Shops[/b] and faded [b]football fields[/b] painted on some floors
+[*][b]Two original boss themes[/b] and stadium sounds: crowd cheers and boos, the air horn, a scoring fanfare
+[*]Dozens of [b]synergies with base-game items[/b]
+[/list]
+
+[h2]The gear[/h2]
+[b]Wear it[/b]
+[list]
+[*][b]Football Helmet[/b]: run in a straight line and you're tackling: big damage, knockback, stuns. The facemask blocks shots from the front.
+[*][b]Shoulder Pads[/b]: deflect enemy shots back at them. Getting hit sets off a shockwave.
+[*][b]Team Jersey[/b]: you get a number for the run, and every few shots you throw a football.
+[*][b]Football Cleats[/b]: speed, and every 10 yards you run in a fight is a first down (damage up for the room).
+[*][b]Eye Black[/b]: long-range tears hit harder. No more Curse of Darkness.
+[*][b]Receiver Gloves[/b]: catch enemy shots and throw them back as footballs.
+[*][b]Mouthguard[/b]: the first big hit each room hurts less. Immune to fear and confusion.
+[*][b]Padded Pants[/b]: shrug off contact hits and stiff-arm the enemy away.
+[*][b]QB Wristband[/b]: every football you throw homes in and hits harder.
+[/list]
+[b]Use it[/b]: the [b]Kicking Tee[/b] (field goals that sail over the rocks), the [b]Pigskin[/b] (a fumble enemies scramble for: recover it for a touchdown), the [b]Playbook[/b] (call a play: Blitz, Hail Mary or Trick Play), the [b]Coach's Whistle[/b] (Offsides! Everyone back five yards) and the [b]End Zone[/b] (paint one under you and play in it).
+
+[b]On the sideline[/b]: the Cheerleader, Water Boy and Tackling Dummy familiars, the Gatorade Bucket, the Foam Finger and the Super Bowl Ring.
+
+[b]Q4 legends[/b]: the Championship Ring, the Hall of Fame Jacket, the Golden Arm and the Hail Mary.
+
+[h2]Characters[/h2]
+[list]
+[*][b]The Quarterback[/b]: every 3rd shot is a football that flies faster and hits harder.
+[b]Tainted[/b]: One Ball. A single heavy football that boomerangs back, and he can't throw until it does.
+[*][b]The Kicker[/b]: Special Teams. Field goals refund the Kicking Tee and put points on the board.
+[b]Tainted[/b]: Shanks. Slow, heavy lobs that clear the rocks, and every 4th one explodes.
+[*][b]The Coach[/b]: his staff does the work. Starts with BFFS!, the Cheerleader and the Water Boy, and his familiars work even harder for him.
+[b]Tainted[/b]: can't shoot. He fields a team: friendly Linemen in your colors sub in every room.
+[/list]
+Every character has a Birthright and completion notes to earn.
+
+[h2]Bosses and enemies[/h2]
+[b]The Linebacker[/b] and [b]The Mascot[/b] can take the place of early bosses, and the two-phase [b]Franchise[/b] can turn up on floors 7 and 8. [b]The Coach[/b] miniboss calls plays for every enemy in the room.
+
+Mascots, Referees, Linemen, Blitzers, Punters, Huddles, Gatorade Coolers, the Chain Gang and Sackers swap in for vanilla enemies that fight the same way. Some of them are [b]Team Captains[/b]: tougher, with a twist each, and the players among them wear gold trim and the captain's C patch.
+
+Take steroids and you're [b]Juiced[/b]: your tackles send enemies pinballing into each other, but the referees start running drug tests.
+
+[h2]Challenges[/h2]
+[b]Fourth and Long[/b], [b]Two-Minute Drill[/b], [b]Ground Game[/b], [b]Special Teams[/b] and [b]Sudden Death[/b], under Challenges > Custom.
+
+[h2]Settings[/h2]
+Press [b]C[/b] during a run to open the settings menu. Tune the gear, pick your team colors (or leave them on auto, where every character wears their own), hide a costume piece on any character, and switch off whatever you don't want: Gridiron items or just the Q4 legends, the bosses, the football enemies, boss music, crowd sounds, the painted fields and more.
+
+[h2]Compatibility[/h2]
+[list]
+[*]Requires [b]Repentance+[/b]. [b]REPENTOGON is not required.[/b]
+[*]Works with [b]External Item Descriptions[/b]: every item lists its numbers and its base-game synergies.
+[*]Save and continue work as normal.
+[*]Other mods can hook in through the global [i]Gridiron[/i] API.
+[/list]
+
+[h2]For testers[/h2]
+With the debug console on: [b]gridiron give[/b] drops every item, [b]gridiron spawn <name>[/b] spawns any football enemy or boss, and [b]gridiron help[/b] lists the rest.
+
+[h2]Credits[/h2]
+The settings menu uses the public domain [b]Dead Sea Scrolls[/b] library. The character menu art builds on the CC0 [b]IsaacTemplates[/b] character template.
+
+Source code, changelog and bug reports: [url=https://github.com/bulmaspanties/tboifbm]github.com/bulmaspanties/tboifbm[/url]

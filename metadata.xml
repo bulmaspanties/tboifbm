@@ -2,51 +2,83 @@
 <metadata>
     <name>Gridiron</name>
     <directory>gridiron</directory>
-    <description>[h1]Gridiron: American football for Isaac[/h1]
-Suit up! Football gear with its own mechanics: no reskins, no stat-only items.
+    <description>[h1]GRIDIRON: American football for The Binding of Isaac[/h1]
+[b]Suit Isaac up for football.[/b] Every item is real gear with its own mechanic: no reskins, no stat-only filler, nothing from the base game replaced. Tackle with the helmet, deflect shots with the pads, catch them with the gloves, kick field goals over the rocks, and once you're wearing three pieces you're [b]Suited Up[/b].
+
+Then take on a rival Linebacker, a giant Mascot, a stadium full of grotesque football enemies, and [b]The Franchise[/b].
 
 [h2]What's inside[/h2]
 [list]
-[*][b]20 items[/b]: Football Helmet (tackles, stuns and a facemask), Shoulder Pads, Team Jersey, Football Cleats, Eye Black, Receiver Gloves, Mouthguard, Padded Pants, QB Wristband, Foam Finger, Super Bowl Ring, Gatorade Bucket, plus the Kicking Tee, Pigskin, Playbook, Coach's Whistle and End Zone actives
-[*][b]4 legendary Q4 items[/b]: Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary
-[*][b]3 familiars[/b]: Cheerleader, Water Boy, Tackling Dummy
-[*][b]3 trinkets, a card and a pill[/b]: Referee Flag, Concussion Protocol, Turf Burn, Coin Toss, Timeout!
-[*][b]Wear 3+ pieces to get Suited Up[/b]: bonus damage, faster tackles, gold glow
-[*][b]Worn costumes[/b]: modern helmet with facemask, jersey over pads, pants and cleats, eye black, fitted per character
-[*][b]Every character in their own colors[/b] (or pick your team colors)
-[*][b]Faded football fields[/b] painted on some floors
-[*][b]Boss themes[/b], a [b]Pro Shop[/b], six more trinkets, two more cards and a pill
-[*][b]Stadium sounds[/b]: crowd cheers and boos, helmet clacks, the air horn and a scoring fanfare
-[*][b]Pick your team colors[/b]: helmet, jersey and pants, 11 colors each (yes, pink too), from the settings menu
-[*][b]Three bosses and 10 football enemies[/b]: The Linebacker, The Mascot, The Franchise (a two-phase final boss), the Coach miniboss, plus Mascot, Referee, Lineman, Blitzer, Punter, Huddle, Gatorade Cooler, Chain Gang and Sacker
-[*][b]Three new characters[/b]: The Quarterback, The Kicker and The Coach, plus their tainted versions
-[*][b]All-Pro transformation[/b], [b]Team Captain[/b] champions, a [b]Halftime show[/b] event and [b]completion notes[/b]
-[*][b]5 challenges[/b]: Fourth and Long, Two-Minute Drill, Ground Game, Special Teams, Sudden Death
-[*][b]Settings[/b] in the Dead Sea Scrolls menu (press C), External Item Descriptions support, save &amp; continue support
+[*][b]24 items[/b]: wearable gear, actives and familiars, plus four [b]Q4 legends[/b]
+[*][b]9 trinkets, 3 cards and 2 pills[/b]
+[*][b]6 new characters[/b]: the Quarterback, the Kicker and the Coach, plus tainted versions that play completely differently
+[*][b]3 bosses, a miniboss and 10 football enemies[/b] in Isaac's own grotesque style, every player in full kit
+[*][b]Gear you can see[/b]: helmet, pads, jersey, pants, cleats and eye black show on your character, fitted per character, in [b]11 team colors[/b]
+[*]The [b]Suited Up[/b] set bonus and the [b]All-Pro[/b] transformation
+[*][b]5 challenges[/b], a [b]Halftime show[/b], [b]Pro Shops[/b] and faded [b]football fields[/b] painted on some floors
+[*][b]Two original boss themes[/b] and stadium sounds: crowd cheers and boos, the air horn, a scoring fanfare
+[*]Dozens of [b]synergies with base-game items[/b]
 [/list]
 
-[h2]Synergies with base-game items[/h2]
+[h2]The gear[/h2]
+[b]Wear it[/b]
 [list]
-[*]Mars dashes are tackles; Aries and Taurus make tackles go live faster; Leo, Thunder Thighs and friends hit harder
-[*]Magneto and Telekinesis help the Receiver Gloves; Infamy helps the Shoulder Pads
-[*]Brimstone, Technology, Mom's Knife and other non-tear weapons still throw footballs
-[*]Footballs take on your tear effects: fire, poison, holy light, ice, charm, Midas...
-[*]Explosive items make bigger field goals; magnets make better fumbles
-[*]Holy Water, lemons, Ball of Tar and Juicy Sack turn the Gatorade shower into creep
-[*]Pony speeds up first downs; Money = Power doubles the Super Bowl Ring; Marked boosts the Foam Finger
-[*]Tarot Cloth lands the Coin Toss on its edge; BFFS! upgrades the sideline crew
-[*][b]Juiced[/b]: Roid Rage, Growth Hormones and friends make tackles brutal, but the referees run drug tests
-[*]Sports medicine: Knockout Drops, Percs!, Adrenaline, Ball of Bandages, Mom's Bracelet, Champion Belt, Number One and more
+[*][b]Football Helmet[/b]: run in a straight line and you're tackling: big damage, knockback, stuns. The facemask blocks shots from the front.
+[*][b]Shoulder Pads[/b]: deflect enemy shots back at them. Getting hit sets off a shockwave.
+[*][b]Team Jersey[/b]: you get a number for the run, and every few shots you throw a football.
+[*][b]Football Cleats[/b]: speed, and every 10 yards you run in a fight is a first down (damage up for the room).
+[*][b]Eye Black[/b]: long-range tears hit harder. No more Curse of Darkness.
+[*][b]Receiver Gloves[/b]: catch enemy shots and throw them back as footballs.
+[*][b]Mouthguard[/b]: the first big hit each room hurts less. Immune to fear and confusion.
+[*][b]Padded Pants[/b]: shrug off contact hits and stiff-arm the enemy away.
+[*][b]QB Wristband[/b]: every football you throw homes in and hits harder.
 [/list]
-EID lists every synergy on the item it belongs to.
+[b]Use it[/b]: the [b]Kicking Tee[/b] (field goals that sail over the rocks), the [b]Pigskin[/b] (a fumble enemies scramble for: recover it for a touchdown), the [b]Playbook[/b] (call a play: Blitz, Hail Mary or Trick Play), the [b]Coach's Whistle[/b] (Offsides! Everyone back five yards) and the [b]End Zone[/b] (paint one under you and play in it).
 
-Every piece of content can be switched off from the settings menu, and other mods can hook in through the global [b]Gridiron[/b] API.
+[b]On the sideline[/b]: the Cheerleader, Water Boy and Tackling Dummy familiars, the Gatorade Bucket, the Foam Finger and the Super Bowl Ring.
 
-Debug console: [b]gridiron give[/b] drops all the gear as pedestals, [b]gridiron boss[/b] summons the Linebacker.
+[b]Q4 legends[/b]: the Championship Ring, the Hall of Fame Jacket, the Golden Arm and the Hail Mary.
 
-Requires Repentance+. REPENTOGON is not required.
-Source and bug reports: github.com/bulmaspanties/tboifbm</description>
-    <version>0.12.5</version>
+[h2]Characters[/h2]
+[list]
+[*][b]The Quarterback[/b]: every 3rd shot is a football that flies faster and hits harder.
+[b]Tainted[/b]: One Ball. A single heavy football that boomerangs back, and he can't throw until it does.
+[*][b]The Kicker[/b]: Special Teams. Field goals refund the Kicking Tee and put points on the board.
+[b]Tainted[/b]: Shanks. Slow, heavy lobs that clear the rocks, and every 4th one explodes.
+[*][b]The Coach[/b]: his staff does the work. Starts with BFFS!, the Cheerleader and the Water Boy, and his familiars work even harder for him.
+[b]Tainted[/b]: can't shoot. He fields a team: friendly Linemen in your colors sub in every room.
+[/list]
+Every character has a Birthright and completion notes to earn.
+
+[h2]Bosses and enemies[/h2]
+[b]The Linebacker[/b] and [b]The Mascot[/b] can take the place of early bosses, and the two-phase [b]Franchise[/b] can turn up on floors 7 and 8. [b]The Coach[/b] miniboss calls plays for every enemy in the room.
+
+Mascots, Referees, Linemen, Blitzers, Punters, Huddles, Gatorade Coolers, the Chain Gang and Sackers swap in for vanilla enemies that fight the same way. Some of them are [b]Team Captains[/b]: tougher, with a twist each, and the players among them wear gold trim and the captain's C patch.
+
+Take steroids and you're [b]Juiced[/b]: your tackles send enemies pinballing into each other, but the referees start running drug tests.
+
+[h2]Challenges[/h2]
+[b]Fourth and Long[/b], [b]Two-Minute Drill[/b], [b]Ground Game[/b], [b]Special Teams[/b] and [b]Sudden Death[/b], under Challenges &gt; Custom.
+
+[h2]Settings[/h2]
+Press [b]C[/b] during a run to open the settings menu. Tune the gear, pick your team colors (or leave them on auto, where every character wears their own), hide a costume piece on any character, and switch off whatever you don't want: Gridiron items or just the Q4 legends, the bosses, the football enemies, boss music, crowd sounds, the painted fields and more.
+
+[h2]Compatibility[/h2]
+[list]
+[*]Requires [b]Repentance+[/b]. [b]REPENTOGON is not required.[/b]
+[*]Works with [b]External Item Descriptions[/b]: every item lists its numbers and its base-game synergies.
+[*]Save and continue work as normal.
+[*]Other mods can hook in through the global [i]Gridiron[/i] API.
+[/list]
+
+[h2]For testers[/h2]
+With the debug console on: [b]gridiron give[/b] drops every item, [b]gridiron spawn &lt;name&gt;[/b] spawns any football enemy or boss, and [b]gridiron help[/b] lists the rest.
+
+[h2]Credits[/h2]
+The settings menu uses the public domain [b]Dead Sea Scrolls[/b] library. The character menu art builds on the CC0 [b]IsaacTemplates[/b] character template.
+
+Source code, changelog and bug reports: [url=https://github.com/bulmaspanties/tboifbm]github.com/bulmaspanties/tboifbm[/url]</description>
+    <version>0.12.6</version>
     <visibility>Private</visibility>
     <tag id="Items"/>
     <tag id="Characters"/>

@@ -15,7 +15,7 @@ Then take on a rival Linebacker, a giant Mascot, a stadium full of grotesque foo
 **[⬇ Download the latest release](https://github.com/bulmaspanties/tboifbm/releases/latest)**, unzip it into your `mods` folder, and enable **Gridiron**.
 
 ## Highlights
-- **27 items and trinkets**: wearable gear, actives, familiars, and four **Q4 legends** (Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary)
+- **24 items and 9 trinkets** (plus 3 cards and 2 pills): wearable gear, actives, familiars, and four **Q4 legends** (Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary)
 - **Six characters**: The Quarterback, The Kicker and The Coach, plus tainted versions that play completely differently
 - **Three bosses, a miniboss and 10 football enemies** in Isaac's own grotesque style, every player in full kit (pads under the jersey, pants, socks, cleats), with **Team Captain** champions
 - **Worn costumes** fitted per character (roomy helmets for big hair, horn holes for horns), in **11 team colors**, pink included
@@ -24,7 +24,7 @@ Then take on a rival Linebacker, a giant Mascot, a stadium full of grotesque foo
 - **Boss themes** for the Linebacker, The Mascot and The Franchise: marching drumlines, brass, organ and a dark choir
 - **Stadium sounds**, a settings menu (press **C**), External Item Descriptions support, and save & continue
 
-<p align="center"><img src="docs/characters.png" alt="The Quarterback, Tainted QB, The Kicker and Tainted Kicker"></p>
+<p align="center"><img src="docs/characters.png" alt="The Quarterback, The Kicker and The Coach, and their tainted versions"></p>
 <p align="center"><img src="docs/items.png" alt="Every item and trinket"></p>
 <p align="center"><img src="docs/enemies.png" alt="The football enemies"></p>
 <p align="center"><img src="docs/bosses.png" alt="The Linebacker, The Mascot, the Coach and The Franchise"></p>
@@ -236,8 +236,10 @@ the files the game loads. No build tools or tests ship in it.
 4. After the first upload the uploader writes the Workshop `<id>` into `mods/gridiron/metadata.xml`.
    **Copy that `<id>` line into the repo's `metadata.xml`**: every later upload then updates the same Workshop page instead of making a new one.
 5. If the uploader rejects a tag, delete that `<tag>` line and upload again.
-6. Optional: on the Workshop page, **Add/edit images & videos** and upload `docs/preview.gif` plus the
-   `docs/*.png` sheets as extra screenshots. The GIF animates on the Workshop page.
+6. On the Workshop page, **Add/edit images & videos** and upload the 1920×1080 screenshots in
+   `docs/workshop/` (in order, `01_title.png` first) plus `docs/preview.gif`, which animates on the page.
+   The description comes from `metadata.xml` on every upload; `docs/workshop/description.txt` is the same
+   text if you'd rather paste it on Steam. `python3 tools/make_workshop.py` rebuilds the screenshots.
 
 To update: bump `<version>`, build the zip, unzip it over `mods/gridiron` (keep the `<id>`), and run the uploader again.
 
@@ -347,7 +349,7 @@ scripts/dssmenucore.lua         Dead Sea Scrolls library (public domain, unmodif
 content/                        items, pools, costumes, entities, players, sounds, menu art
 resources/                      sprites, costumes, sounds
 tests/smoke_test.lua            runs the mod against a mock of the Isaac API (2000+ checks)
-tools/                          generators for every sprite, costume, sound, the boss music, the README images and the preview GIF
+tools/                          generators for every sprite, costume, sound, the boss music, the README images, the preview GIF and the Workshop screenshots
 reference/                      vanilla character/boss sprites used as art reference (not shipped)
 ```
 

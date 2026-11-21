@@ -153,7 +153,7 @@ def enemies_sheet():
             font=font(16, False), fill=(220, 220, 230))
     bd.text((432, 82), "The Tainted Coach's linemen suit up in your team colours.", font=font(16, False),
             fill=(220, 220, 230))
-    return stack(header(body.width, "10 FOOTBALL ENEMIES", "Built on Isaac's rules: giant black eyes, gore, coloured shading"),
+    return stack(header(body.width, "10 FOOTBALL ENEMIES", "Built on Isaac's rules: giant black eyes, gore, colored shading"),
                  body, banner)
 
 
@@ -188,7 +188,7 @@ def uniforms_sheet():
         body.alpha_composite(px(Image.open(helmet).convert("RGBA"), 3), (x + 8, 20))
         body.alpha_composite(px(Image.open(jersey).convert("RGBA"), 3), (x + 8, 120))
         d.text((x + cw // 2, 228), c.upper(), font=font(15), fill=(250, 250, 240), anchor="ma")
-    return stack(header(body.width, "PICK YOUR TEAM COLOURS", "Helmet, jersey and pants: 11 colours each, from the settings menu"), body)
+    return stack(header(body.width, "PICK YOUR TEAM COLORS", "Helmet, jersey and pants: 11 colors each, from the settings menu"), body)
 
 
 def banner():

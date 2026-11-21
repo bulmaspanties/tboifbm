@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12.6
+- A new Steam Workshop description, and seven 1920×1080 Workshop screenshots built from the mod's own art (`docs/workshop/`).
+- Corrected item counts on the GitHub page and in the preview GIF: 24 items and 9 trinkets, plus 3 cards and 2 pills.
+
 ## 0.12.5
 A full bug, crash and security pass before the Workshop release.
 - **Crash fix:** a Tainted Kicker shank still in the air can no longer explode during a room change or while quitting.
