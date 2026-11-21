@@ -41,7 +41,7 @@ return function(mod)
         local ref = EntityRef(Isaac.GetPlayer(0))
         for _, z in ipairs(zones) do
             for _, e in ipairs(Isaac.FindInRadius(z, Cfg.END_ZONE_HALF_W + 10, EntityPartition.ENEMY)) do
-                if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) and mod.inEndZone(e.Position) then
+                if mod.isFoe(e) and mod.inEndZone(e.Position) then
                     e:AddSlowing(ref, 2, Cfg.END_ZONE_SLOW, Color(1, 0.95, 0.8, 1))
                 end
             end

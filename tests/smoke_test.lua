@@ -536,6 +536,7 @@ local room = {
         return (x == 0 or y == 0 or x == 14 or y == 8) and 1 or 0
     end,
     IsPositionInRoom = function() return true end,
+    GetFrameCount = function() return world.roomFrame or 100 end,
     GetGridCollisionAtPos = function(_, pos) return world.blockedAt and world.blockedAt(pos) and 1 or 0 end,
     GetRoomShape = function() return world.roomShape or RoomShape.ROOMSHAPE_1x1 end,
     FindFreePickupSpawnPosition = function(_, pos) world.freeSpawnCalls = (world.freeSpawnCalls or 0) + 1; return pos end,
@@ -629,11 +630,12 @@ Isaac = {
     GetEntityVariantByName = function(name) return entityByName[name] and entityByName[name].variant or -1 end,
     GetPlayerTypeByName = function(name, tainted) return playerTypes[name .. (tainted and "#b" or "")] or -1 end,
     GetEntityTypeByName = function(name) return entityByName[name] and entityByName[name].type or 0 end,
-    GetItemConfig = function() return { GetCollectible = function(_, id) return { ID = id } end } end,
-    FindByType = function(type, variant)
+    GetItemConfig = function() return { GetCollectible = function(_, id) return { ID = id, MaxCharges = 6 } end } end,
+    FindByType = function(type, variant, subtype)
         local list = {}
         for _, e in ipairs(world.entities) do
-            if e.exists and e.Type == type and (variant == nil or variant == -1 or e.Variant == variant) then
+            if e.exists and e.Type == type and (variant == nil or variant == -1 or e.Variant == variant)
+                and (subtype == nil or subtype == -1 or (e.SubType or 0) == subtype) then
                 list[#list + 1] = e
             end
         end
@@ -670,6 +672,21 @@ local Items, Trinkets, Cfg = mod.Items, mod.Trinkets, mod.Cfg
 -- (it gets its own scenario near the end).
 Cfg.ALLPRO_ITEMS = 999
 Cfg.HALFTIME_CHANCE = 0   -- the mock rng rolls low; halftime gets its own scenario
+
+-- A run start re-reads the save file (each save slot has its own data), which resets tuning
+-- and settings to what's stored. The scenarios tweak Cfg / Settings directly, so in tests a
+-- run start keeps the current values; the reload itself gets its own scenario.
+local realReloadSaveData = mod.ReloadSaveData
+mod.ReloadSaveData = function()
+    local cfg, settings = {}, {}
+    for k, v in pairs(Cfg) do cfg[k] = v end
+    for k, v in pairs(mod.Settings) do settings[k] = v end
+    local saved = mod.GetSaveData().settings
+    realReloadSaveData()
+    mod.GetSaveData().settings = saved
+    for k, v in pairs(cfg) do Cfg[k] = v end
+    for k, v in pairs(settings) do mod.Settings[k] = v end
+end
 
 for key, id in pairs(Items) do check(id > 0, "item name not found in items.xml: " .. key) end
 for key, id in pairs(Trinkets) do check(id > 0, "trinket name not found in items.xml: " .. key) end
@@ -1591,6 +1608,11 @@ check(not isaac:HasCollectible(Items.HELMET), "other characters get nothing")
     kk:EvaluateItems()
     check(kk:GetActiveCharge(ActiveSlot.SLOT_POCKET) == Cfg.KICKER_REFUND, "a field goal refunds tee charges")
     check(kk.Damage > dmg0, "and puts points on the board")
+    mod.onFieldGoal(kk)                                -- Car Battery: the second ball, same kick
+    check(kk:GetActiveCharge(ActiveSlot.SLOT_POCKET) == Cfg.KICKER_REFUND, "one refund per kick (no endless Car Battery kicks)")
+    tick()
+    mod.onFieldGoal(kk)
+    check(kk:GetActiveCharge(ActiveSlot.SLOT_POCKET) == 2 * Cfg.KICKER_REFUND, "the next kick refunds again")
     dispatch(ModCallbacks.MC_POST_NEW_LEVEL)
     kk:EvaluateItems()
     check(math.abs(kk.Damage - dmg0) < 1e-6, "the points reset next floor")
@@ -1615,7 +1637,7 @@ check(not isaac:HasCollectible(Items.HELMET), "other characters get nothing")
     check(booms == 2, "every " .. Cfg.TKICK_EVERY .. "th shank is live")
     local victim = newEnemy(Vector(40, 0), 100)
     local live = tk:FireTear(Vector(40, 0), Vector(1, 0))
-    live.data.GridironShankBoom = true
+    live.data.GridironShankBoom = Game():GetLevel():GetCurrentRoomIndex()
     local hurtBefore = tk.damageTaken
     dispatch(ModCallbacks.MC_POST_ENTITY_REMOVE, EntityType.ENTITY_TEAR, live)
     check(victim.damageTaken > 0 and tk.damageTaken == hurtBefore, "a live shank blows up enemies, not him")
@@ -2233,6 +2255,7 @@ end)()
     jp.items[Items.CHEERLEADER] = 1
     jp.items[C.COLLECTIBLE_JUMPER_CABLES] = 1
     jp.charges = { [ActiveSlot.SLOT_PRIMARY] = 0 }
+    jp.active = Items.KICKING_TEE                     -- something to charge
     for _ = 1, Cfg.CHEER_HYPE do dispatch(ModCallbacks.MC_POST_NPC_DEATH, nil, newEnemy(Vector(300, 0))) end
     check(jp:GetActiveCharge(ActiveSlot.SLOT_PRIMARY) == 1, "jumper cables: the routine charges your active")
     check(eidText[Items.HELMET]:find("Juiced", 1, true) and eidText[Items.MOUTHGUARD]:find("Percs", 1, true),
@@ -2513,6 +2536,20 @@ end)()
     check(mod.FoeSwaps[999][1] == MV.LINEMAN, "api: football swaps")
     Gridiron.SetCharacterColors(4242, { "pink", "pink", "pink" })
     check(mod.CharacterTeamColors[4242][1] == "pink", "api: character colours")
+    -- junk in: nothing happens, nothing breaks
+    check(Gridiron.AddFootballSwap(998, "lineman") == false and mod.FoeSwaps[998] == nil, "api: a non-number variant is refused")
+    check(Gridiron.AddFootballSwap(998, MV.LINEBACKER) == false, "api: bosses can't be swapped in for regular enemies")
+    check(Gridiron.AddFootballSwap(MT, MV.LINEMAN) == false, "api: football enemies can't swap themselves")
+    check(Gridiron.AddFootballSwap(5, MV.LINEMAN) == false, "api: only enemy types can be swapped (not pickups)")
+    check(Gridiron.SetCharacterColors(4243, { "pink", "../../evil", "white" }) == false
+        and mod.CharacterTeamColors[4243] == nil, "api: unknown colours are refused (they'd become sprite paths)")
+    check(Gridiron.AddCallback("TOUCHDOWN", "not a function") == false, "api: listeners must be functions")
+    check(Gridiron.AddCallback("SOMETHING", function() end) == false, "api: unknown events are refused")
+    check(Gridiron.AddSynergyNote("helmet", 5) == false, "api: notes need an item id and text")
+    check(Gridiron.IsSuitedUp(nil) == false and Gridiron.GearCount(42) == 0 and Gridiron.UniformColor("x", "helmet") == nil,
+        "api: not-a-player arguments are turned away")
+    Gridiron.Items.HELMET = -5
+    check(mod.Items.HELMET > 0, "api: changing the published ids doesn't touch Gridiron's own")
     -- content switches
     world.removedItems, world.removedTrinkets = {}, {}
     mod.Settings.q4Items = false
@@ -2648,6 +2685,222 @@ end)()
     mod.Settings.jerseyColor = "auto"
     for _, e in ipairs(Isaac.FindByType(MT, MV.LINEMAN)) do e.exists = false end
     newRoom(true)
+end)()
+
+-- Workshop audit fixes -------------------------------------------------------------------------
+;(function()
+    local ap = newPlayer()
+    players = { ap }
+    world.entities = { ap }
+    newRoom(false)
+
+    -- Friendly / charmed enemies are never treated as foes: no tackles, shoves, slows or buffs
+    local pal = newEnemy(Vector(20, 0))
+    pal:AddEntityFlags(EntityFlag.FLAG_FRIENDLY)
+    local foe = newEnemy(Vector(-20, 0))
+    check(mod.isFoe(foe) and not mod.isFoe(pal), "friendly enemies aren't foes")
+    ap.items[Items.WHISTLE] = 1
+    dispatch(ModCallbacks.MC_USE_ITEM, Items.WHISTLE, Items.WHISTLE, ap.rng, ap)
+    check(foe.slowed and not pal.slowed, "the whistle leaves your own side alone")
+    ap.items[Items.WHISTLE] = nil
+    ap.items[Items.HELMET] = 1
+    mod.pdata(ap).tackling = nil
+    ap.Position, ap.Velocity = Vector(0, 0), Vector(5, 0)
+    pal.Position, foe.Position = Vector(18, 0), Vector(400, 400)
+    local palHits = pal.damageTaken
+    tick(Cfg.TACKLE_WINDUP + 5)
+    check(pal.damageTaken == palHits, "no tackling your own squad")
+    ap.items[Items.HELMET] = nil
+    ap.Velocity = Vector(0, 0)
+
+    -- Audible: a charmed vanilla enemy stays yours
+    world.entities = { ap }
+    local charmedGaper = newEnemy(Vector(50, 50))
+    charmedGaper.Type, charmedGaper.Variant = 10, 0
+    charmedGaper:AddEntityFlags(EntityFlag.FLAG_FRIENDLY)
+    dispatch(ModCallbacks.MC_USE_CARD, mod.Cards.AUDIBLE, mod.Cards.AUDIBLE, ap, 0)
+    check(charmedGaper.exists, "audible doesn't turn a charmed enemy against you")
+
+    -- A charmed football shooter fires shots that can't hurt you
+    local friendlyRef = mod.spawnMonster(MV.REFEREE, Vector(100, 0))
+    friendlyRef:AddEntityFlags(EntityFlag.FLAG_FRIENDLY)
+    local shot = mod.monsterShoot(friendlyRef, Vector(1, 0), 1)
+    check(shot:HasProjectileFlags(ProjectileFlags.CANT_HIT_PLAYER) and shot:HasProjectileFlags(ProjectileFlags.HIT_ENEMIES),
+        "a charmed shooter's shots are friendly")
+    local hostile = mod.monsterShoot(mod.spawnMonster(MV.REFEREE, Vector(120, 0)), Vector(1, 0), 1)
+    check(not hostile:HasProjectileFlags(ProjectileFlags.CANT_HIT_PLAYER), "a hostile shooter's shots still hurt")
+
+    -- Tainted Coach squad: marked, benched on clear, never restored hostile
+    world.entities = { ap }
+    local tc = newPlayer(mod.PlayerTypes.COACH_B)
+    tc.ptype = mod.PlayerTypes.COACH_B
+    players = { tc }
+    world.entities = { tc }
+    newRoom(false)
+    local squad = Isaac.FindByType(MT, MV.LINEMAN, mod.SQUAD_SUBTYPE)
+    check(#squad == Cfg.TCOACH_SQUAD, "the squad subs in, marked as the squad")
+    dispatch(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, nil, tc.rng, Vector(0, 0))
+    check(#Isaac.FindByType(MT, MV.LINEMAN, mod.SQUAD_SUBTYPE) == 0, "room cleared: the squad heads to the bench")
+    -- the game restoring a saved squad member (no charm, no data) when you come back
+    world.entities = { tc }
+    world.roomClear = false
+    local stray = mod.spawnMonster(MV.LINEMAN, Vector(80, 80))
+    stray.SubType = mod.SQUAD_SUBTYPE
+    local realFoe = mod.spawnMonster(MV.LINEMAN, Vector(90, 90))
+    dispatch(ModCallbacks.MC_POST_NEW_ROOM)
+    check(not stray.exists and realFoe.exists, "a restored squad member is sent off; real linemen stay")
+    check(#Isaac.FindByType(MT, MV.LINEMAN, mod.SQUAD_SUBTYPE) == Cfg.TCOACH_SQUAD, "and fresh subs come in")
+    for _, e in ipairs(Isaac.FindByType(MT, MV.LINEMAN)) do e.exists = false end
+
+    -- the Coach's Birthright Dummy survives save & continue (no second Dummy)
+    local hc = newPlayer(mod.PlayerTypes.COACH)
+    hc.ptype = mod.PlayerTypes.COACH
+    players = { hc }
+    world.entities = { hc }
+    hc.items[CollectibleType.COLLECTIBLE_BIRTHRIGHT] = 1
+    tick()
+    check(hc:GetCollectibleNum(Items.DUMMY) == 1, "birthright: the dummy joins the staff")
+    dispatch(ModCallbacks.MC_PRE_GAME_EXIT, nil, true)
+    local hc2 = newPlayer(mod.PlayerTypes.COACH)
+    hc2.ptype = mod.PlayerTypes.COACH
+    hc2.items[CollectibleType.COLLECTIBLE_BIRTHRIGHT] = 1
+    hc2.items[Items.DUMMY] = 1
+    players = { hc2 }
+    world.entities = { hc2 }
+    dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, true)
+    tick()
+    check(hc2:GetCollectibleNum(Items.DUMMY) == 1, "continuing doesn't hand out a second dummy")
+
+    -- Tainted Kicker: a shank never goes off after a room change or while the game exits
+    local tk = newPlayer(mod.PlayerTypes.KICKER_B)
+    tk.ptype = mod.PlayerTypes.KICKER_B
+    players = { tk }
+    world.entities = { tk }
+    local function liveShank(room)
+        local t = newEntity({ Type = EntityType.ENTITY_TEAR, Position = Vector(60, 0), SpawnerEntity = tk })
+        t.data.GridironShankBoom = room
+        return t
+    end
+    local victim = newEnemy(Vector(60, 0), 100)
+    world.roomIndex = 84
+    dispatch(ModCallbacks.MC_POST_ENTITY_REMOVE, EntityType.ENTITY_TEAR, liveShank(70))
+    check(victim.damageTaken == 0, "a shank from another room doesn't explode here")
+    mod.gameExiting = true
+    dispatch(ModCallbacks.MC_POST_ENTITY_REMOVE, EntityType.ENTITY_TEAR, liveShank(84))
+    check(victim.damageTaken == 0, "nothing explodes while the game is exiting")
+    mod.gameExiting = false
+    world.roomFrame = 0
+    dispatch(ModCallbacks.MC_POST_ENTITY_REMOVE, EntityType.ENTITY_TEAR, liveShank(84))
+    check(victim.damageTaken == 0, "nothing explodes while a room is loading")
+    world.roomFrame = nil
+    dispatch(ModCallbacks.MC_POST_ENTITY_REMOVE, EntityType.ENTITY_TEAR, liveShank(84))
+    check(victim.damageTaken > 0, "a shank that lands in its room still explodes")
+    world.roomIndex = nil
+
+    -- Content switch: no Gridiron items from halftime or the Pro Shop when they're turned off
+    players = { ap }
+    world.entities = { ap }
+    mod.Settings.gridironItems = false
+    world.spawned = {}
+    mod.startHalftime(ap.rng)
+    local gave = false
+    for _, e in ipairs(world.spawned) do if e.Variant == PickupVariant.PICKUP_COLLECTIBLE then gave = true end end
+    check(not gave, "items off: halftime only offers the heart")
+    mod.Settings.gridironItems = true
+
+    -- Pedestal colour comes back after the pedestal cycles away and back
+    mod.Settings.helmetColor = "pink"
+    local ped = newEntity({ Type = EntityType.ENTITY_PICKUP, Variant = PickupVariant.PICKUP_COLLECTIBLE, SubType = Items.HELMET })
+    dispatch(ModCallbacks.MC_POST_PICKUP_UPDATE, PickupVariant.PICKUP_COLLECTIBLE, ped)
+    local first = ped.sprite.sheets and ped.sprite.sheets[1]
+    ped.SubType = 1
+    dispatch(ModCallbacks.MC_POST_PICKUP_UPDATE, PickupVariant.PICKUP_COLLECTIBLE, ped)
+    ped.sprite.sheets[1] = nil                      -- the game redraws the other item
+    ped.SubType = Items.HELMET
+    dispatch(ModCallbacks.MC_POST_PICKUP_UPDATE, PickupVariant.PICKUP_COLLECTIBLE, ped)
+    check(first and first:find("pink") and ped.sprite.sheets[1] == first, "the pedestal gets its colour back after cycling")
+    mod.Settings.helmetColor = "auto"
+
+    -- Jumper Cables never overcharge
+    ap.items[Items.CHEERLEADER] = 1
+    ap.items[CollectibleType.COLLECTIBLE_JUMPER_CABLES] = 1
+    ap.active = Items.KICKING_TEE
+    ap.charges = { [ActiveSlot.SLOT_PRIMARY] = 6 }
+    for _ = 1, Cfg.CHEER_HYPE do dispatch(ModCallbacks.MC_POST_NPC_DEATH, nil, newEnemy(Vector(300, 0))) end
+    check(ap:GetActiveCharge(ActiveSlot.SLOT_PRIMARY) == 6, "jumper cables stop at a full charge")
+    ap.items[Items.CHEERLEADER], ap.items[CollectibleType.COLLECTIBLE_JUMPER_CABLES] = nil, nil
+
+    -- Greedier: his first form "dying" as he transforms is not the Greedier note
+    local qb = newPlayer(mod.PlayerTypes.QUARTERBACK)
+    qb.ptype = mod.PlayerTypes.QUARTERBACK
+    players = { qb }
+    world.entities = { qb }
+    local oldDiff = mod.game.Difficulty
+    mod.game.Difficulty = Difficulty.DIFFICULTY_GREEDIER
+    local marks = mod.getMarks()
+    marks.qb = {}
+    dispatch(ModCallbacks.MC_POST_NPC_DEATH, nil, newEntity({ Type = EntityType.ENTITY_ULTRA_GREED, Variant = 0 }))
+    check(marks.qb.greedier == nil, "greedier: the first form doesn't count")
+    dispatch(ModCallbacks.MC_POST_NPC_DEATH, nil, newEntity({ Type = EntityType.ENTITY_ULTRA_GREED, Variant = 1 }))
+    check(marks.qb.greedier ~= nil, "greedier: beating Ultra Greedier does")
+    mod.game.Difficulty = oldDiff
+
+    -- Save files: each run start reads its own slot; a bad run snapshot never loses the settings
+    local slotA = world.modData
+    world.modData = 'return {settings={jerseyColor="pink"},menu={}}'
+    realReloadSaveData()
+    check(mod.Settings.jerseyColor == "pink", "a run start reads the current save file's settings")
+    world.modData = 'return {settings={jerseyColor="green"},menu={}}'
+    realReloadSaveData()
+    check(mod.Settings.jerseyColor == "green", "switching save files switches settings")
+    mod.GetSaveData().run = { players = { ["0"] = { bad = function() end } } }
+    world.modData = nil
+    mod.StoreSaveData()
+    check(world.modData and world.modData:find("green", 1, true), "an unsaveable run snapshot doesn't lose the settings")
+    mod.GetSaveData().run = nil
+    world.modData = slotA
+    realReloadSaveData()
+    mod.Settings.jerseyColor = "auto"
+
+    players = { ap }
+    world.entities = { ap }
+    newRoom(true)
+end)()
+
+;(function()
+    -- A corrupted or hand-edited save file can't break anything or reach the game
+    local stored = world.modData
+    world.modData = 'return {settings="oops", menu={MenuKeybind="x", MenuPalette=2}, marks=7, run=5}'
+    realReloadSaveData()
+    local d = mod.GetSaveData()
+    check(type(d.settings) == "table" and type(d.menu) == "table" and d.menu.MenuKeybind == nil
+        and d.menu.MenuPalette == 2 and (d.marks == nil or next(d.marks) == nil) and d.run == nil,
+        "a malformed save file is cleaned up")
+    world.modData = 'return {settings={FIELD_GOAL_COINS=1000000000, KICK_DAMAGE=1e9, TACKLE_WINDUP=0/0, ' ..
+        'GLOVES_CATCH_CHANCE=7, jerseyColor="../../gfx/evil", helmetColor="pink", charRules="nope"}, menu={}}'
+    realReloadSaveData()
+    check(Cfg.FIELD_GOAL_COINS == mod.Defaults.FIELD_GOAL_COINS, "a save can't change settings the menu doesn't offer")
+    check(Cfg.KICK_DAMAGE == 100 and Cfg.GLOVES_CATCH_CHANCE == 1, "saved numbers are clamped to the menu's range")
+    check(Cfg.TACKLE_WINDUP == mod.Defaults.TACKLE_WINDUP, "NaN falls back to the default")
+    check(mod.Settings.jerseyColor == "auto" and mod.Settings.helmetColor == "pink", "unknown colours are ignored")
+    check(type(mod.Settings.charRules) == "table", "bad costume rules are ignored")
+    -- a tampered run snapshot: values are clamped or dropped on continue
+    local rp = newPlayer()
+    players = { rp }
+    world.entities = { rp }
+    world.modData = 'return {settings={}, menu={}, run={state={clock="soon", trophies={["3"]=true, evil=5}}, ' ..
+        'players={["0"]={caught=1000000000, play="rm -rf", rings=-4, allPro="yes", touchdown=2}}}}'
+    realReloadSaveData()
+    dispatch(ModCallbacks.MC_POST_GAME_STARTED, nil, true)
+    local pd = mod.pdata(rp)
+    check(pd.caught == Cfg.GLOVES_MAX_HELD and pd.play == nil and pd.rings == 0 and pd.allPro ~= "yes" and pd.touchdown == 2,
+        "a tampered run snapshot is clamped and cleaned")
+    check(mod.RunState.clock == nil and mod.RunState.trophies["3"] == true and mod.RunState.trophies.evil == nil,
+        "tampered run state is cleaned")
+    world.modData = stored
+    realReloadSaveData()
+    mod.Settings.jerseyColor, mod.Settings.helmetColor = "auto", "auto"
+    mod.RunState = {}
 end)()
 
 -- Settings survive a restart (fresh load reads the stored blob)

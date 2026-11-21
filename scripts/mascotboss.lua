@@ -28,6 +28,7 @@ return function(mod)
         for i = 1, n do
             local off = Vector.FromAngle(math.random(360)) * 40
             local m = Isaac.Spawn(TYPE, V.MASCOT, 0, npc.Position + off, off * 0.15, npc)
+            m:AddEntityFlags(EntityFlag.FLAG_NO_REWARD)
             m:ClearEntityFlags(EntityFlag.FLAG_APPEAR)
         end
         npc:GetSprite():Play("Hurt", true)

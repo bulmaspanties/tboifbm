@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.12.5
+A full bug, crash and security pass before the Workshop release.
+- **Crash fix:** a Tainted Kicker shank still in the air can no longer explode during a room change or while quitting.
+- **Tainted Coach:** his squad heads to the bench when a room is cleared, so it can never come back hostile when you return to a room. Your own tackles, shoves, Whistle, fumble pull, End Zone, Timeout, Coin Toss, Foam Finger, Tackling Dummy and pre-snap freeze no longer hit or slow friendly and charmed enemies, and the enemy Coach no longer buffs your squad.
+- The Coach's Birthright no longer gives a second Tackling Dummy after you continue a run.
+- **Exploit fixes:** Kicker + Birthright + Car Battery no longer loops free kicks (one Tee refund per kick), and endless reinforcements (the Coach's subs, The Franchise's audibles, the Mascot's Spirit Squad, the Tainted Coach's squad) drop no champion rewards, so a stalled fight can't be farmed.
+- With **Gridiron items** turned off, the Halftime show and Pro Shops no longer hand out Gridiron items.
+- Settings and completion notes now follow the save file you're playing on.
+- Helmet and Jersey pedestals keep your colors after an item cycles; Jumper Cables + Cheerleader no longer overcharges an active; Fair Catch lasts the 2 seconds it promises; the Greedier note needs the real Ultra Greedier kill; the Kicker's headband and the Coach's cap no longer stack and come off with costumes off.
+- A charmed football enemy's shots no longer hurt you, and Audible no longer turns charmed enemies against you.
+- **Hardening:** the save file is only ever read as data and is validated (only menu settings, kept within the menu's ranges; a bad value falls back to the default; a broken run snapshot can't cost you your settings). The Gridiron API checks every input before it reaches the game.
+- Text: American spelling throughout, a new Water Boy quote, and the Tainted Kicker's Birthright is now "Squib kick".
+
 ## 0.12.4
 - **Room art redrawn to Isaac's rules**: three-quarter view, desaturated and grimy, dark brown outlines, top-left light and floor shadows.
   - **Goalposts are back on the painted fields**, rebuilt as rusted iron pipe on a filthy padded base wrapped in caution tape, with blood, dirt and a shadow. They never stand on a rock.

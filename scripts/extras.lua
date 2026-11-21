@@ -16,7 +16,7 @@ return function(mod)
     local function pickTarget()
         local best
         for _, e in ipairs(Isaac.GetRoomEntities()) do
-            if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) and not e:IsDead() then
+            if mod.isFoe(e) and not e:IsDead() then
                 if not best or e.MaxHitPoints > best.MaxHitPoints then best = e end
             end
         end
@@ -86,7 +86,7 @@ return function(mod)
     local function tails(player)
         player:FullCharge(ActiveSlot.SLOT_PRIMARY, true)
         for _, e in ipairs(Isaac.GetRoomEntities()) do
-            if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) then
+            if mod.isFoe(e) then
                 e:AddSlowing(EntityRef(player), Cfg.COIN_TAILS_SLOW, 0.5, Color(0.8, 0.8, 1, 1))
             end
         end
@@ -116,7 +116,7 @@ return function(mod)
     -- Timeout! pill: everything stops, and you catch your breath --------------------
     function mod:OnUseTimeout(_, player)
         for _, e in ipairs(Isaac.GetRoomEntities()) do
-            if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) then
+            if mod.isFoe(e) then
                 e:AddFreeze(EntityRef(player), Cfg.TIMEOUT_FREEZE)
             elseif e.Type == EntityType.ENTITY_PROJECTILE then
                 e:Remove()

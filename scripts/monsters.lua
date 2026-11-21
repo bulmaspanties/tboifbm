@@ -30,6 +30,9 @@ return function(mod)
             npc.Position, vel, npc):ToProjectile()
         p.Scale = scale or 1
         if color then p.Color = color end
+        if npc:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) then     -- a charmed shooter fires for your side
+            p:AddProjectileFlags(ProjectileFlags.CANT_HIT_PLAYER | ProjectileFlags.HIT_ENEMIES)
+        end
         return p
     end
 

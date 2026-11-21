@@ -34,7 +34,9 @@ jobs:
         run: lua5.4 tests/smoke_test.lua
 
       - name: Build mod zip
-        run: python3 tools/package.py --expect-version "${{ steps.version.outputs.tag }}"
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: python3 tools/package.py --expect-version "$TAG"
 
       - name: Publish release
         env:

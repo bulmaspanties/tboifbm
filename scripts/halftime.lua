@@ -11,6 +11,7 @@ return function(mod)
     local Q4 = { [Items.CHAMP_RING] = true, [Items.HOF_JACKET] = true, [Items.GOLDEN_ARM] = true,
         [Items.HAIL_MARY] = true }
     local function pickItem(rng)
+        if not mod.Settings.gridironItems then return nil end   -- content switched off: just the heart
         local choices = {}
         for _, id in pairs(Items) do
             if id > 0 and not Q4[id] and not mod.anyPlayerHas(id) then choices[#choices + 1] = id end

@@ -13,7 +13,7 @@
             birthright="Automatic: every kick is good, and the blast is bigger" />
     <player name="Kicker" skin="character_kicker_b.png" skinColor="-1" hp="4" armor="2" bombs="2"
             nameimage="playername_kicker_b.png" portrait="playerportrait_kicker_b.png"
-            bSkinParent="Kicker" birthright="Fair catch: every other shank explodes" />
+            bSkinParent="Kicker" birthright="Squib kick: every other shank explodes" />
     <!-- The Coach (scripts/coach.lua): animations named "Coach" in the same menu files -->
     <player name="Coach" skin="character_coach.png" skinColor="-1" hp="6" bombs="1" coins="5" keys="1"
             nameimage="playername_coach.png" portrait="playerportrait_coach.png"

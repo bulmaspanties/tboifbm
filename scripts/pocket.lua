@@ -13,7 +13,8 @@ return function(mod)
         local changed = 0
         for _, e in ipairs(Isaac.GetRoomEntities()) do
             local list = swaps[e.Type]
-            if list and e.Variant == 0 and e:IsActiveEnemy(false) and not e:IsBoss() then
+            if list and e.Variant == 0 and e:IsActiveEnemy(false) and not e:IsBoss()
+                and not e:HasEntityFlags(EntityFlag.FLAG_FRIENDLY) then         -- your charmed ones stay yours
                 local variant = list[rng:RandomInt(#list) + 1]
                 local foe = Isaac.Spawn(T, variant, 0, e.Position, Vector.Zero, nil)
                 foe:AddConfusion(EntityRef(player), Cfg.AUDIBLE_CONFUSE, false)

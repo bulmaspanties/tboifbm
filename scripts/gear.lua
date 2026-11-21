@@ -9,7 +9,7 @@ return function(mod)
         scale = scale or 1
         local radius = Cfg.PADS_POP_RADIUS * scale
         for _, e in ipairs(Isaac.FindInRadius(origin, radius, EntityPartition.ENEMY)) do
-            if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) then
+            if mod.isFoe(e) then
                 local away = (e.Position - origin):Resized(Cfg.PADS_POP_KNOCKBACK * scale)
                 if e:IsBoss() then away = away * 0.3 end
                 e:AddVelocity(away)
@@ -88,7 +88,7 @@ return function(mod)
         local now = game:GetFrameCount()
         local reach = player.Size + Cfg.TACKLE_REACH
         for _, e in ipairs(Isaac.FindInRadius(player.Position, reach, EntityPartition.ENEMY)) do
-            if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) then
+            if mod.isFoe(e) then
                 local ed = e:GetData()
                 if (ed.GridironTackleCD or 0) <= now then
                     ed.GridironTackleCD = now + Cfg.TACKLE_HIT_COOLDOWN
@@ -298,7 +298,7 @@ return function(mod)
 
         local froze = false
         for _, e in ipairs(Isaac.GetRoomEntities()) do
-            if e:IsActiveEnemy(false) and e:IsVulnerableEnemy() then
+            if mod.isFoe(e) then
                 local duration = e:IsBoss() and math.floor(Cfg.JERSEY_SNAP_FREEZE / 2) or Cfg.JERSEY_SNAP_FREEZE
                 e:AddFreeze(EntityRef(snapper), duration)
                 froze = true
@@ -579,7 +579,7 @@ return function(mod)
         if Trinkets.PROTOCOL > 0 and player:HasTrinket(Trinkets.PROTOCOL) then
             local frames = Cfg.PROTOCOL_DAZE * player:GetTrinketMultiplier(Trinkets.PROTOCOL)
             for _, e in ipairs(Isaac.GetRoomEntities()) do
-                if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) then
+                if mod.isFoe(e) then
                     e:AddConfusion(EntityRef(player), frames, false)
                 end
             end

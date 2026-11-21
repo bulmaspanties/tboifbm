@@ -42,11 +42,16 @@ return function(mod)
     end
     mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.OnGameStartedCoach)
 
+    -- The cap is part of who he is (not an item). Re-applied on room change (the game can
+    -- rebuild costumes), never stacked, and taken off when costumes are turned off.
     function mod.updateCoachLook(player)
+        for _, id in ipairs({ CAP, CAP_B }) do
+            if id >= 0 then player:TryRemoveNullCostume(id) end
+        end
         local kind = mod.coachKind(player)
         if not kind or not mod.Settings.costumes then return end
         local id = kind == "tainted" and CAP_B or CAP
-        if id > 0 then player:AddNullCostume(id) end
+        if id >= 0 then player:AddNullCostume(id) end
     end
 
     -- His staff works overtime (read by synergies' familiarBoost).
@@ -71,6 +76,24 @@ return function(mod)
     mod:AddCallback(ModCallbacks.MC_POST_PEFFECT_UPDATE, mod.OnPeffectCoach)
 
     -- Tainted Coach: his team -----------------------------------------------------------------
+    -- Squad members carry their own subtype. The game saves a room's enemies when you leave it
+    -- and restores them without their charm, so the squad heads to the bench when the room is
+    -- cleared, and any member the game restores on its own is sent off before new subs come in.
+    local SQUAD = 7
+    mod.SQUAD_SUBTYPE = SQUAD
+
+    local function bench(onlyStrays, poof)
+        for _, e in ipairs(Isaac.FindByType(mod.MonsterType, mod.MonsterVariants.LINEMAN, SQUAD)) do
+            if not onlyStrays or not e:GetData().GridironCoach then
+                if poof then
+                    Isaac.Spawn(EntityType.ENTITY_EFFECT, EffectVariant.POOF01, 0, e.Position, Vector.Zero, nil)
+                end
+                e:Remove()
+            end
+        end
+    end
+    mod.benchSquad = bench
+
     local function squadOf(player)
         local mine, list = GetPtrHash(player), {}
         for _, e in ipairs(Isaac.FindByType(mod.MonsterType, mod.MonsterVariants.LINEMAN)) do
@@ -87,9 +110,9 @@ return function(mod)
         for i = 1, count do
             if #squadOf(player) >= cap then break end
             local pos = room:FindFreePickupSpawnPosition(player.Position + Vector.FromAngle(i * 120) * 40, 0, true)
-            local guy = Isaac.Spawn(mod.MonsterType, mod.MonsterVariants.LINEMAN, 0, pos, Vector.Zero, player)
+            local guy = Isaac.Spawn(mod.MonsterType, mod.MonsterVariants.LINEMAN, SQUAD, pos, Vector.Zero, player)
             guy:AddCharmed(EntityRef(player), -1)        -- on his side for good
-            guy:AddEntityFlags(EntityFlag.FLAG_FRIENDLY)
+            guy:AddEntityFlags(EntityFlag.FLAG_FRIENDLY | EntityFlag.FLAG_NO_REWARD)
             guy:GetData().GridironCoach = GetPtrHash(player)
             local colour = mod.uniformColor(player, "jersey")              -- your team's kit
             for _, known in ipairs(mod.UNIFORM_COLORS.jersey) do
@@ -105,6 +128,7 @@ return function(mod)
 
     function mod:OnNewRoomCoach()
         local room = game:GetRoom()
+        bench(true, false)                               -- squad members the room restored without us
         mod.forEachPlayer(function(player)
             mod.updateCoachLook(player)
             if mod.coachKind(player) == "tainted" and not room:IsClear() then
@@ -113,6 +137,17 @@ return function(mod)
         end)
     end
     mod:AddCallback(ModCallbacks.MC_POST_NEW_ROOM, mod.OnNewRoomCoach)
+
+    -- Room cleared: good game, the squad heads back to the bench.
+    function mod:OnRoomClearCoach()
+        local any = #Isaac.FindByType(mod.MonsterType, mod.MonsterVariants.LINEMAN, SQUAD) > 0
+        if not any then return end
+        bench(false, true)
+        mod.forEachPlayer(function(player)
+            if mod.coachKind(player) == "tainted" then mod.popOn(player, "GOOD GAME!", mod.Colors.yellow) end
+        end)
+    end
+    mod:AddCallback(ModCallbacks.MC_PRE_SPAWN_CLEAN_AWARD, mod.OnRoomClearCoach)
 
     function mod:OnUseWhistleCoach(_, _, player)
         if mod.coachKind(player) == "tainted" then mod.subIn(player, Cfg.TCOACH_WHISTLE_SUBS) end

@@ -154,8 +154,10 @@ return function(mod)
             or (cleats and "cleats") or "none"
 
         -- a colour that isn't in the lists (old save, edited file) falls back to the default
+        -- (or a costume the game failed to register, id -1)
         for slot, key in pairs(want) do
-            if key ~= "none" and not Costumes[slot][key] then want[slot] = "none" end
+            local id = Costumes[slot][key]
+            if key ~= "none" and (not id or id < 0) then want[slot] = "none" end
         end
 
         for slot in pairs(want) do
@@ -166,7 +168,9 @@ return function(mod)
 
     local function removeAll(player)
         for _, group in pairs(Costumes) do
-            for _, id in pairs(group) do player:TryRemoveNullCostume(id) end
+            for _, id in pairs(group) do
+                if id >= 0 then player:TryRemoveNullCostume(id) end
+            end
         end
     end
 
@@ -229,8 +233,11 @@ return function(mod)
 
     function mod:OnPedestalUpdate(pickup)
         local icon = pedestalIcon(pickup.SubType)
-        if not icon then return end
         local d = pickup:GetData()
+        if not icon then
+            d.GridironIcon = nil   -- cycled to another item: the game redraws it, so reapply on the way back
+            return
+        end
         if d.GridironIcon == icon or mayBeBlind() then return end
         d.GridironIcon = icon
         local s = pickup:GetSprite()

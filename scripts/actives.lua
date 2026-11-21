@@ -45,7 +45,7 @@ return function(mod)
         -- It's good if the explosion is going to finish something off.
         local good = false
         for _, e in ipairs(Isaac.FindInRadius(ball.pos, Cfg.KICK_RADIUS * mod.kickRadiusMult(player) * mod.kickerRadiusMult(player), EntityPartition.ENEMY)) do
-            if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) and e.HitPoints <= dmg then
+            if mod.isFoe(e) and e.HitPoints <= dmg then
                 good = true
             end
         end
@@ -105,7 +105,7 @@ return function(mod)
 
         local magnet = mod.fumblePullMult(player)
         for _, e in ipairs(Isaac.FindInRadius(ball.pos, Cfg.FUMBLE_PULL_RADIUS * magnet, EntityPartition.ENEMY)) do
-            if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) and not e:IsBoss() then
+            if mod.isFoe(e) and not e:IsBoss() then
                 local toBall = ball.pos - e.Position
                 if toBall:Length() > 8 then
                     e:AddVelocity(toBall:Resized(Cfg.FUMBLE_PULL * magnet))
@@ -244,7 +244,7 @@ return function(mod)
             local proj = e:ToProjectile()
             if proj and not proj:HasProjectileFlags(ProjectileFlags.CANT_HIT_PLAYER) then
                 proj:Die() -- the play is dead
-            elseif e:IsVulnerableEnemy() and e:IsActiveEnemy(false) then
+            elseif mod.isFoe(e) then
                 local away = e.Position - player.Position
                 if away:Length() < 1 then away = Vector(0, 1) end
                 if e:IsBoss() then

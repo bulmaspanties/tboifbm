@@ -183,16 +183,16 @@ return function(mod)
                 toggle("hud text", "hud", { "downs, plays and", "bucket under", "your character" }),
                 toggle("popup text", "popups", { "callouts like", "tackle! and", "it's good!" }),
                 toggle("crowd sounds", "crowd", { "cheers, boos,", "the stadium horn", "and fanfare" }),
-                toggle("boss music", "bossMusic", { "themes for the", "linebacker and", "the franchise" }),
+                toggle("boss music", "bossMusic", { "the football", "bosses get their", "own themes" }),
                 toggle("football fields", "fields", { "yard lines and", "end zones painted", "on some floors" }),
             },
         },
         uniform = {
             title = "uniform",
             buttons = {
-                colorChoice("helmet", "helmet", "helmetColor", { "helmet shell", "colour (auto:", "your character's)" }),
-                colorChoice("jersey", "jersey", "jerseyColor", { "jersey colour", "(auto: your", "character's)" }),
-                colorChoice("pants", "pants", "pantsColor", { "pants colour", "(auto: your", "character's)" }),
+                colorChoice("helmet", "helmet", "helmetColor", { "helmet shell", "color (auto:", "your character's)" }),
+                colorChoice("jersey", "jersey", "jerseyColor", { "jersey color", "(auto: your", "character's)" }),
+                colorChoice("pants", "pants", "pantsColor", { "pants color", "(auto: your", "character's)" }),
                 { str = "", fsize = 2, nosel = true },
                 {
                     str = "team defaults",
@@ -203,7 +203,7 @@ return function(mod)
                         mod.StoreSaveData()
                         mod.refreshAllCostumes()
                     end,
-                    tooltip = { strset = { "back to auto:", "every character", "in their colours" } },
+                    tooltip = { strset = { "back to auto:", "every character", "in their colors" } },
                 },
             },
         },

@@ -98,6 +98,7 @@ return function(mod)
     end
 
     local function proShop(room)
+        if not mod.Settings.gridironItems then return end        -- content switched off: a normal shop
         local yes, rng = mod.isProShop(room)
         if not yes then return end
         local key = game:GetLevel():GetStage() .. ":" .. game:GetLevel():GetCurrentRoomIndex()

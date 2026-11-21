@@ -95,7 +95,11 @@ return function(mod)
         if npc.Type == EntityType.ENTITY_BEAST and npc.Variant == 0 then
             mod.awardMark("beast")
         elseif npc.Type == EntityType.ENTITY_ULTRA_GREED then
-            mod.awardMark(game.Difficulty == Difficulty.DIFFICULTY_GREEDIER and "greedier" or "greed")
+            if game.Difficulty == Difficulty.DIFFICULTY_GREEDIER then
+                if npc.Variant == 1 then mod.awardMark("greedier") end   -- not his first form transforming
+            elseif npc.Variant == 0 then
+                mod.awardMark("greed")
+            end
         end
     end
     mod:AddCallback(ModCallbacks.MC_POST_NPC_DEATH, mod.OnNpcDeathMarks)

@@ -75,7 +75,13 @@ return function(mod)
             mod.refreshCache(player, CacheFlag.CACHE_FIREDELAY)
             if player:HasCollectible(CollectibleType.COLLECTIBLE_JUMPER_CABLES) then
                 -- Jumper Cables: the routine charges your active item too
-                player:SetActiveCharge(player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY) + 1, ActiveSlot.SLOT_PRIMARY)
+                local active = player:GetActiveItem(ActiveSlot.SLOT_PRIMARY)
+                local config = active > 0 and Isaac.GetItemConfig():GetCollectible(active)
+                local max = config and config.MaxCharges or 0
+                local charge = player:GetActiveCharge(ActiveSlot.SLOT_PRIMARY)
+                if max > 0 and charge < max then
+                    player:SetActiveCharge(charge + 1, ActiveSlot.SLOT_PRIMARY)
+                end
             end
             for _, fam in ipairs(familiarsOf(player, Variants.CHEERLEADER)) do
                 fam:GetSprite():Play("Cheer", true)
@@ -135,7 +141,7 @@ return function(mod)
         fam.Velocity = fam:GetOrbitPosition(player.Position + player.Velocity) - fam.Position
         local leaf = mod.dummyPullMult(player)
         for _, e in ipairs(Isaac.FindInRadius(fam.Position, Cfg.DUMMY_TAUNT_RADIUS * mod.familiarBoost(player) * math.sqrt(leaf), EntityPartition.ENEMY)) do
-            if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) and not e:IsBoss() then
+            if mod.isFoe(e) and not e:IsBoss() then
                 e:AddVelocity((fam.Position - e.Position):Resized(Cfg.DUMMY_TAUNT_PULL * leaf))
             end
         end

@@ -47,11 +47,16 @@ return function(mod)
     mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, mod.OnGameStartedKicker)
 
     -- The headband is part of who he is (not an item), so it's kept on here.
+    -- Re-applied on room change (the game can rebuild costumes), never stacked, and taken off
+    -- when costumes are turned off.
     function mod.updateKickerLook(player)
+        for _, id in ipairs({ HEADBAND, HEADBAND_B }) do
+            if id >= 0 then player:TryRemoveNullCostume(id) end
+        end
         local kind = mod.kickerKind(player)
         if not kind or not mod.Settings.costumes then return end
         local id = kind == "tainted" and HEADBAND_B or HEADBAND
-        if id > 0 then player:AddNullCostume(id) end
+        if id >= 0 then player:AddNullCostume(id) end
     end
     function mod:OnNewRoomKicker()
         mod.forEachPlayer(function(p) mod.updateKickerLook(p) end)
@@ -69,13 +74,19 @@ return function(mod)
 
     function mod.onFieldGoal(player)
         if mod.kickerKind(player) ~= "normal" then return end
-        for _, slot in ipairs({ ActiveSlot.SLOT_PRIMARY, ActiveSlot.SLOT_SECONDARY, ActiveSlot.SLOT_POCKET }) do
-            if player:GetActiveItem(slot) == Items.KICKING_TEE then
-                local max = Isaac.GetItemConfig():GetCollectible(Items.KICKING_TEE).MaxCharges or 4
-                player:SetActiveCharge(math.min(max, player:GetActiveCharge(slot) + Cfg.KICKER_REFUND), slot)
+        local d = pdata(player)
+        -- One refund per kick, however many balls it puts in the air: Car Battery kicks twice,
+        -- and two refunds would hand back the whole Tee (an endless free kick, coins every time).
+        local now = game:GetFrameCount()
+        if d.refundFrame ~= now then
+            d.refundFrame = now
+            for _, slot in ipairs({ ActiveSlot.SLOT_PRIMARY, ActiveSlot.SLOT_SECONDARY, ActiveSlot.SLOT_POCKET }) do
+                if player:GetActiveItem(slot) == Items.KICKING_TEE then
+                    local max = Isaac.GetItemConfig():GetCollectible(Items.KICKING_TEE).MaxCharges or 4
+                    player:SetActiveCharge(math.min(max, player:GetActiveCharge(slot) + Cfg.KICKER_REFUND), slot)
+                end
             end
         end
-        local d = pdata(player)
         if (d.fieldGoals or 0) < Cfg.KICKER_FG_MAX then
             d.fieldGoals = (d.fieldGoals or 0) + 1
             mod.refreshCache(player)
@@ -128,14 +139,18 @@ return function(mod)
         d.shanks = (d.shanks or 0) + 1
         local every = hasBirthright(player) and 2 or Cfg.TKICK_EVERY
         if d.shanks % every == 0 then
-            tear:GetData().GridironShankBoom = true
+            -- remember the room: tears are also removed when you leave a room or quit, and
+            -- a shank must never go off during a room change or while the game shuts down
+            tear:GetData().GridironShankBoom = game:GetLevel():GetCurrentRoomIndex()
             tear.Color = Color(1, 0.7, 0.4, 1, 0.3, 0.15, 0)
         end
     end
     mod:AddCallback(ModCallbacks.MC_POST_FIRE_TEAR, mod.OnFireTearKicker)
 
     function mod:OnTearRemovedKicker(entity)
-        if not entity:GetData().GridironShankBoom then return end
+        local room = entity:GetData().GridironShankBoom
+        if not room or mod.gameExiting or room ~= game:GetLevel():GetCurrentRoomIndex()
+            or game:GetRoom():GetFrameCount() < 1 then return end     -- (a room that's just loading)
         local player = entity.SpawnerEntity and entity.SpawnerEntity:ToPlayer()
         if not player then return end
         mod.kickExploding = true                      -- his own shanks never hurt him

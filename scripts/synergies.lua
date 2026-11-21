@@ -53,7 +53,7 @@ return function(mod)
         if not launch then return end
         launch.frames = launch.frames - 1
         for _, other in ipairs(Isaac.FindInRadius(npc.Position, npc.Size + 18, EntityPartition.ENEMY)) do
-            if GetPtrHash(other) ~= GetPtrHash(npc) and other:IsVulnerableEnemy() and other:IsActiveEnemy(false)
+            if GetPtrHash(other) ~= GetPtrHash(npc) and mod.isFoe(other)
                 and not other:GetData().GridironPinballed then
                 other:GetData().GridironPinballed = true
                 other:TakeDamage(launch.dmg, 0, EntityRef(launch.player), 0)
@@ -288,7 +288,7 @@ return function(mod)
             icon(C.COLLECTIBLE_HOLY_MANTLE) .. " Holy Mantle: when the shield breaks, the pads release a shockwave",
         [Items.EYE_BLACK] = icon(C.COLLECTIBLE_MOMS_CONTACTS) .. " Mom's Contacts: +50% to the long-range bonus",
         [Items.JERSEY] = icon(C.COLLECTIBLE_BRIMSTONE) .. " Brimstone, Technology, Mom's Knife, etc.: still throw footballs#" ..
-            "Footballs take on your tear effects' colours (fire, poison, holy, ice...)",
+            "Footballs take on your tear effects' colors (fire, poison, holy, ice...)",
         [Items.CLEATS] = icon(C.COLLECTIBLE_PONY) .. icon(C.COLLECTIBLE_WHITE_PONY) .. icon(C.COLLECTIBLE_TAURUS) ..
             icon(C.COLLECTIBLE_SPEED_BALL) .. " Pony / White Pony / Taurus / Speed Ball: first downs need half the yards#" ..
             "{{Pill}} Speed Up: the same, for the room#" ..

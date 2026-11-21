@@ -18,7 +18,7 @@ Then take on a rival Linebacker, a giant Mascot, a stadium full of grotesque foo
 - **27 items and trinkets**: wearable gear, actives, familiars, and four **Q4 legends** (Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary)
 - **Six characters**: The Quarterback, The Kicker and The Coach, plus tainted versions that play completely differently
 - **Three bosses, a miniboss and 10 football enemies** in Isaac's own grotesque style, every player in full kit (pads under the jersey, pants, socks, cleats), with **Team Captain** champions
-- **Worn costumes** fitted per character (roomy helmets for big hair, horn holes for horns), in **11 team colours**, pink included
+- **Worn costumes** fitted per character (roomy helmets for big hair, horn holes for horns), in **11 team colors**, pink included
 - **All-Pro** transformation, a **Halftime show** event, **completion notes**, and dozens of **base-game synergies**
 - **Juiced**: steroids make tackles brutal (enemies pinball into each other), but the referees run drug tests
 - **Boss themes** for the Linebacker, The Mascot and The Franchise: marching drumlines, brass, organ and a dark choir
@@ -28,7 +28,7 @@ Then take on a rival Linebacker, a giant Mascot, a stadium full of grotesque foo
 <p align="center"><img src="docs/items.png" alt="Every item and trinket"></p>
 <p align="center"><img src="docs/enemies.png" alt="The football enemies"></p>
 <p align="center"><img src="docs/bosses.png" alt="The Linebacker, The Mascot, the Coach and The Franchise"></p>
-<p align="center"><img src="docs/uniforms.png" alt="Uniform colours"></p>
+<p align="center"><img src="docs/uniforms.png" alt="Uniform colors"></p>
 
 ## Everything in detail
 Click a section to expand it.
@@ -144,7 +144,7 @@ Clearing a normal room has a **6% chance** (once per floor, adjustable in the me
 | Football Cleats | Lucky Foot | Every first down is also +0.5 Luck for the room |
 | Football Helmet | Mega Mush | Counts as a big body: harder, farther tackles |
 | Water Boy | Old Bandage, Super Bandage | Same as Ball of Bandages: more often, and whole hearts |
-| Every football | Tear effects (fire, poison, Ipecac, holy light, ice, charm, Dark Matter, Midas, homing) | The football takes on that effect's colour, so you can see the synergy |
+| Every football | Tear effects (fire, poison, Ipecac, holy light, ice, charm, Dark Matter, Midas, homing) | The football takes on that effect's color, so you can see the synergy |
 
 These also appear in External Item Descriptions.
 
@@ -163,7 +163,7 @@ These also appear in External Item Descriptions.
 | **Tainted Kicker** | 2 red + 1 soul | Padded Pants, **Pigskin** (pocket active), a filthy torn headband | **Shanks:** his tears are slow, heavy lobs that clear rocks (+1 damage, slower fire rate), and every 4th one blows up like a mini field goal (it never hurts him). **Birthright:** every other shank explodes. |
 
 | **The Coach** | 3 red hearts | **BFFS!**, Cheerleader, Water Boy, **Coach's Whistle** (pocket active), a navy cap and headset | A familiar build: 75% damage himself, but his sideline crew works overtime (familiars +25% on top of BFFS!). **Birthright:** the Tackling Dummy joins the staff. |
-| **Tainted Coach** | 2 red + 1 soul | Tackling Dummy, **Coach's Whistle** (pocket active), a torn cap and busted headset | **Can't shoot.** He fields a team: **friendly Linemen in your team colours sub in** whenever he enters a room with enemies, and his Whistle calls in more (2 at a time). **Birthright:** a deeper bench (4), every sub a gold Team Captain. |
+| **Tainted Coach** | 2 red + 1 soul | Tackling Dummy, **Coach's Whistle** (pocket active), a torn cap and busted headset | **Can't shoot.** He fields a team: **friendly Linemen in your team colors sub in** whenever he enters a room with enemies, and his Whistle calls in more (2 at a time). **Birthright:** a deeper bench (4), every sub a gold Team Captain. |
 
 All six appear on the character select screen with their own page, portrait, co-op and death-screen art.
 
@@ -254,7 +254,7 @@ If **External Item Descriptions** is installed, every item shows its description
 Gridiron adds a page to the **Dead Sea Scrolls** menu (press **C** in a run, or the key you've set):
 - **gameplay:** Gridiron items on/off and Q4 legends on/off (for new runs), tackle windup, facemask block %, pad deflect %, glove catch %, pants shrug-off %, yards per first down, kick damage, drug tests, Franchise boss chance, Mascot boss chance, Pro Shop chance, halftime show chance, Linebacker boss chance, football-enemy chance, reset to defaults
 - **visuals:** costumes on/off, Suited Up glow, HUD text (down & distance, current play, bucket fill), popup text (callouts like TACKLE!, IT'S GOOD!, FUMBLE!), crowd sounds (cheers, boos, the stadium horn and the scoring fanfare), boss music, football fields
-- **uniform:** by default (**auto**) every character suits up in **their own colours**: Magdalene in pink and white, Judas in black and red, Cain in green and gold, Keeper in gold and money green, Blue Baby in blues, the tainted characters in darker, meaner versions, and so on. Or pick your team colours yourself: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colours each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts everything back on auto. Helmet and Team Jersey **pedestals** show your colours too (except where the item could be hidden: Curse of the Blind and the alt-floor "?" treasure items)
+- **uniform:** by default (**auto**) every character suits up in **their own colors**: Magdalene in pink and white, Judas in black and red, Cain in green and gold, Keeper in gold and money green, Blue Baby in blues, the tainted characters in darker, meaner versions, and so on. Or pick your team colors yourself: **helmet** shell, **jersey** (the trim and sleeve stripes match) and **pants**, eleven colors each (red, blue, navy, green, orange, purple, gold, black, silver, white, pink); **team defaults** puts everything back on auto. Helmet and Team Jersey **pedestals** show your colors too (except where the item could be hidden: Curse of the Blind and the alt-floor "?" treasure items)
 - **completion notes:** the marks each Gridiron character has earned
 - **costume fit:** hide the helmet, eye black, jersey/pads or pants/cleats for the character you're playing right now
 
@@ -325,7 +325,7 @@ scripts/gear.lua                passive items, trinkets, stats, All-Pro, Turf Bu
 scripts/actives.lua             Kicking Tee, Pigskin, Playbook, Coach's Whistle
 scripts/endzone.lua             End Zone active and its floor paint
 scripts/legends.lua             Q4 items: Championship Ring, Hall of Fame Jacket, Golden Arm, Hail Mary
-scripts/costumes.lua            worn gear, uniform colours, per-character fit, pedestal recolours
+scripts/costumes.lua            worn gear, uniform colors, per-character fit, pedestal recolors
 scripts/hud.lua                 Suited Up glow, held balls, text readouts
 scripts/save.lua                settings + save & continue persistence
 scripts/eid.lua                 External Item Descriptions

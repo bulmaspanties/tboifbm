@@ -53,7 +53,8 @@ return function(mod)
         local linemen = #Isaac.FindByType(TYPE, V.LINEMAN)
         if linemen < Cfg.FRANCHISE_MAX_LINEMEN then
             for side = -1, 1, 2 do
-                Isaac.Spawn(TYPE, V.LINEMAN, 0, npc.Position + Vector(side * 60, 30), Vector.Zero, npc)
+                local guard = Isaac.Spawn(TYPE, V.LINEMAN, 0, npc.Position + Vector(side * 60, 30), Vector.Zero, npc)
+                guard:AddEntityFlags(EntityFlag.FLAG_NO_REWARD)   -- he calls them all fight long: nothing to farm
             end
         end
         mod.popOn(npc, "AUDIBLE! HUT HUT!", mod.Colors.red, 1.2)

@@ -344,7 +344,7 @@ return function(mod)
     local function teammates(coach)
         local list = {}
         for _, e in ipairs(Isaac.GetRoomEntities()) do
-            if e:IsVulnerableEnemy() and e:IsActiveEnemy(false) and not (e.Type == TYPE and e.Variant == V.COACH) then
+            if mod.isFoe(e) and not (e.Type == TYPE and e.Variant == V.COACH) then
                 list[#list + 1] = e
             end
         end
@@ -380,7 +380,8 @@ return function(mod)
         if d.subTimer <= 0 then
             d.subTimer = 300
             if #teammates(npc) < 2 then
-                Isaac.Spawn(TYPE, V.LINEMAN, 0, npc.Position + toward(npc, target, 30), Vector.Zero, npc)
+                local sub = Isaac.Spawn(TYPE, V.LINEMAN, 0, npc.Position + toward(npc, target, 30), Vector.Zero, npc)
+                sub:AddEntityFlags(EntityFlag.FLAG_NO_REWARD)   -- endless subs: no champion drops to farm
                 mod.popOn(npc, "SUB IN!", mod.Colors.yellow)
             end
         end

@@ -197,7 +197,7 @@ return function(mod)
 
         -- Audible / Fair Catch
         AUDIBLE_CONFUSE       = 60,
-        FAIR_CATCH_FRAMES     = 60,
+        FAIR_CATCH_FRAMES     = 120,   -- player damage cooldown runs at 60 a second: 2 seconds
 
         -- Timeout!
         TIMEOUT_FREEZE        = 90,
@@ -449,6 +449,12 @@ return function(mod)
 
     function mod.isSuitedUp(player)
         return mod.gearCount(player) >= mod.Cfg.SUITED_UP_PIECES
+    end
+
+    -- A hostile enemy you can hurt: not friendly / charmed (the Tainted Coach's squad, Friendly
+    -- Ball catches, charmed enemies), so tackles, shoves, slows and buffs leave them alone.
+    function mod.isFoe(e)
+        return e:IsVulnerableEnemy() and e:IsActiveEnemy(false) and not e:HasEntityFlags(EntityFlag.FLAG_FRIENDLY)
     end
 
     function mod.rngFor(player, item)
